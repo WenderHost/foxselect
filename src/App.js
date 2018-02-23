@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Header from './components/Header';
-import Configurator from './components/Configurator';
-//import logo from './logo.svg';
-//import './App.css';
+import PartSelector from './components/PartSelector';
 
 class App extends Component {
   constructor(){
@@ -31,9 +29,9 @@ class App extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col">
-            <Header title="Configurator" />
-            <Configurator addPart={this.addPart} />
+          <div className="col-md-12">
+            <Header title="Part Selector" />
+            <PartSelector addPart={this.addPart} />
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import registerServiceWorker from './registerServiceWorker';
+import { unregister } from './registerServiceWorker';
 
 import './css/style.css';
 import App from './App';
@@ -22,4 +22,5 @@ const Root = () => {
 
 
 render(<Root />,document.querySelector('#root'));
-registerServiceWorker();
+//registerServiceWorker();
+unregister();

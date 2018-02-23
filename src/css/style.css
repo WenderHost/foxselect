@@ -24,6 +24,12 @@ body{
   background-color: #fff;
   color: #0d649b;
 }
+label{
+  font-size: 13px;
+}
+.form-row{
+  margin-bottom: 10px;
+}
 .size-options{
   margin-top: 20px;
   border: 1px solid #eee;
