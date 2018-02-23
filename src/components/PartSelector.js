@@ -58,6 +58,10 @@ class PartSelector extends React.Component{
     // Update the value of our part attribute
     configuredPart[attribute] = value;
 
+    // When we are changing the `size`, reset the package_option to the default: `BS`
+    if( 'size' === attribute )
+      configuredPart['package_option'] = 'BS';
+
     this.setState({configuredPart: configuredPart});
   }
 
