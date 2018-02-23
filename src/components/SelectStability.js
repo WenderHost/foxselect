@@ -3,20 +3,14 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 class SelectStability extends Component{
-  state = {
-    selectedOption: ''
-  }
 
   handleChange = (selectedOption) => {
-    this.setState(
-      {selectedOption},
-      () => this.props.updateConfiguredPart('stability',selectedOption)
-    );
+    this.props.updateConfiguredPart('stability',selectedOption);
   }
 
   render(){
-    const { selectedOption } = this.state;
-    const value = selectedOption && selectedOption.value;
+    const { configuredPart } = this.props;
+    const value = configuredPart.stability;
 
     return(
       <div>

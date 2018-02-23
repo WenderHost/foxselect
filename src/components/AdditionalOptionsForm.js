@@ -14,24 +14,24 @@ class AdditionalOptionsForm extends Component{
       <div>
         <div className="form-row" style={divStyle}>
           <div className="col-md-2">
-            <SelectSize updateConfiguredPart={this.props.updateConfiguredPart} />
+            <SelectSize configuredPart={this.props.configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} />
           </div>
           <div className="col-md-2">
-            <SelectTolerance updateConfiguredPart={this.props.updateConfiguredPart} />
+            <SelectTolerance  configuredPart={this.props.configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} />
           </div>
           <div className="col-md-2">
-            <SelectStability updateConfiguredPart={this.props.updateConfiguredPart} />
+            <SelectStability  configuredPart={this.props.configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} />
           </div>
           <div className="col-md-2">
-            <SelectLoad updateConfiguredPart={this.props.updateConfiguredPart} />
+            <SelectLoad  configuredPart={this.props.configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} />
           </div>
           <div className="col-md-2">
-            <SelectOpTemp updateConfiguredPart={this.props.updateConfiguredPart} />
+            <SelectOpTemp  configuredPart={this.props.configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} />
           </div>
         </div>
         <div className="form-row">
           <div className="col-md-6">
-            { this.props.showSizeOptions ? <SizeOptions configuredPartSize={this.props.configuredPartSize} updateConfiguredPart={this.props.updateConfiguredPart} /> : null }
+            { ( typeof this.props.configuredPart.size !== 'undefined' && 0 !== this.props.configuredPart.size.length ) ? <SizeOptions configuredPart={this.props.configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} /> : null }
           </div>
         </div>
       </div>

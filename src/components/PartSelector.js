@@ -15,9 +15,6 @@ class PartSelector extends React.Component{
     this.updateConfiguredPart = this.updateConfiguredPart.bind(this);
 
     this.state = {
-      showAdditionalOptionsForm: false,
-      showPartDetails: false,
-      showSizeOptions: false,
       configuredPart: {
         product_type: '',
         frequency: '',
@@ -61,18 +58,7 @@ class PartSelector extends React.Component{
     // Update the value of our part attribute
     configuredPart[attribute] = value;
 
-    // Should we show size options after updating `size`?
-    var showSizeOptions = ( typeof configuredPart.size !== 'undefined' && 0 !== configuredPart.size.length )? true : false;
-
-    // Should we show the Additional Options form?
-    var showAdditionalOptionsForm = ( typeof configuredPart.product_type !== 'undefined' && 0 !== configuredPart.product_type.length )? true : false;
-
-    this.setState({
-      configuredPart: configuredPart,
-      showSizeOptions: showSizeOptions,
-      showPartDetails: this.isPartConfigured(configuredPart),
-      showAdditionalOptionsForm: showAdditionalOptionsForm
-    });
+    this.setState({configuredPart: configuredPart});
   }
 
   /**
@@ -118,6 +104,8 @@ class PartSelector extends React.Component{
   }
 
   render(){
+    const { configuredPart } = this.state;
+
     return (
       <div className="PartSelector">
         <form ref={form => this.form = form}>
@@ -132,13 +120,13 @@ class PartSelector extends React.Component{
             <div className="col-md-1">
               <label>&nbsp;</label>
               <div className="form-check">
-                <input className="form-check-input" type="radio" name="frequency_unit" value="MHz" id="MHz" checked={this.state.configuredPart.frequency_unit === 'MHz'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="frequency_unit" value="MHz" id="MHz" checked={configuredPart.frequency_unit === 'MHz'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="MHz">
                   MHz
                 </label>
               </div>
               <div className="form-check">
-                <input className="form-check-input" type="radio" name="frequency_unit" value="kHz" id="kHz" checked={this.state.configuredPart.frequency_unit === 'kHz'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="frequency_unit" value="kHz" id="kHz" checked={configuredPart.frequency_unit === 'kHz'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="kHz">
                   kHz
                 </label>
@@ -147,21 +135,21 @@ class PartSelector extends React.Component{
             <div className="col-md-2">
               <label>&nbsp;</label>
               <div className="form-check">
-                <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="SMD" checked={this.state.configuredPart.package_type === 'SMD'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="SMD" checked={configuredPart.package_type === 'SMD'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="package_smd">
                   SMD
                 </label>
               </div>
               <div className="form-check">
-                <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="Pin-Thru" checked={this.state.configuredPart.package_type === 'Pin-Thru'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="Pin-Thru" checked={configuredPart.package_type === 'Pin-Thru'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="package_pinthru">
                   Pin-Thru
                 </label>
               </div>
             </div>
           </div>
-          { this.state.showAdditionalOptionsForm ? <AdditionalOptionsForm showSizeOptions={this.state.showSizeOptions} updateConfiguredPart={this.updateConfiguredPart} configuredPartSize={this.state.configuredPart.size} /> : null }
-          { this.state.showPartDetails ? <PartDetails configuredPart={this.state.configuredPart} /> : null }
+          { ( typeof configuredPart.product_type !== 'undefined' && 0 !== configuredPart.product_type.length ) ? <AdditionalOptionsForm configuredPart={configuredPart} updateConfiguredPart={this.updateConfiguredPart} /> : null }
+          { this.isPartConfigured(configuredPart) ? <PartDetails configuredPart={configuredPart} /> : null }
         </form>
       </div>
     );

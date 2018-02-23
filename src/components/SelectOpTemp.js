@@ -3,20 +3,14 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 class SelectOpTemp extends Component{
-  state = {
-    selectedOption: ''
-  }
 
   handleChange = (selectedOption) => {
-    this.setState(
-      {selectedOption},
-      () => this.props.updateConfiguredPart('optemp',selectedOption)
-    );
+    this.props.updateConfiguredPart('optemp',selectedOption);
   }
 
   render(){
-    const { selectedOption } = this.state;
-    const value = selectedOption && selectedOption.value;
+    const { configuredPart } = this.props;
+    const value = configuredPart.optemp;
 
     return(
       <div>

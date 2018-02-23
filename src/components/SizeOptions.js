@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { RadioGroup, Radio } from 'react-radio-group';
 
 class SizeOptions extends Component{
-  state = {
-    selectedValue: 'BS'
-  }
 
   constructor(){
     super();
@@ -13,15 +10,11 @@ class SizeOptions extends Component{
   }
 
   handleChange(value){
-    console.log(`running SizeOptions.handleChange(${value})`);
-    this.setState(
-      {selectedValue: value},
-      () => this.props.updateConfiguredPart('package_option',value)
-    );
+    this.props.updateConfiguredPart('package_option',value)
   }
 
-  showOptions(size){
-    console.log(size);
+  showOptions(size,package_option){
+
     switch(size){
       case 'A':
       case '0':
@@ -31,13 +24,13 @@ class SizeOptions extends Component{
       case '4SD':
       case '9SD':
         return(
-          <input type="hidden" name="package_option" value={this.state.selectedValue} />
+          <input type="hidden" name="package_option" value={package_option} />
         );
       case '1':
         return(
           <div className="alert alert-secondary">
             <p>2.0 x 1.6 mm package options:</p>
-            <RadioGroup name="package_option" selectedValue={this.state.selectedValue} onChange={this.handleChange}>
+            <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="form-check">
                 <label>
                   <Radio value="BS" /> Standard 4.5 mm height, metal lid, seam seal
@@ -60,7 +53,7 @@ class SizeOptions extends Component{
         return(
           <div className="alert alert-secondary">
             <p>3.2 x 2.5 mm package options:</p>
-            <RadioGroup name="package_option" selectedValue={this.state.selectedValue} onChange={this.handleChange}>
+            <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="form-check">
                 <label>
                   <Radio value="BS" /> Metal lid, seam seal
@@ -78,7 +71,7 @@ class SizeOptions extends Component{
         return(
           <div className="alert alert-secondary">
             <p>5.0 x 3.2 mm package options:</p>
-            <RadioGroup name="package_option" selectedValue={this.state.selectedValue} onChange={this.handleChange}>
+            <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
                 <div className="col-6">Metal lid, seam seal</div>
                 <div className="col-2"><label><Radio value="BS" /> 4 pad</label></div>
@@ -101,7 +94,7 @@ class SizeOptions extends Component{
         return(
           <div className="alert alert-secondary">
             <p>6.0 x 3.5 mm package options:</p>
-            <RadioGroup name="package_option" selectedValue={this.state.selectedValue} onChange={this.handleChange}>
+            <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="form-check">
                 Metal lid, seam seal
                 <label>
@@ -121,7 +114,7 @@ class SizeOptions extends Component{
         return(
           <div className="alert alert-secondary">
             <p>7.0 x 5.0 mm package options:</p>
-            <RadioGroup name="package_option" selectedValue={this.state.selectedValue} onChange={this.handleChange}>
+            <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="form-check">
                 Metal lid, seam seal
                 <label>
@@ -149,9 +142,13 @@ class SizeOptions extends Component{
   }
 
   render(){
+    const { configuredPart } = this.props;
+    const size = configuredPart.size;
+    const package_option = configuredPart.package_option;
+
     return(
       <div>
-        { this.showOptions(this.props.configuredPartSize) }
+        { this.showOptions(size, package_option) }
       </div>
     );
   }
