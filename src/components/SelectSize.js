@@ -9,8 +9,9 @@ class SelectSize extends Component{
   }
 
   render(){
-    const { configuredPart } = this.props;
+    const { configuredPart, sizeOptions } = this.props;
     const value = configuredPart.size;
+    const className = ( 0 === sizeOptions.length )? 'empty' : null;
 
     return(
       <div>
@@ -22,7 +23,18 @@ class SelectSize extends Component{
           placeholder="Size..."
           autoBlur={true}
           matchPos="start"
-          options={[
+          options={sizeOptions}
+          className={className}
+        />
+      </div>
+    );
+  };
+}
+
+export default SelectSize;
+
+/*
+[
             { value: 'A', label: '1.2x1.0 mm' },
             { value: '0', label: '1.6x1.2 mm' },
             { value: '1', label: '2.0x1.6 mm' },
@@ -36,11 +48,5 @@ class SelectSize extends Component{
             { value: '8', label: '11.0x5.0 mm' },
             { value: '4SD', label: 'HC49 SMD (4.5mm)'},
             { value: '9SD', label: 'HC49 SMD (3.2mm)'},
-          ]}
-        />
-      </div>
-    );
-  };
-}
-
-export default SelectSize;
+          ]
+ */

@@ -21,30 +21,34 @@ class SizeOptions extends Component{
       case '2':
       case '4':
       case '8':
-      case '4SD':
-      case '9SD':
         return(
           <input type="hidden" name="package_option" value={package_option} />
         );
+      case '4SD':
+      case '9SD':
+        return false;
       case '1':
         return(
           <div className="alert alert-secondary">
             <p>2.0 x 1.6 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
-              <div className="form-check">
-                <label>
-                  <Radio value="BS" /> Standard 4.5 mm height, metal lid, seam seal
-                </label>
+              <div className="row">
+                <div className="col-7">
+                  <label htmlFor="20x16bs">Standard 4.5 mm height, metal lid, seam seal</label>
+                </div>
+                <div className="col-2"><Radio value="BS" id="20x16bs" /></div>
               </div>
-              <div className="form-check">
-                <label>
-                  <Radio value="BQ" /> Optional Ceramic Lid, resin seal
-                </label>
+              <div className="row">
+                <div className="col-7">
+                  <label htmlFor="20x16bq">Optional Ceramic Lid, resin seal</label>
+                </div>
+                <div className="col-2"><Radio value="BQ" id="20x16bq" /></div>
               </div>
-              <div className="form-check">
-                <label>
-                  <Radio value="BC" /> Optional 4.0 mm height, metal lid seam seal
-                </label>
+              <div className="row">
+                <div className="col-7">
+                  <label htmlFor="20x16bc">Optional 4.0 mm height, metal lid seam seal</label>
+                </div>
+                <div className="col-2"><Radio value="BC" id="20x16bc" /></div>
               </div>
             </RadioGroup>
           </div>
@@ -54,15 +58,13 @@ class SizeOptions extends Component{
           <div className="alert alert-secondary">
             <p>3.2 x 2.5 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
-              <div className="form-check">
-                <label>
-                  <Radio value="BS" /> Metal lid, seam seal
-                </label>
+              <div className="row">
+                <div className="col-4"><label htmlFor="32x25bs">Metal lid, seam seal</label></div>
+                <div className="col-4"><Radio value="BS" id="32x25bs" /></div>
               </div>
-              <div className="form-check">
-                <label>
-                  <Radio value="BQ" /> Ceramic lid, resin seal
-                </label>
+              <div className="row">
+                <div className="col-4"><label htmlFor="32x25bq">Ceramic lid, resin seal</label></div>
+                <div className="col-4"><Radio value="BQ" id="32x25bq" /></div>
               </div>
             </RadioGroup>
           </div>
@@ -135,9 +137,6 @@ class SizeOptions extends Component{
         );
       default:
         console.log('this is the default option. Part size: ' + size);
-        return(
-          <p>MWENDER NOTE: Choose <code>2.0 x 1.6 mm</code> to see options here. I haven't coded out the options for the other sizes yet.</p>
-        );
     }
   }
 

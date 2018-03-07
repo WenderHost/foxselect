@@ -9,8 +9,9 @@ class SelectOpTemp extends Component{
   }
 
   render(){
-    const { configuredPart } = this.props;
+    const { configuredPart, optempOptions } = this.props;
     const value = configuredPart.optemp;
+    const className = ( 0 === optempOptions.length )? 'empty' : null;
 
     return(
       <div>
@@ -20,7 +21,18 @@ class SelectOpTemp extends Component{
           value={value}
           onChange={this.handleChange}
           placeholder="Op Temp..."
-          options={[
+          options={optempOptions}
+          className={className}
+        />
+      </div>
+    );
+  };
+}
+
+export default SelectOpTemp;
+
+/*
+[
             { value: 'B', label: '-10 To +50 C' },
             { value: 'D', label: '-10 To +60 C' },
             { value: 'E', label: '-10 To +70 C' },
@@ -45,11 +57,5 @@ class SelectOpTemp extends Component{
             { value: 'A', label: '0 To +50 C' },
             { value: 'C', label: '0 To +70 C' },
             { value: 'W', label: 'Other' }
-            ]}
-        />
-      </div>
-    );
-  };
-}
-
-export default SelectOpTemp;
+            ]
+ */

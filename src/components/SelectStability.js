@@ -9,8 +9,9 @@ class SelectStability extends Component{
   }
 
   render(){
-    const { configuredPart } = this.props;
+    const { configuredPart, stabilityOptions } = this.props;
     const value = configuredPart.stability;
+    const className = ( 0 === stabilityOptions.length )? 'empty' : null;
 
     return(
       <div>
@@ -21,7 +22,18 @@ class SelectStability extends Component{
           onChange={this.handleChange}
           placeholder="Stability..."
           matchPos="start"
-          options={[
+          options={stabilityOptions}
+          className={className}
+        />
+      </div>
+    );
+  };
+}
+
+export default SelectStability;
+
+/*
+[
             { value: 'M', label: '-0.036+-1 ppm (Delta temp)E^2' },
             { value: 'I', label: '-0.04 ppm (Delta Temp)E^2 max' },
             { value: 'O', label: '-140 ~ +10 ppm' },
@@ -48,11 +60,5 @@ class SelectStability extends Component{
             { value: 'J', label: '8 ppm' },
             { value: 'Z', label: 'Other' },
             { value: 'X', label: 'Overall' }
-            ]}
-        />
-      </div>
-    );
-  };
-}
-
-export default SelectStability;
+            ]
+ */

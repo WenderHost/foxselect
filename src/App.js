@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Header from './components/Header';
 import PartSelector from './components/PartSelector';
 
 class App extends Component {
@@ -30,7 +29,6 @@ class App extends Component {
       <div className="container">
         <div className="row">
           <div className="col-md-12">
-            <Header title="Part Selector" />
             <PartSelector addPart={this.addPart} />
           </div>
         </div>

@@ -22,7 +22,6 @@ class SelectLoad extends Component{
           placeholder="Load..."
           matchPos="start"
           options={[
-            { value: 'A', label: 'SERIES' },
             { value: 'B', label: '6 pF' },
             { value: 'C', label: '4 pF' },
             { value: 'D', label: '8 pF' },
@@ -52,3 +51,7 @@ class SelectLoad extends Component{
 }
 
 export default SelectLoad;
+
+/*
+             { value: 'A', label: 'SERIES' },
+ */

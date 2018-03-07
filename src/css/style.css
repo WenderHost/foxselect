@@ -24,8 +24,18 @@ body{
   background-color: #fff;
   color: #0d649b;
 }
+p > code{
+  background-color: #eee;
+  padding: 2px 4px;
+  color: #666;
+  border-radius: 3px;
+}
 label{
   font-size: 13px;
+  cursor: pointer;
+}
+div[class^=col-] label:only-child{
+  display: block;
 }
 .form-row{
   margin-bottom: 10px;
@@ -34,4 +44,9 @@ label{
   margin-top: 20px;
   border: 1px solid #eee;
   padding: 20px;
+}
+
+/* Select states */
+.empty .Select-control{
+  background-color: #eee;
 }
