@@ -1,3 +1,14 @@
+# FoxSelect™ - Fox Electronics Part Selector #
+
+FoxSelect™ is a [React](https://reactjs.org/) frontend to the Fox Electronics part catalog.
+
+## Changelog
+
+### 0.1.0
+* Initial release
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
