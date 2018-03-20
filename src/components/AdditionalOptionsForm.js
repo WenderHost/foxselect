@@ -14,29 +14,35 @@ class AdditionalOptionsForm extends Component{
     return(
       <div>
         <div className="form-row" style={{marginTop: '20px'}}>
+          { typeof partOptions.size !== 'undefined' &&
           <div className="col-md-2">
             <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
-          </div>
-          { ( typeof configuredPart.size !== 'undefined' && aecq200Sizes.includes(configuredPart.size) ) ? <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> : null }
+          </div> }
+          { typeof configuredPart.size !== 'undefined' && aecq200Sizes.includes(configuredPart.size) &&
+            <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
           { typeof partOptions.tolerance !== 'undefined' &&
           <div className="col-md-2">
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
           </div> }
+          { typeof partOptions.stability !== 'undefined' &&
           <div className="col-md-2">
             <SelectStability  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} stabilityOptions={partOptions.stability} />
-          </div>
+          </div> }
+          { typeof partOptions.load !== 'undefined' &&
           <div className="col-md-2">
             <SelectLoad  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} loadOptions={partOptions.load} />
-          </div>
+          </div> }
+          { typeof partOptions.optemp !== 'undefined' &&
           <div className="col-md-2">
             <SelectOpTemp  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} optempOptions={partOptions.optemp} />
-          </div>
+          </div> }
         </div>
+        { typeof configuredPart.size !== 'undefined' && 0 !== configuredPart.size.length &&
         <div className="form-row">
           <div className="col-md-6">
-            { ( typeof configuredPart.size !== 'undefined' && 0 !== configuredPart.size.length ) ? <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> : null }
+            <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
           </div>
-        </div>
+        </div> }
       </div>
     );
   }
