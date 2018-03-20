@@ -28,7 +28,8 @@ class PartSelector extends React.Component{
         tolerance: '_',
         stability: '_',
         load: '_',
-        optemp: '_'
+        optemp: '_',
+        number: '_________'
       },
       partOptions: {
         frequency: [
@@ -92,11 +93,12 @@ class PartSelector extends React.Component{
       } else if( '_' === value ){
         // No frequency, reset configurePart
         value = '0.0';
-        configuredPart.size = '_';
-        configuredPart.tolerance = '_';
-        configuredPart.stability = '_';
-        configuredPart.load = '_';
-        configuredPart.optemp = '_';
+        //configuredPart.size = '_';
+        //configuredPart.tolerance = '_';
+        //configuredPart.stability = '_';
+        //configuredPart.load = '_';
+        //configuredPart.optemp = '_';
+        configuredPart.package_option = 'BS';
       } else {
         value = parseInt(value,10).toFixed(1);
       }
@@ -214,9 +216,10 @@ class PartSelector extends React.Component{
 
     return (
       <div className="PartSelector">
-        <div className="row">
-          <div className="col-md-6"><h1 className="title">FoxSelect&trade;</h1></div>
-          <div className="col-md-2 offset-md-4"><p>Available Parts: <code>{availableParts}</code></p></div>
+        <div className="row no-gutters">
+          <div className="col-md-3"><h1 className="title">FoxSelect&trade;</h1></div>
+          <div className="col-md-2" style={{textAlign: 'right'}}><p>Configured Part:&nbsp;<br />Available Parts:&nbsp;</p></div>
+          <div className="col-md-4"><p>{ ( configuredPart.number )? <code>{configuredPart.number}</code> : null }<br/><code>{availableParts}</code></p></div>
         </div>
         <form ref={form => this.form = form}>
           <div className="form-row">
@@ -228,8 +231,7 @@ class PartSelector extends React.Component{
               <SelectFrequency updateConfiguredPart={this.updateConfiguredPart} frequencyOptions={partOptions.frequency} />
             </div>
             <div className="col-md-1">
-              <label>&nbsp;</label>
-              <div className="form-check">
+              <div className="form-check" style={{marginTop: '24px'}}>
                 <input className="form-check-input" type="radio" name="frequency_unit" value="MHz" id="MHz" checked={configuredPart.frequency_unit === 'MHz'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="MHz">
                   MHz
@@ -243,8 +245,7 @@ class PartSelector extends React.Component{
               </div>
             </div>
             <div className="col-md-2">
-              <label>&nbsp;</label>
-              <div className="form-check">
+              <div className="form-check" style={{marginTop: '24px'}}>
                 <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="SMD" checked={configuredPart.package_type === 'SMD'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="package_smd">
                   SMD
