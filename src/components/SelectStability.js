@@ -4,21 +4,44 @@ import 'react-select/dist/react-select.css';
 
 class SelectStability extends Component{
 
+  constructor(){
+    super();
+    this.state = {
+      savedStabilityOption: {}
+    }
+  }
+
   handleChange = (selectedOption) => {
-    this.props.updateConfiguredPart('stability',selectedOption);
+    this.setState(
+      {savedStabilityOption: selectedOption},
+      () => this.props.updateConfiguredPart('stability',selectedOption)
+    );
   }
 
   render(){
     const { configuredPart, stabilityOptions } = this.props;
-    const value = configuredPart.stability;
-    const className = ( 0 === stabilityOptions.length )? 'empty' : null;
+    const { savedStabilityOption } = this.state;
+    var stability = configuredPart.stability;
+    var optionValue = stability;
+
+    // When we have no stablity options, set `value` == the option
+    // value that matches our `configuredPart.size`.
+    if( 0 === stabilityOptions.length )
+      optionValue = savedStabilityOption;
+
+    var className = null;
+    if( 0 === stabilityOptions.length && 0 < stability.length ){
+      className = 'error';
+    } else if( 0 === stabilityOptions.length && '_' === stability ){
+      className = 'empty';
+    }
 
     return(
       <div>
         <label htmlFor="stability">Stability</label>
         <Select
           name="stability"
-          value={value}
+          value={optionValue}
           onChange={this.handleChange}
           placeholder="Stability..."
           matchPos="start"

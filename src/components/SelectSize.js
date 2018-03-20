@@ -4,21 +4,44 @@ import 'react-select/dist/react-select.css';
 
 class SelectSize extends Component{
 
+  constructor(){
+    super();
+    this.state = {
+      savedSizeOption: {}
+    }
+  }
+
   handleChange = (selectedOption) => {
-    this.props.updateConfiguredPart('size',selectedOption);
+    this.setState(
+      {savedSizeOption: selectedOption},
+      () => this.props.updateConfiguredPart('size',selectedOption)
+    );
   }
 
   render(){
     const { configuredPart, sizeOptions } = this.props;
-    const value = configuredPart.size;
-    const className = ( 0 === sizeOptions.length )? 'empty' : null;
+    const { savedSizeOption } = this.state;
+    var size = configuredPart.size;
+    var optionValue = size;
+
+    // When we have no size options, set `value` ===
+    // the option value that matches our `configuredPart.size`
+    if( 0 === sizeOptions.length )
+      optionValue = savedSizeOption;
+
+    var className = null;
+    if( 0 === sizeOptions.length && 0 < size.length ){
+      className = 'error';
+    } else if ( 0 === sizeOptions.length && '_' === size ){
+      className = 'empty';
+    }
 
     return(
       <div>
         <label htmlFor="size">Size</label>
         <Select
           name="size"
-          value={value}
+          value={optionValue}
           onChange={this.handleChange}
           placeholder="Size..."
           autoBlur={true}

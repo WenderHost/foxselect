@@ -4,21 +4,47 @@ import 'react-select/dist/react-select.css';
 
 class SelectTolerance extends Component{
 
+  constructor(){
+    super();
+    this.state = {
+      savedToleranceOption: {}
+    }
+  }
+
   handleChange = (selectedOption) => {
-    this.props.updateConfiguredPart('tolerance',selectedOption);
+    this.setState(
+      {savedToleranceOption: selectedOption},
+      () => this.props.updateConfiguredPart('tolerance',selectedOption)
+    );
   }
 
   render(){
     const { configuredPart, toleranceOptions } = this.props;
-    const value = configuredPart.tolerance;
-    const className = ( 0 === toleranceOptions.length )? 'empty' : null;
+    const{ savedToleranceOption } = this.state;
+    var tolerance = configuredPart.tolerance;
+    var optionValue = tolerance;
+
+    // When we have no tolerance options, set `value` ===
+    // the option value that matches our `configuredPart.size`
+    if( 0 === toleranceOptions.length )
+      optionValue = savedToleranceOption;
+
+    var className = null;
+    if( 0 === toleranceOptions.length && 0 < tolerance.length ){
+      className = 'error';
+    } else if( 0 === toleranceOptions.length && '_' === tolerance ){
+      className = 'empty';
+    }
+
+    //const value = configuredPart.tolerance;
+    //const className = ( 0 === toleranceOptions.length )? 'empty' : null;
 
     return(
       <div>
         <label htmlFor="tolerance">Tolerance</label>
         <Select
           name="tolerance"
-          value={value}
+          value={optionValue}
           onChange={this.handleChange}
           placeholder="Tolerance..."
           matchPos="start"

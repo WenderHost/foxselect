@@ -4,21 +4,44 @@ import 'react-select/dist/react-select.css';
 
 class SelectOpTemp extends Component{
 
+  constructor(){
+    super();
+    this.state = {
+      savedOpTempOption: {}
+    }
+  }
+
   handleChange = (selectedOption) => {
-    this.props.updateConfiguredPart('optemp',selectedOption);
+    this.setState(
+      {savedOpTempOption: selectedOption},
+      () => this.props.updateConfiguredPart('optemp',selectedOption)
+    );
   }
 
   render(){
     const { configuredPart, optempOptions } = this.props;
-    const value = configuredPart.optemp;
-    const className = ( 0 === optempOptions.length )? 'empty' : null;
+    const { savedOpTempOption } = this.state;
+    var optemp = configuredPart.optemp;
+    var optionValue = optemp;
+
+    // When we have no optemp options, set `value` ===
+    // the option value that matches our `configuredPage.optemp`
+    if( 0 === optempOptions.length )
+      optionValue = savedOpTempOption;
+
+    var className = null;
+    if( 0 === optempOptions.length && 0 < optemp.length ){
+      className = 'error';
+    } else if ( 0 === optempOptions.length && '_' === optemp ){
+      className = 'empty';
+    }
 
     return(
       <div>
         <label htmlFor="optemp">Op Temp</label>
         <Select
           name="optemp"
-          value={value}
+          value={optionValue}
           onChange={this.handleChange}
           placeholder="Op Temp..."
           options={optempOptions}
