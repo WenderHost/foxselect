@@ -18,9 +18,10 @@ class AdditionalOptionsForm extends Component{
             <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
           </div>
           { ( typeof configuredPart.size !== 'undefined' && aecq200Sizes.includes(configuredPart.size) ) ? <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> : null }
+          { typeof partOptions.tolerance !== 'undefined' &&
           <div className="col-md-2">
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
-          </div>
+          </div> }
           <div className="col-md-2">
             <SelectStability  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} stabilityOptions={partOptions.stability} />
           </div>
