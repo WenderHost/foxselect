@@ -117,17 +117,15 @@ class SizeOptions extends Component{
           <div className="alert alert-secondary">
             <p>7.0 x 5.0 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
-              <div className="form-check">
-                Metal lid, seam seal
-                <label>
-                  <Radio value="BS" /> 4 pad
-                </label>
+              <div className="row">
+                <div className="col-5">Metal lid, seam seal</div>
+                <div className="col-2"><label><Radio value="BS" /> 4 pad</label></div>
+                <div className="col-2"></div>
               </div>
-              <div className="form-check">
-                Ceramic lid, resin seal
-                <label>
-                  <Radio value="BQ" /> 4 pad <Radio value="AQ" /> 2 pad
-                </label>
+              <div className="row">
+                <div className="col-5">Ceramic lid, resin seal</div>
+                <div className="col-2"><label><Radio value="BQ" /> 4 pad</label></div>
+                <div className="col-2"><label><Radio value="AQ" /> 2 pad</label></div>
               </div>
               <div className="alert alert-error">
                 MWENDER NOTE: Check with Roger on the 2 pad option. His Visio says a 2 pad Ceramic lid, resin seal package can be called an <code>AQ</code> or an <code>AS</code>. Which is it? Currently, if you select <code>Ceramic lid, resin seal, 2 pad</code> above, the returned code is <code>AQ</code>.
@@ -136,7 +134,7 @@ class SizeOptions extends Component{
           </div>
         );
       default:
-        console.log('this is the default option. Part size: ' + size);
+        // nothing
     }
   }
 
