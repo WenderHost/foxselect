@@ -8,8 +8,9 @@ class SelectFrequency extends Component{
   }
 
   handleChange = (value) => {
+    const stateValue = ( null === value )? {value: '',label: ''} : value;
     this.setState(
-      value,
+      stateValue,
       () => this.props.updateConfiguredPart('frequency',value)
     )
   }
@@ -30,6 +31,7 @@ class SelectFrequency extends Component{
           autoBlur={true}
           matchPos="start"
           options={frequencyOptions}
+          resetValue={undefined}
         />
       </div>
     );
