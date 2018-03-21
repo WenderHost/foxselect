@@ -30,10 +30,10 @@ class SelectSize extends Component{
       optionValue = savedSizeOption;
 
     var className = null;
-    if( 0 === sizeOptions.length && 0 < size.length ){
-      className = 'error';
-    } else if ( 0 === sizeOptions.length && '_' === size ){
+    if( 0 === sizeOptions.length && '_' === size ){
       className = 'empty';
+    } else if ( 0 === sizeOptions.length && 0 < size.length ){
+      className = 'error';
     }
 
     return(

@@ -30,10 +30,10 @@ class SelectStability extends Component{
       optionValue = savedStabilityOption;
 
     var className = null;
-    if( 0 === stabilityOptions.length && 0 < stability.length ){
-      className = 'error';
-    } else if( 0 === stabilityOptions.length && '_' === stability ){
+    if( 0 === stabilityOptions.length && '_' === stability ){
       className = 'empty';
+    } else if( 0 === stabilityOptions.length && 0 < stability.length ){
+      className = 'error';
     }
 
     return(

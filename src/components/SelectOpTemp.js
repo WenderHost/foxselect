@@ -30,10 +30,10 @@ class SelectOpTemp extends Component{
       optionValue = savedOpTempOption;
 
     var className = null;
-    if( 0 === optempOptions.length && 0 < optemp.length ){
-      className = 'error';
-    } else if ( 0 === optempOptions.length && '_' === optemp ){
+    if( 0 === optempOptions.length && '_' === optemp ){
       className = 'empty';
+    } else if ( 0 === optempOptions.length && 0 < optemp.length ){
+      className = 'error';
     }
 
     return(

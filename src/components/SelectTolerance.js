@@ -30,14 +30,11 @@ class SelectTolerance extends Component{
       optionValue = savedToleranceOption;
 
     var className = null;
-    if( 0 === toleranceOptions.length && 0 < tolerance.length ){
-      className = 'error';
-    } else if( 0 === toleranceOptions.length && '_' === tolerance ){
+    if( 0 === toleranceOptions.length && '_' === tolerance ){
       className = 'empty';
+    } else if( 0 === toleranceOptions.length && 0 < tolerance.length ){
+      className = 'error';
     }
-
-    //const value = configuredPart.tolerance;
-    //const className = ( 0 === toleranceOptions.length )? 'empty' : null;
 
     return(
       <div>
