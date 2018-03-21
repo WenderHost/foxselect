@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class CheckboxAECQ200 extends Component {
+class CheckboxCrystalAECQ200 extends Component {
 
   constructor(){
     super();
@@ -26,4 +26,4 @@ class CheckboxAECQ200 extends Component {
   }
 }
 
-export default CheckboxAECQ200;
+export default CheckboxCrystalAECQ200;

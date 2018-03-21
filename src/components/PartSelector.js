@@ -14,8 +14,10 @@ class PartSelector extends React.Component{
 
     this.handleChange = this.handleChange.bind(this);
     this.isPartConfigured = this.isPartConfigured.bind(this);
+    this.generatePartNumber = this.generatePartNumber.bind(this);
     this.updateConfiguredPart = this.updateConfiguredPart.bind(this);
     this.updateOptions = this.updateOptions.bind(this);
+    this.resetConfiguredPart = this.resetConfiguredPart.bind(this);
 
     this.state = {
       configuredPart: {
@@ -25,7 +27,6 @@ class PartSelector extends React.Component{
         package_type: 'SMD',
         package_option: 'BS',
         size: '_',
-        tolerance: '_',
         stability: '_',
         load: '_',
         optemp: '_',
@@ -56,14 +57,58 @@ class PartSelector extends React.Component{
           { value: '98.304', label: '98.304'}
         ],
         size: [],
-        tolerance: [],
         stability: [],
         load: [],
         optemp: []
       },
-      aecq200Sizes: ['1','2','3','4','5','6','7'],
+      crystalAECQ200Sizes: ['1','2','3','4','5','6','7'],
+      oscillatorAECQ200Sizes: ['1','2','3','5','7'],
       availableParts: 'n/a'
     };
+  }
+
+  /**
+   * Generates a Fox Part number from configuredPart
+   *
+   * @param      {object}  configuredPart  The configured part
+   */
+  generatePartNumber(configuredPart){
+    if('_' === configuredPart.product_type){
+      configuredPart.number = '_________';
+      return;
+    }
+
+
+    configuredPart.number = 'F' + configuredPart.product_type + configuredPart.size;
+    var partNumberProperties = [];
+    switch(configuredPart.product_type){
+      case 'C':
+        partNumberProperties = ['package_option','tolerance','stability','load','optemp'];
+      break;
+      case 'O':
+        partNumberProperties = ['output','voltage','stability','optemp'];
+      break;
+      default:
+        console.log('No Part Number pattern specified for product_type `' + configuredPart.product_type + '`');
+    }
+    for (var i = 0; i < partNumberProperties.length; i++) {
+      var property = partNumberProperties[i];
+      if(configuredPart.hasOwnProperty(property) && '' !== configuredPart[property]){
+        configuredPart.number += configuredPart[property];
+      } else {
+        var value = '';
+        switch(property){
+          case 'package_option':
+          case 'output':
+            value = '__';
+            break;
+          default:
+            value = '_';
+        }
+        configuredPart.number += value;
+      }
+    }
+    configuredPart.number += '-' + configuredPart.frequency;
   }
 
   /**
@@ -73,8 +118,9 @@ class PartSelector extends React.Component{
    * @param      {mixed}  value      The new value of the attribute
    */
   updateConfiguredPart( attribute, value ){
-    const { configuredPart, aecq200Sizes } = this.state;
+    const { configuredPart, crystalAECQ200Sizes } = this.state;
     const originalConfiguredPart = configuredPart;
+    const currentValue = configuredPart[attribute];
 
     // Account for value = `null` and value = [Object]
     if( ! value ){
@@ -86,26 +132,25 @@ class PartSelector extends React.Component{
     if( '' === value )
       value = '_';
 
+    // `product_type` has changed, reset the configuredPart
+    if( 'product_type' === attribute && value !== currentValue )
+      this.resetConfiguredPart(configuredPart,value);
+
     // Set frequency to a number
     if( 'frequency' === attribute && 0 < value.length ){
-      if( 0 <= value.indexOf('.') ){
-        console.log('We found a decimal in value. Value is fixed already.');
+      if( 0 === value.indexOf('.') ){
+        value = '0' + value;
+      } else if( 0 < value.indexOf('.') ){
+        // nothing; We found a decimal in value. Value is fixed already.
       } else if( '_' === value ){
-        // No frequency, reset configurePart
+        // No frequency, (We may one to RESET the part here:)
         value = '0.0';
-        //configuredPart.size = '_';
-        //configuredPart.tolerance = '_';
-        //configuredPart.stability = '_';
-        //configuredPart.load = '_';
-        //configuredPart.optemp = '_';
-        configuredPart.package_option = 'BS';
       } else {
         value = parseInt(value,10).toFixed(1);
       }
     }
 
     // Don't update if value hasn't changed
-    const currentValue = configuredPart[attribute];
     if( value === currentValue )
       return;
 
@@ -114,30 +159,43 @@ class PartSelector extends React.Component{
 
     // When we are changing the `size`, reset the package_option to the default: `BS`
     if( 'size' === attribute ){
-      if( 3 === value.length ){ // no package_option when size is 3 chars
-        configuredPart['package_option'] = '';
-      } else if( 0 < value.length && aecq200Sizes.includes(value) && configuredPart.package_option === 'BA' ){
-        // do nothing
-      } else if( 0 < value.length && ! aecq200Sizes.includes(value) ){
-        configuredPart.package_option = 'BS';
-      } else {
-        configuredPart['package_option'] = 'BS';
+      switch(configuredPart.product_type){
+        case 'C':
+          if( 3 === value.length ){ // no package_option when size is 3 chars
+            configuredPart['package_option'] = '';
+          } else if( 0 < value.length && crystalAECQ200Sizes.includes(value) && configuredPart.package_option === 'BA' ){
+            // do nothing
+          } else if( 0 < value.length && ! crystalAECQ200Sizes.includes(value) ){
+            configuredPart.package_option = 'BS';
+          } else {
+            configuredPart['package_option'] = 'BS';
+          }
+          break;
+        default:
+          console.log('No size rules for product_type = `' + configuredPart.product_type + '`');
       }
     }
 
-    configuredPart['number'] = 'F' + configuredPart['product_type'] + configuredPart['size'] + configuredPart['package_option'] + configuredPart['tolerance'] + configuredPart['stability'] + configuredPart['load'] + configuredPart['optemp'] + '-' + configuredPart['frequency'];
-
+    this.generatePartNumber(configuredPart);
     this.setState({configuredPart: configuredPart});
     this.updateOptions( originalConfiguredPart, configuredPart );
   }
 
-
+  /**
+   * Updates this.state.partOptions with data returned from the REST API
+   *
+   * @param      {object}  originalConfiguredPart  The original configured part
+   * @param      {object}  configuredPart          The configured part
+   */
   updateOptions( originalConfiguredPart, configuredPart ){
+    if( '_________' === configuredPart.number )
+      return;
+
     axios
       .get(`${API_ROOT}${configuredPart.number}`)
       .then(response => {
-        console.log('Axios request returned...');
-        console.log(response.data);
+        //console.log('Axios request returned...');
+        //console.log(response.data);
 
         const { partOptions } = this.state;
         const { availableParts } = response.data;
@@ -149,24 +207,73 @@ class PartSelector extends React.Component{
         if( originalConfiguredPart.size !== configuredPart.size )
           forceUpdate = true;
 
-        if( typeof response.data.partOptions.size !== 'undefined' || true === forceUpdate )
-          partOptions.size = response.data.partOptions.size;
-
-        if( typeof response.data.partOptions.tolerance !== 'undefined' || true === forceUpdate )
-          partOptions.tolerance = response.data.partOptions.tolerance;
-
-        if( typeof response.data.partOptions.stability !== 'undefined' || true === forceUpdate )
-          partOptions.stability = response.data.partOptions.stability;
-
-        if( typeof response.data.partOptions.load !== 'undefined' )
-          partOptions.load = response.data.partOptions.load;
-
-        if( typeof response.data.partOptions.optemp !== 'undefined' )
-          partOptions.optemp = response.data.partOptions.optemp;
+        const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp'];
+        for (var i = allowedOptions.length - 1; i >= 0; i--) {
+          var option = allowedOptions[i];
+          if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate )
+            partOptions[option] = response.data.partOptions[option];
+        }
 
         this.setState({partOptions: partOptions, availableParts: availableParts});
       })
       .catch(error => console.log(error))
+  }
+
+  /**
+   * Resets ${configuredPart} with `_` for all properties
+   *
+   * @param      {object}  configuredPart   The configured part
+   * @param      {string}  new_product_type The `product_type` code we're switching to
+   */
+  resetConfiguredPart(configuredPart, new_product_type){
+    console.log('resetting configuredPart:');
+    console.log(configuredPart);
+    console.log('new_product_type = ' + new_product_type);
+    for(var property in configuredPart){
+      if(configuredPart.hasOwnProperty(property)){
+        var propertyValue = '_';
+        switch(property){
+          case 'frequency':
+            propertyValue = '0.0';
+            break;
+
+          case 'frequency_unit':
+            propertyValue = 'MHz';
+            break;
+
+          case 'output':
+          case 'package_option':
+            propertyValue = '__'
+            break;
+
+          case 'package_type':
+            propertyValue = 'SMD';
+            break;
+
+          default:
+            // nothing
+        }
+        configuredPart[property] = propertyValue;
+      }
+    }
+
+    switch(new_product_type){
+      case 'C':
+        delete configuredPart.voltage;
+        delete configuredPart.output;
+        configuredPart.tolerance = '_';
+        configuredPart.package_option = '__';
+      break;
+
+      case 'O':
+        delete configuredPart.tolerance;
+        delete configuredPart.package_option;
+        configuredPart.voltage = '_';
+        configuredPart.output = '__';
+      break;
+
+      default:
+    }
   }
 
   /**
@@ -259,11 +366,17 @@ class PartSelector extends React.Component{
               </div>
             </div>
           </div>
-          { ( typeof configuredPart.product_type !== 'undefined'
-              && 0 !== configuredPart.product_type.length
-              && '_' !== configuredPart.product_type
-            ) ? <AdditionalOptionsForm configuredPart={configuredPart} updateConfiguredPart={this.updateConfiguredPart} partOptions={partOptions} aecq200Sizes={this.state.aecq200Sizes} /> : null }
-          {/* this.isPartConfigured(configuredPart) ? <PartDetails configuredPart={configuredPart} /> : null */}
+          { typeof configuredPart.product_type !== 'undefined'
+            && 0 !== configuredPart.product_type.length
+            && '_' !== configuredPart.product_type &&
+            <AdditionalOptionsForm
+              configuredPart={configuredPart}
+              updateConfiguredPart={this.updateConfiguredPart}
+              partOptions={partOptions}
+              crystalAECQ200Sizes={this.state.crystalAECQ200Sizes}
+              oscillatorAECQ200Sizes={this.state.oscillatorAECQ200Sizes}
+            /> }
+          {/* this.isPartConfigured(configuredPart) && <PartDetails configuredPart={configuredPart} /> */}
           <PartDetails configuredPart={configuredPart} />
         </form>
       </div>
