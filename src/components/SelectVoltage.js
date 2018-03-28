@@ -21,7 +21,7 @@ class SelectVoltage extends Component{
   render(){
     const { configuredPart, voltageOptions } = this.props;
     const{ savedVoltageOption } = this.state;
-    var voltage = configuredPart.voltage;
+    var voltage = configuredPart.voltage.value;
     var optionValue = voltage;
 
     // When we have no voltage options, set `value` ===
