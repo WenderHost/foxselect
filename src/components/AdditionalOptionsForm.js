@@ -28,17 +28,17 @@ class AdditionalOptionsForm extends Component{
           { typeof configuredPart.size !== 'undefined' && oscillatorAECQ200Sizes.includes(configuredPart.size.value) && 'O' === configuredPart.product_type.value &&
             <CheckboxOscillatorAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
 
-          { typeof partOptions.tolerance !== 'undefined' &&
+          { typeof partOptions.tolerance !== 'undefined' && 'C' === configuredPart.product_type.value &&
           <div className="col-md-2">
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
           </div> }
 
-          { typeof partOptions.output !== 'undefined' &&
+          { typeof partOptions.output !== 'undefined' && 'O' === configuredPart.product_type.value &&
           <div className="col-md-2">
             <SelectOutput  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
           </div> }
 
-          { typeof partOptions.voltage !== 'undefined' &&
+          { typeof partOptions.voltage !== 'undefined' && 'O' === configuredPart.product_type.value &&
           <div className="col-md-2">
             <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
           </div> }
@@ -48,7 +48,7 @@ class AdditionalOptionsForm extends Component{
             <SelectStability  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} stabilityOptions={partOptions.stability} />
           </div> }
 
-          { typeof partOptions.load !== 'undefined' &&
+          { typeof partOptions.load !== 'undefined' && 'C' === configuredPart.product_type.value &&
           <div className="col-md-2">
             <SelectLoad  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} loadOptions={partOptions.load} />
           </div> }
