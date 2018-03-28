@@ -10,7 +10,7 @@ class SelectLoad extends Component{
 
   render(){
     const { configuredPart } = this.props;
-    const value = configuredPart.load;
+    const value = configuredPart.load.value;
 
     return(
       <div>

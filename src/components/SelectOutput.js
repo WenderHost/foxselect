@@ -22,7 +22,7 @@ class SelectOutput extends Component{
   render(){
     const { configuredPart, outputOptions } = this.props;
     const{ savedOutputOption } = this.state;
-    var output = configuredPart.output;
+    var output = ( typeof configuredPart.output !== 'undefined' )? configuredPart.output.value : '';
     var optionValue = output;
 
     // When we have no output options, set `value` ===

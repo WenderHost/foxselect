@@ -22,10 +22,10 @@ class AdditionalOptionsForm extends Component{
             <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
           </div> }
 
-          { typeof configuredPart.size !== 'undefined' && crystalAECQ200Sizes.includes(configuredPart.size) && 'C' === configuredPart.product_type &&
+          { typeof configuredPart.size !== 'undefined' && crystalAECQ200Sizes.includes(configuredPart.size.value) && 'C' === configuredPart.product_type.value &&
             <CheckboxCrystalAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
 
-          { typeof configuredPart.size !== 'undefined' && oscillatorAECQ200Sizes.includes(configuredPart.size) && 'O' === configuredPart.product_type &&
+          { typeof configuredPart.size !== 'undefined' && oscillatorAECQ200Sizes.includes(configuredPart.size.value) && 'O' === configuredPart.product_type.value &&
             <CheckboxOscillatorAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
 
           { typeof partOptions.tolerance !== 'undefined' &&
@@ -58,7 +58,7 @@ class AdditionalOptionsForm extends Component{
             <SelectOpTemp  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} optempOptions={partOptions.optemp} />
           </div> }
         </div>
-        { typeof configuredPart.size !== 'undefined' && 0 !== configuredPart.size.length && 'C' === configuredPart.product_type &&
+        { typeof configuredPart.size !== 'undefined' && 0 !== configuredPart.size.value.length && 'C' === configuredPart.product_type.value &&
         <div className="form-row">
           <div className="col-md-6">
             <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />

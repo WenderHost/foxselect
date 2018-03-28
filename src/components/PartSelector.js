@@ -21,16 +21,16 @@ class PartSelector extends React.Component{
 
     this.state = {
       configuredPart: {
-        product_type: '_',
-        frequency: '0.0',
-        frequency_unit: 'MHz',
-        package_type: 'SMD',
-        package_option: 'BS',
-        size: '_',
-        stability: '_',
-        load: '_',
-        optemp: '_',
-        number: '_________'
+        product_type: {value: '_', label: ''},
+        frequency: {value: '0.0', label: ''},
+        frequency_unit: {value: 'MHz', label: 'MHz'},
+        package_type: {value: 'SMD', label: 'SMD'},
+        package_option: {value: 'BS', label: ''},
+        size: {value: '_', label: ''},
+        stability: {value: '_', label: ''},
+        load: {value: '_', label: ''},
+        optemp: {value: '_', label: ''},
+        number: {value: '_________', label: '_________'}
       },
       partOptions: {
         frequency: [
@@ -73,15 +73,15 @@ class PartSelector extends React.Component{
    * @param      {object}  configuredPart  The configured part
    */
   generatePartNumber(configuredPart){
-    if('_' === configuredPart.product_type){
-      configuredPart.number = '_________';
+    if('_' === configuredPart.product_type.value){
+      configuredPart.number.value = '_________';
       return;
     }
 
 
-    configuredPart.number = 'F' + configuredPart.product_type + configuredPart.size;
+    configuredPart.number.value = 'F' + configuredPart.product_type.value + configuredPart.size.value;
     var partNumberProperties = [];
-    switch(configuredPart.product_type){
+    switch(configuredPart.product_type.value){
       case 'C':
         partNumberProperties = ['package_option','tolerance','stability','load','optemp'];
       break;
@@ -89,90 +89,95 @@ class PartSelector extends React.Component{
         partNumberProperties = ['output','voltage','stability','optemp'];
       break;
       default:
-        console.log('No Part Number pattern specified for product_type `' + configuredPart.product_type + '`');
+        console.log('No Part Number pattern specified for product_type `' + configuredPart.product_type.value + '`');
     }
     for (var i = 0; i < partNumberProperties.length; i++) {
       var property = partNumberProperties[i];
       if(configuredPart.hasOwnProperty(property) && '' !== configuredPart[property]){
-        configuredPart.number += configuredPart[property];
+        configuredPart.number.value += configuredPart[property].value;
       } else {
         var value = '';
         switch(property){
           case 'package_option':
+            value = ( 'Pin-Thru' === configuredPart.package_type.value )? '' : '__';
+            break;
           case 'output':
             value = '__';
             break;
           default:
             value = '_';
         }
-        configuredPart.number += value;
+        configuredPart.number.value += value;
       }
     }
-    configuredPart.number += '-' + configuredPart.frequency;
+    configuredPart.number.value += '-' + configuredPart.frequency.value;
   }
 
   /**
    * Updates the state of the `configuredPart`
    *
    * @param      {str}    attribute  The configuredPart attribute
-   * @param      {mixed}  value      The new value of the attribute
+   * @param      {obj}    option     The attribute object: {value: '', label: ''}
    */
-  updateConfiguredPart( attribute, value ){
+  updateConfiguredPart( attribute, option ){
+
     const { configuredPart, crystalAECQ200Sizes } = this.state;
     const originalConfiguredPart = configuredPart;
-    const currentValue = configuredPart[attribute];
+    const currentValue = (typeof configuredPart[attribute] !== 'undefined')? configuredPart[attribute].value : '';
 
-    // Account for value = `null` and value = [Object]
-    if( ! value ){
-      value = '';
-    } else if ( typeof value === 'object' && value.value ){
-      value = value.value;
+    // Account for option = `null`
+    if( ! option ){
+      option = {value: '', label: ''};
+    }
+    // Ensure `option` is [object]
+    if ( typeof option !== 'object' ){
+      option = {value: option, label: option};
     }
 
-    if( '' === value )
-      value = '_';
+    if( '' === option.value )
+      option.value = '_';
 
     // `product_type` has changed, reset the configuredPart
-    if( 'product_type' === attribute && value !== currentValue )
-      this.resetConfiguredPart(configuredPart,value);
+    if( 'product_type' === attribute && option.value !== currentValue )
+      this.resetConfiguredPart(configuredPart,option);
 
     // Set frequency to a number
-    if( 'frequency' === attribute && 0 < value.length ){
-      if( 0 === value.indexOf('.') ){
-        value = '0' + value;
-      } else if( 0 < value.indexOf('.') ){
+    if( 'frequency' === attribute && 0 < option.value.length ){
+      if( 0 === option.value.indexOf('.') ){
+        option.value = '0' + option.value;
+      } else if( 0 < option.value.indexOf('.') ){
         // nothing; We found a decimal in value. Value is fixed already.
-      } else if( '_' === value ){
+      } else if( '_' === option.value ){
         // No frequency, (We may one to RESET the part here:)
-        value = '0.0';
+        option.value = '0.0';
       } else {
-        value = parseInt(value,10).toFixed(1);
+        option.value = parseInt(option.value,10).toFixed(1);
       }
     }
 
     // Don't update if value hasn't changed
-    if( value === currentValue )
+    if( option.value === currentValue )
       return;
 
     // Update the value of our part attribute
-    configuredPart[attribute] = value;
+    configuredPart[attribute] = option;
 
     // When we are changing the `size`, reset the package_option to the default: `BS`
     if( 'size' === attribute ){
-      switch(configuredPart.product_type){
+      switch(configuredPart.product_type.value){
         case 'C':
-          if( 3 === value.length ){ // no package_option when size is 3 chars
-            configuredPart['package_option'] = '';
-          } else if( 0 < value.length && crystalAECQ200Sizes.includes(value) && configuredPart.package_option === 'BA' ){
+          if( 3 === option.value.length ){ // no package_option when size is 3 chars
+            configuredPart['package_option'].value = '';
+          } else if( 0 < option.value.length && crystalAECQ200Sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
             // do nothing
-          } else if( 0 < value.length && ! crystalAECQ200Sizes.includes(value) ){
-            configuredPart.package_option = 'BS';
+          } else if( 0 < option.value.length && ! crystalAECQ200Sizes.includes(option.value) ){
+            configuredPart.package_option.value = 'BS';
           } else {
-            configuredPart['package_option'] = 'BS';
+            configuredPart['package_option'].value = 'BS';
           }
           break;
         default:
-          console.log('No size rules for product_type = `' + configuredPart.product_type + '`');
+          console.log('No size rules for product_type = `' + configuredPart.product_type.value + '`');
       }
     }
 
@@ -188,11 +193,11 @@ class PartSelector extends React.Component{
    * @param      {object}  configuredPart          The configured part
    */
   updateOptions( originalConfiguredPart, configuredPart ){
-    if( '_________' === configuredPart.number )
+    if( typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value )
       return;
 
     axios
-      .get(`${API_ROOT}${configuredPart.number}`)
+      .get(`${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}`)
       .then(response => {
         //console.log('Axios request returned...');
         //console.log(response.data);
@@ -201,10 +206,10 @@ class PartSelector extends React.Component{
         const { availableParts } = response.data;
 
         var forceUpdate = false;
-        if( originalConfiguredPart.frequency !== configuredPart.frequency || '0.0' === configuredPart.frequency )
+        if( originalConfiguredPart.frequency.value !== configuredPart.frequency.value || '0.0' === configuredPart.frequency.value )
           forceUpdate = true;
 
-        if( originalConfiguredPart.size !== configuredPart.size )
+        if( originalConfiguredPart.size.value !== configuredPart.size.value )
           forceUpdate = true;
 
         const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp'];
@@ -226,9 +231,6 @@ class PartSelector extends React.Component{
    * @param      {string}  new_product_type The `product_type` code we're switching to
    */
   resetConfiguredPart(configuredPart, new_product_type){
-    console.log('resetting configuredPart:');
-    console.log(configuredPart);
-    console.log('new_product_type = ' + new_product_type);
     for(var property in configuredPart){
       if(configuredPart.hasOwnProperty(property)){
         var propertyValue = '_';
@@ -253,23 +255,26 @@ class PartSelector extends React.Component{
           default:
             // nothing
         }
-        configuredPart[property] = propertyValue;
+        configuredPart[property].value = propertyValue;
       }
+
+      return configuredPart;
     }
 
-    switch(new_product_type){
+    switch(new_product_type.value){
       case 'C':
+        console.log('Initializing configuredPart as a `Crystal`');
         delete configuredPart.voltage;
         delete configuredPart.output;
-        configuredPart.tolerance = '_';
-        configuredPart.package_option = '__';
+        configuredPart.tolerance.value = '_';
+        configuredPart.package_option.value = '__';
       break;
 
       case 'O':
         delete configuredPart.tolerance;
         delete configuredPart.package_option;
-        configuredPart.voltage = '_';
-        configuredPart.output = '__';
+        configuredPart.voltage.value = '_';
+        configuredPart.output.value = '__';
       break;
 
       default:
@@ -285,25 +290,25 @@ class PartSelector extends React.Component{
   isPartConfigured(configuredPart){
     var isConfigured = true;
 
-    if( typeof configuredPart.product_type === 'undefined' ||  0 === configuredPart.product_type.length || '_' === configuredPart.product_type )
+    if( typeof configuredPart.product_type === 'undefined' ||  0 === configuredPart.product_type.value.length || '_' === configuredPart.product_type.value )
       isConfigured = false;
 
-    if( typeof configuredPart.frequency === 'undefined' || 0 === configuredPart.frequency.length || '_' === configuredPart.frequency )
+    if( typeof configuredPart.frequency === 'undefined' || 0 === configuredPart.frequency.value.length || '_' === configuredPart.frequency.value )
       isConfigured = false;
 
-    if( typeof configuredPart.size === 'undefined' || 0 === configuredPart.size.length || '_' === configuredPart.size )
+    if( typeof configuredPart.size === 'undefined' || 0 === configuredPart.size.value.length || '_' === configuredPart.size.value )
       isConfigured = false;
 
-    if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.length || '_' === configuredPart.tolerance )
+    if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
       isConfigured = false;
 
-    if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.length || '_' === configuredPart.stability )
+    if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
       isConfigured = false;
 
-    if( typeof configuredPart.load === 'undefined' || 0 === configuredPart.load.length || '_' === configuredPart.load )
+    if( typeof configuredPart.load === 'undefined' || 0 === configuredPart.load.value.length || '_' === configuredPart.load.value )
       isConfigured = false;
 
-    if( typeof configuredPart.optemp === 'undefined' || 0 === configuredPart.optemp.length || '_' === configuredPart.optemp )
+    if( typeof configuredPart.optemp === 'undefined' || 0 === configuredPart.optemp.value.length || '_' === configuredPart.optemp.value )
       isConfigured = false;
 
     return isConfigured;
@@ -315,18 +320,19 @@ class PartSelector extends React.Component{
    * @param      {object}  e       A changeEvent object
    */
   handleChange(e){
-    this.updateConfiguredPart(e.target.name,e.target.value);
+    this.updateConfiguredPart(e.target.name,e.target);
   }
 
   render(){
     const { configuredPart, partOptions, availableParts } = this.state;
+    const { addPart } = this.props;
 
     return (
       <div className="PartSelector">
         <div className="row no-gutters">
           <div className="col-md-3"><h1 className="title">FoxSelect&trade;</h1></div>
           <div className="col-md-2" style={{textAlign: 'right'}}><p>Configured Part:&nbsp;<br />Available Parts:&nbsp;</p></div>
-          <div className="col-md-4"><p>{ ( configuredPart.number )? <code>{configuredPart.number}</code> : null }<br/><code>{availableParts}</code></p></div>
+          <div className="col-md-4"><p>{ ( configuredPart.number.value )? <code>{configuredPart.number.value}</code> : null }<br/><code>{availableParts}</code></p></div>
         </div>
         <form ref={form => this.form = form}>
           <div className="form-row">
@@ -339,13 +345,13 @@ class PartSelector extends React.Component{
             </div>
             <div className="col-md-1">
               <div className="form-check" style={{marginTop: '24px'}}>
-                <input className="form-check-input" type="radio" name="frequency_unit" value="MHz" id="MHz" checked={configuredPart.frequency_unit === 'MHz'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="frequency_unit" value="MHz" id="MHz" checked={configuredPart.frequency_unit.value === 'MHz'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="MHz">
                   MHz
                 </label>
               </div>
               <div className="form-check">
-                <input className="form-check-input" type="radio" name="frequency_unit" value="kHz" id="kHz" checked={configuredPart.frequency_unit === 'kHz'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="frequency_unit" value="kHz" id="kHz" checked={configuredPart.frequency_unit.value === 'kHz'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="kHz">
                   kHz
                 </label>
@@ -353,22 +359,23 @@ class PartSelector extends React.Component{
             </div>
             <div className="col-md-2">
               <div className="form-check" style={{marginTop: '24px'}}>
-                <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="SMD" checked={configuredPart.package_type === 'SMD'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="SMD" checked={configuredPart.package_type.value === 'SMD'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="package_smd">
                   SMD
                 </label>
               </div>
+              { 'C' === configuredPart.product_type &&
               <div className="form-check">
-                <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="Pin-Thru" checked={configuredPart.package_type === 'Pin-Thru'} onChange={this.handleChange} />
+                <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="Pin-Thru" checked={configuredPart.package_type.value === 'Pin-Thru'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="package_pinthru">
                   Pin-Thru
                 </label>
-              </div>
+              </div> }
             </div>
           </div>
           { typeof configuredPart.product_type !== 'undefined'
-            && 0 !== configuredPart.product_type.length
-            && '_' !== configuredPart.product_type &&
+            && 0 !== configuredPart.product_type.value.length
+            && '_' !== configuredPart.product_type.value &&
             <AdditionalOptionsForm
               configuredPart={configuredPart}
               updateConfiguredPart={this.updateConfiguredPart}
@@ -376,8 +383,9 @@ class PartSelector extends React.Component{
               crystalAECQ200Sizes={this.state.crystalAECQ200Sizes}
               oscillatorAECQ200Sizes={this.state.oscillatorAECQ200Sizes}
             /> }
-          {/* this.isPartConfigured(configuredPart) && <PartDetails configuredPart={configuredPart} /> */}
-          <PartDetails configuredPart={configuredPart} />
+          { this.isPartConfigured(configuredPart) &&
+            <PartDetails configuredPart={configuredPart} addPart={addPart} /> }
+          {/*<PartDetails configuredPart={configuredPart} />*/}
         </form>
       </div>
     );

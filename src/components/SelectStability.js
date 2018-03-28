@@ -21,7 +21,7 @@ class SelectStability extends Component{
   render(){
     const { configuredPart, stabilityOptions } = this.props;
     const { savedStabilityOption } = this.state;
-    var stability = configuredPart.stability;
+    var stability = configuredPart.stability.value;
     var optionValue = stability;
 
     // When we have no stablity options, set `value` == the option

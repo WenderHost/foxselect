@@ -21,7 +21,7 @@ class SelectOpTemp extends Component{
   render(){
     const { configuredPart, optempOptions } = this.props;
     const { savedOpTempOption } = this.state;
-    var optemp = configuredPart.optemp;
+    var optemp = configuredPart.optemp.value;
     var optionValue = optemp;
 
     // When we have no optemp options, set `value` ===

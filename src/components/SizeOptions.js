@@ -140,8 +140,8 @@ class SizeOptions extends Component{
 
   render(){
     const { configuredPart } = this.props;
-    const size = configuredPart.size;
-    const package_option = configuredPart.package_option;
+    const size = configuredPart.size.value;
+    const package_option = configuredPart.package_option.value;
 
     return(
       <div>

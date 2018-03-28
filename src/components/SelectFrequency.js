@@ -4,20 +4,19 @@ import 'react-select/dist/react-select.css';
 
 class SelectFrequency extends Component{
   state = {
-    value: undefined
+    selectedOption: undefined
   }
 
-  handleChange = (value) => {
-    const stateValue = ( null === value )? {value: '',label: ''} : value;
+  handleChange = (selectedOption) => {
     this.setState(
-      stateValue,
-      () => this.props.updateConfiguredPart('frequency',value)
+      {selectedOption: selectedOption},
+      () => this.props.updateConfiguredPart('frequency',selectedOption)
     )
   }
 
   render(){
     const { frequencyOptions } = this.props;
-    const value = this.state.value;
+    const { selectedOption } = this.state;
 
     return(
       <div>
@@ -25,7 +24,7 @@ class SelectFrequency extends Component{
         <Creatable
           name="frequency"
           multi={false}
-          value={value}
+          value={selectedOption}
           onChange={this.handleChange}
           placeholder="Frequency..."
           autoBlur={true}

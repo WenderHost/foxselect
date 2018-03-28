@@ -21,7 +21,7 @@ class SelectTolerance extends Component{
   render(){
     const { configuredPart, toleranceOptions } = this.props;
     const{ savedToleranceOption } = this.state;
-    var tolerance = configuredPart.tolerance;
+    var tolerance = ( typeof configuredPart.tolerance !== 'undefined' )? configuredPart.tolerance.value : '';
     var optionValue = tolerance;
 
     // When we have no tolerance options, set `value` ===

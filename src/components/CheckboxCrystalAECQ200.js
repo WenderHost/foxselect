@@ -18,7 +18,7 @@ class CheckboxCrystalAECQ200 extends Component {
     return(
       <div className="col-md-2">
         <div className="form-check" style={{marginTop: '36px'}}>
-          <input type="checkbox" className="form-check-input" id="aec-q200" value="BA" checked={configuredPart.package_option === 'BA'} onChange={this.handleChange}/>
+          <input type="checkbox" className="form-check-input" id="aec-q200" value="BA" checked={configuredPart.package_option.value === 'BA'} onChange={this.handleChange}/>
           <label htmlFor="aec-q200" className="form-check-label">AEC-Q200</label>
         </div>
       </div>
