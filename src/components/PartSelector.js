@@ -139,7 +139,7 @@ class PartSelector extends React.Component{
 
     // `product_type` has changed, reset the configuredPart
     if( 'product_type' === attribute && option.value !== currentValue )
-      this.resetConfiguredPart(configuredPart,option);
+      this.resetConfiguredPart(configuredPart,option.value);
 
     // Set frequency to a number
     if( 'frequency' === attribute && 0 < option.value.length ){
@@ -257,24 +257,21 @@ class PartSelector extends React.Component{
         }
         configuredPart[property].value = propertyValue;
       }
-
-      return configuredPart;
     }
 
-    switch(new_product_type.value){
+    switch(new_product_type){
       case 'C':
-        console.log('Initializing configuredPart as a `Crystal`');
         delete configuredPart.voltage;
         delete configuredPart.output;
-        configuredPart.tolerance.value = '_';
-        configuredPart.package_option.value = '__';
+        configuredPart.tolerance = {value: '_', label: ''};
+        configuredPart.package_option = {value: '__', label: ''};
       break;
 
       case 'O':
         delete configuredPart.tolerance;
         delete configuredPart.package_option;
-        configuredPart.voltage.value = '_';
-        configuredPart.output.value = '__';
+        configuredPart.voltage = {value: '_', label: ''};
+        configuredPart.output = {value: '__', label: ''};
       break;
 
       default:
