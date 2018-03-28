@@ -11,4 +11,4 @@ if(hostname === 'foxonline.wenderhost.com'){
   apiHost = 'http://foxelectronics.loco'
 }
 
-export const API_ROOT = `${apiHost}/wp-json/foxparts/${apiVersion}/get_options/part=`;
+export const API_ROOT = `${apiHost}/wp-json/foxparts/${apiVersion}/get_options/`;
