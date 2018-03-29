@@ -9,9 +9,8 @@ class PartDetails extends Component{
   }
 
   handleClick(e){
-    console.log(e.target);
-    const { configuredPart } = this.props;
-    this.props.addPart(configuredPart);
+    //const { configuredPart } = this.props;
+    this.props.addPart();
   }
 
   render(){
