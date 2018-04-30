@@ -3,20 +3,24 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 class SelectProductType extends Component{
-  state = {
-    selectedOption: ''
+  constructor(){
+    super();
+
+    this.state = {
+      savedProductTypeOption: {}
+    }
   }
 
   handleChange = (selectedOption) => {
     this.setState(
-      {selectedOption},
+      {savedProductTypeOption: selectedOption},
       () => this.props.updateConfiguredPart('product_type',selectedOption)
     );
   }
 
   render(){
-    const { selectedOption } = this.state;
-    const value = selectedOption && selectedOption.value;
+    const { product_type } = this.props;
+    let value = ( '_' !== product_type.value )? product_type : '';
 
     return(
       <div>

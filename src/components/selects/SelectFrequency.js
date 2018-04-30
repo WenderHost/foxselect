@@ -3,20 +3,24 @@ import { Creatable } from 'react-select';
 import 'react-select/dist/react-select.css';
 
 class SelectFrequency extends Component{
-  state = {
-    selectedOption: undefined
+  constructor(props){
+    super(props);
+
+    this.state = {
+      savedFrequencyOption: {}
+    }
   }
 
   handleChange = (selectedOption) => {
     this.setState(
-      {selectedOption: selectedOption},
+      {savedFrequencyOption: selectedOption},
       () => this.props.updateConfiguredPart('frequency',selectedOption)
     )
   }
 
   render(){
-    const { frequencyOptions } = this.props;
-    const { selectedOption } = this.state;
+    const { frequency, frequencyOptions, configuredPart } = this.props;
+    let value = ( '_' !== frequency.value && '0.0' !== frequency.value )? frequency : '';
 
     return(
       <div>
@@ -24,13 +28,14 @@ class SelectFrequency extends Component{
         <Creatable
           name="frequency"
           multi={false}
-          value={selectedOption}
+          value={value}
           onChange={this.handleChange}
           placeholder="Frequency..."
           autoBlur={true}
           matchPos="start"
           options={frequencyOptions}
           resetValue={undefined}
+          disabled={'0.032768' === configuredPart.frequency.value}
         />
       </div>
     );
