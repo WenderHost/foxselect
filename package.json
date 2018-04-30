@@ -2,6 +2,7 @@
   "name": "fox-configurator",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/wp-content/themes/business-pro-theme/assets/scripts/foxselect/",
   "dependencies": {
     "axios": "^0.18.0",
     "react": "^16.2.0",
