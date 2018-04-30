@@ -1,18 +1,27 @@
 import React, { Component } from 'react';
 import SelectSize from './SelectSize';
-import CheckboxCrystalAECQ200 from './CheckboxCrystalAECQ200';
-import CheckboxOscillatorAECQ200 from './CheckboxOscillatorAECQ200';
 import SelectTolerance from './SelectTolerance';
 import SelectOutput from './SelectOutput';
 import SelectVoltage from './SelectVoltage';
 import SelectStability from './SelectStability';
 import SelectLoad from './SelectLoad';
 import SelectOpTemp from './SelectOpTemp';
+import CheckboxAECQ200 from './CheckboxAECQ200';
 import SizeOptions from './SizeOptions';
 
 class AdditionalOptionsForm extends Component{
   render(){
-    const { configuredPart, updateConfiguredPart, partOptions, crystalAECQ200Sizes, oscillatorAECQ200Sizes } = this.props;
+    const { configuredPart, updateConfiguredPart, partOptions } = this.props;
+
+    /**
+     * Show AEC-Q200 option if size:
+     *
+     * - Crystal-MHz  [1,2,3,4,5,6,7]
+     * - Crystal-kHz  [122,12A,13A,135,13L]
+     * - Oscillator   [1,2,3,5,7]
+     */
+    const aecq200Parts = ['C','K','O']
+    const aecq200Sizes = ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
 
     return(
       <div>
