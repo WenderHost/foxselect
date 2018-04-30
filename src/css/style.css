@@ -28,6 +28,10 @@ body{
   background-color: #fff;
   color: #0d649b;
 }
+.cart-item-options .btn-sm{
+  padding: .1rem .25rem;
+  font-size: .7rem;
+}
 p > code{
   background-color: #eee;
   padding: 2px 4px;

@@ -10,12 +10,50 @@ class SizeOptions extends Component{
   }
 
   handleChange(value){
-    this.props.updateConfiguredPart('package_option',value)
+    switch(this.props.configuredPart.product_type.value){
+      case 'K':
+        this.props.updateConfiguredPart('size',value)
+        break;
+
+      default:
+        this.props.updateConfiguredPart('package_option',value)
+    }
   }
 
   showOptions(size,package_option){
 
     switch(size){
+
+      case '13A':
+      case '135':
+      case '13L':
+      case '13A,135,13L':
+      case '135,13A,13L':
+      case '13A,13L,135':
+      case '13L,13A,135':
+      case '135,13L,13A':
+      case '13L,135,13A':
+        let value = this.props.configuredPart.size.value
+        return(
+          <div className="alert alert-secondary">
+            <p>ESR:</p>
+            <RadioGroup name="size" selectedValue={value} onChange={this.handleChange}>
+              <div className="row">
+                <div className="col-7">
+                  <label htmlFor="70KOhm">70 K Ohm  (Standard)</label>
+                </div>
+                <div className="col-2"><Radio value="135" id="70KOhm" /></div>
+              </div>
+              <div className="row">
+                <div className="col-7">
+                  <label htmlFor="50KOhm">50 K Ohm (Optional)</label>
+                </div>
+                <div className="col-2"><Radio value="13L" id="50KOhm" /></div>
+              </div>
+            </RadioGroup>
+          </div>
+        )
+
       case 'A':
       case '0':
       case '2':
@@ -33,37 +71,38 @@ class SizeOptions extends Component{
             <p>2.0 x 1.6 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
-                <div className="col-7">
-                  <label htmlFor="20x16bs">Standard 4.5 mm height, metal lid, seam seal</label>
+                <div className="col-10">
+                  <label htmlFor="20x16bs">4.5 mm height, metal lid, seam seal (Std)</label>
                 </div>
-                <div className="col-2"><Radio value="BS" id="20x16bs" /></div>
+                <div className="col-1"><Radio value="BS" id="20x16bs" /></div>
               </div>
               <div className="row">
-                <div className="col-7">
-                  <label htmlFor="20x16bq">Optional Ceramic Lid, resin seal</label>
+                <div className="col-10">
+                  <label htmlFor="20x16bq">Ceramic Lid, resin seal (Opt)</label>
                 </div>
-                <div className="col-2"><Radio value="BQ" id="20x16bq" /></div>
+                <div className="col-1"><Radio value="BQ" id="20x16bq" /></div>
               </div>
               <div className="row">
-                <div className="col-7">
-                  <label htmlFor="20x16bc">Optional 4.0 mm height, metal lid seam seal</label>
+                <div className="col-10">
+                  <label htmlFor="20x16bc">4.0 mm height, metal lid seam seal (Opt)</label>
                 </div>
-                <div className="col-2"><Radio value="BC" id="20x16bc" /></div>
+                <div className="col-1"><Radio value="BC" id="20x16bc" /></div>
               </div>
             </RadioGroup>
           </div>
-        );
+        )
+
       case '3':
         return(
           <div className="alert alert-secondary">
             <p>3.2 x 2.5 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
-                <div className="col-4"><label htmlFor="32x25bs">Metal lid, seam seal</label></div>
+                <div className="col-8"><label htmlFor="32x25bs">Metal lid, seam seal</label></div>
                 <div className="col-4"><Radio value="BS" id="32x25bs" /></div>
               </div>
               <div className="row">
-                <div className="col-4"><label htmlFor="32x25bq">Ceramic lid, resin seal</label></div>
+                <div className="col-8"><label htmlFor="32x25bq">Ceramic lid, resin seal</label></div>
                 <div className="col-4"><Radio value="BQ" id="32x25bq" /></div>
               </div>
             </RadioGroup>
@@ -75,19 +114,19 @@ class SizeOptions extends Component{
             <p>5.0 x 3.2 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
-                <div className="col-6">Metal lid, seam seal</div>
-                <div className="col-2"><label><Radio value="BS" /> 4 pad</label></div>
-                <div className="col-2"><label><Radio value="AS" /> 2 pad</label></div>
+                <div className="col-6"><label>Metal lid, seam seal</label></div>
+                <div className="col-3"><label><Radio value="BS" /> 4 pad</label></div>
+                <div className="col-3"><label><Radio value="AS" /> 2 pad</label></div>
               </div>
               <div className="row">
-                <div className="col-6">Ceramic lid, resin seal:</div>
-                <div className="col-2"><label><Radio value="BQ" /> 4 pad</label></div>
-                <div className="col-2"><label><Radio value="AQ" /> 2 pad</label></div>
+                <div className="col-6"><label>Ceramic lid, resin seal:</label></div>
+                <div className="col-3"><label><Radio value="BQ" /> 4 pad</label></div>
+                <div className="col-3"><label><Radio value="AQ" /> 2 pad</label></div>
               </div>
               <div className="row">
-                <div className="col-6">Ceramic lid, glass seal:</div>
-                <div className="col-2"><label><Radio value="CG" /> 4 pad</label></div>
-                <div className="col-2"><label><Radio value="AG" /> 2 pad</label></div>
+                <div className="col-6"><label>Ceramic lid, glass seal:</label></div>
+                <div className="col-3"><label><Radio value="CG" /> 4 pad</label></div>
+                <div className="col-3"><label><Radio value="AG" /> 2 pad</label></div>
               </div>
             </RadioGroup>
           </div>
@@ -97,17 +136,14 @@ class SizeOptions extends Component{
           <div className="alert alert-secondary">
             <p>6.0 x 3.5 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
-              <div className="form-check">
-                Metal lid, seam seal
-                <label>
-                  <Radio value="BS" /> 4 pad
-                </label>
+              <div className="row">
+                <div className="col-6"><label>Metal lid, seam seal</label></div>
+                <div className="col-3"><label><Radio value="BS" /> 4 pad</label></div>
               </div>
-              <div className="form-check">
-                Ceramic lid, resin seal
-                <label>
-                  <Radio value="BQ" /> 4 pad <Radio value="AQ" /> 2 pad
-                </label>
+              <div className="row">
+                <div className="col-6"><label>Ceramic lid, resin seal:</label></div>
+                <div className="col-3"><label><Radio value="BQ" /> 4 pad</label></div>
+                <div className="col-3"><label><Radio value="AQ" /> 2 pad</label></div>
               </div>
             </RadioGroup>
           </div>
@@ -118,16 +154,15 @@ class SizeOptions extends Component{
             <p>7.0 x 5.0 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
-                <div className="col-5">Metal lid, seam seal</div>
-                <div className="col-2"><label><Radio value="BS" /> 4 pad</label></div>
-                <div className="col-2"></div>
+                <div className="col-6"><label>Metal lid, seam seal</label></div>
+                <div className="col-3"><label><Radio value="BS" /> 4 pad</label></div>
               </div>
               <div className="row">
-                <div className="col-5">Ceramic lid, resin seal</div>
-                <div className="col-2"><label><Radio value="BQ" /> 4 pad</label></div>
-                <div className="col-2"><label><Radio value="AQ" /> 2 pad</label></div>
+                <div className="col-6"><label>Ceramic lid, resin seal:</label></div>
+                <div className="col-3"><label><Radio value="BQ" /> 4 pad</label></div>
+                <div className="col-3"><label><Radio value="AQ" /> 2 pad</label></div>
               </div>
-              <div className="alert alert-error">
+              <div style={{fontSize: '11px', backgroundColor: '#fff', padding: '10px'}}>
                 MWENDER NOTE: Check with Roger on the 2 pad option. His Visio says a 2 pad Ceramic lid, resin seal package can be called an <code>AQ</code> or an <code>AS</code>. Which is it? Currently, if you select <code>Ceramic lid, resin seal, 2 pad</code> above, the returned code is <code>AQ</code>.
               </div>
             </RadioGroup>
@@ -144,8 +179,10 @@ class SizeOptions extends Component{
     const package_option = configuredPart.package_option.value;
 
     return(
-      <div>
-        { this.showOptions(size, package_option) }
+      <div className="form-row">
+        <div className="col-md-4">
+          { this.showOptions(size, package_option) }
+        </div>
       </div>
     );
   }

@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
+
 import PartSelector from './components/PartSelector';
 import ShoppingCart from './components/ShoppingCart';
+import Checkout from './components/Checkout';
+import sampleCart from './sample-cart';
+import logo from './logo.svg';
+
+// Server Communication
 import axios from 'axios';
 import { API_ROOT } from './api-config';
 
@@ -8,11 +14,15 @@ class App extends Component {
   constructor(){
     super();
 
-    this.addPart = this.addPart.bind(this);
+    this.validateUser = this.validateUser.bind(this);
+    this.loadPart = this.loadPart.bind(this);
+    this.loadSampleCart = this.loadSampleCart.bind(this);
+    this.logoutUser = this.logoutUser.bind(this);
     this.setCurrentView = this.setCurrentView.bind(this);
     this.setPartNumber = this.setPartNumber.bind(this);
     this.isPartConfigured = this.isPartConfigured.bind(this);
     this.resetConfiguredPart = this.resetConfiguredPart.bind(this);
+    this.updateCart = this.updateCart.bind(this);
     this.updateConfiguredPart = this.updateConfiguredPart.bind(this);
     this.updateOptions = this.updateOptions.bind(this);
 
@@ -23,9 +33,9 @@ class App extends Component {
       configuredPart: {
         product_type: {value: '_', label: ''},
         frequency: {value: '0.0', label: ''},
-        frequency_unit: {value: 'MHz', label: 'MHz'},
-        package_type: {value: 'SMD', label: 'SMD'},
-        package_option: {value: 'BS', label: ''},
+        frequency_unit: {value: 'MHz', label: 'frequency_unit'},
+        package_type: {value: 'SMD', label: 'package_type'},
+        package_option: {value: 'BS', label: 'package_option'},
         size: {value: '_', label: ''},
         stability: {value: '_', label: ''},
         load: {value: '_', label: ''},
@@ -61,31 +71,65 @@ class App extends Component {
         load: [],
         optemp: []
       },
-      crystalAECQ200Sizes: ['1','2','3','4','5','6','7'],
-      oscillatorAECQ200Sizes: ['1','2','3','5','7'],
       availableParts: 'n/a'
     };
   }
 
   /**
-   * Adds a part to the cart.
-   *
-   * @param      {object}  part    The part
+   * Logs out a user from the app
    */
-  addPart(){
-    // 1. take a copy of the cart
-    let cart = { ...this.state.cart };
-    let savedPart = {...this.state.configuredPart };
-    // 2. Either add to the cart, or fail if already exists
-    const timestamp = Date.now();
-    cart[`part-${timestamp}`] = savedPart;
-
-    // set state
-    this.setState({cart, currentView: 'ShoppingCart'})
+  logoutUser(){
+    localStorage.removeItem('userData');
+    this.setCurrentView('Checkout');
   }
 
-  addToCart = (key) => {
+  /**
+   * Validates a user
+   *
+   * @param      {string}  username  The username
+   * @param      {string}  password  The password
+   */
+  validateUser(username,password){
+    const { wpvars } = window;
 
+    if( typeof wpvars !== 'undefined' ){
+      console.log('wpvars.root = ' + wpvars.root );
+    } else {
+      console.log('wpvars is `undefined`.');
+    }
+    let request = `${wpvars.root}${wpvars.authroute}`
+    console.log('request = ' + request )
+    axios.post(request,{
+        username: username,
+        password: password
+      })
+      .then(response => {
+        console.log('Saving userData to `localStorage`...');
+        localStorage.setItem('userData', JSON.stringify( response.data ) );
+        this.setCurrentView('Checkout');
+      })
+      .catch(error => console.log(error))
+  }
+
+  /**
+   * Loads a part into the PartSelector.
+   *
+   * @param      {string}   id    The Cart part item ID
+   * @return     {null}
+   */
+  loadPart = (id) => {
+    let cart = this.state.cart;
+    let part = JSON.parse(JSON.stringify(cart[id])); // deep clone the `part` obj, Object.assign() doesn't clone all the way down if properties are objects themselves
+    part.cart_id = id; // Add `cart_id` so we can check in PartSelector if configuredPart === cart[cart_id] (i.e. both vars reference the same object)
+    this.setState({configuredPart: part, currentView: 'PartSelector'});
+    this.updateOptions( null, part );
+  }
+
+  /**
+   * Loads sample data into the shopping cart
+   */
+  loadSampleCart = () => {
+    this.setState({ cart: sampleCart, currentView: 'ShoppingCart' });
   }
 
   /**
@@ -94,28 +138,29 @@ class App extends Component {
    * @param      {string}  view    A string defining the current view
    */
   setCurrentView(view){
+    let viewObj = {currentView: view};
+
     switch(view){
+
       case 'PartSelector':
-        // TODO: Use the following inside resetConfiguredPart
-        var resetPart = {
-          product_type: {value: '_', label: ''},
-          frequency: {value: '0.0', label: ''},
-          frequency_unit: {value: 'MHz', label: 'MHz'},
-          package_type: {value: 'SMD', label: 'SMD'},
-          package_option: {value: 'BS', label: ''},
-          size: {value: '_', label: ''},
-          stability: {value: '_', label: ''},
-          load: {value: '_', label: ''},
-          optemp: {value: '_', label: ''},
-          number: {value: '_________', label: '_________'}
-        }
-        this.setState({configuredPart: resetPart, availableParts: 'n/a'});
+        this.resetConfiguredPart();
+        break;
+
+      case 'UpdateCartPart':
+        const { cart, configuredPart } = this.state;
+        const cart_id = configuredPart.cart_id;
+        delete configuredPart.cart_id;
+        console.log('configuredPart after deleting cart_id:');
+        console.log(configuredPart);
+        cart[cart_id] = configuredPart;
+        viewObj = {cart: cart, currentView: 'ShoppingCart'};
         break;
 
       default:
         // nothing
+
     }
-    this.setState({currentView: view});
+    this.setState(viewObj);
   }
 
   /**
@@ -127,28 +172,66 @@ class App extends Component {
     let { configuredPart } = {...this.state};
 
     if( '_' === configuredPart.product_type.value){
-      configuredPart.number.value = '_________';
+      configuredPart.number = {value: '_________', label: '_________'};
       return;
     }
 
-    configuredPart.number.value = 'F' + configuredPart.product_type.value + configuredPart.size.value;
-    var partNumberProperties = [];
+    let product_family = {value: '', label: ''};
+    if( -1 < configuredPart.size.value.indexOf(',') ){
+      let label = '_'
+
+      switch(configuredPart.product_type.value){
+        case 'K':
+          label = '___'
+          break;
+
+        default:
+          console.log('[NOTE] `Size` contains a comma. Setting `Size` label to default: `_`.')
+      }
+      product_family.label = 'F' + configuredPart.product_type.value + label
+      product_family.value = 'F' + configuredPart.product_type.value + '[' + configuredPart.size.value + ']'
+    } else {
+      product_family.label = 'F' + configuredPart.product_type.value + configuredPart.size.value
+      product_family.value = 'F' + configuredPart.product_type.value + configuredPart.size.value
+    }
+
+    configuredPart.number = {value: product_family.value, label: product_family.label}
+
+    let partNumberProperties = [];
     switch(configuredPart.product_type.value){
       case 'C':
         partNumberProperties = ['package_option','tolerance','stability','load','optemp'];
-      break;
+        break;
+
+      case 'K':
+        partNumberProperties = ['tolerance','stability','optemp'];
+        break;
+
       case 'O':
         partNumberProperties = ['output','voltage','stability','optemp'];
-      break;
+        break;
+
       default:
-        console.log('No Part Number pattern specified for product_type `' + configuredPart.product_type.value + '`');
+        console.log('[WARNING] No Part Number pattern specified for product_type `' + configuredPart.product_type.value + '`');
     }
     for (var i = 0; i < partNumberProperties.length; i++) {
-      var property = partNumberProperties[i];
-      if(configuredPart.hasOwnProperty(property) && '' !== configuredPart[property]){
-        configuredPart.number.value += configuredPart[property].value;
+      let property = partNumberProperties[i];
+      if( configuredPart.hasOwnProperty(property)
+          && '' !== configuredPart[property]
+          /*&& ! configuredPart[property].value.indexOf(',')*/
+          /*&& ( typeof configuredPart[property].display === 'undefined' || configuredPart[property].display === true )*/
+      ){
+
+        if( -1 < configuredPart[property].value.indexOf(',') ){
+          console.log('We found a comma in: `' + configuredPart[property].value + '`')
+          configuredPart.number.value += '[' + configuredPart[property].value + ']'
+          configuredPart.number.label += '_' // TODO: Set this to the corresponding # of underscorces
+        } else {
+          configuredPart.number.value += configuredPart[property].value;
+          configuredPart.number.label += configuredPart[property].value;
+        }
       } else {
-        var value = '';
+        let value = '';
         switch(property){
           case 'package_option':
             value = ( 'Pin-Thru' === configuredPart.package_type.value )? '' : '__';
@@ -160,10 +243,11 @@ class App extends Component {
             value = '_';
         }
         configuredPart.number.value += value;
+        configuredPart.number.label += value;
       }
     }
     configuredPart.number.value += '-' + configuredPart.frequency.value;
-    configuredPart.number.label = configuredPart.number.value;
+    configuredPart.number.label += '-' + configuredPart.frequency.value;
     this.setState({configuredPart: {number: configuredPart.number}});
   }
 
@@ -174,30 +258,96 @@ class App extends Component {
    * @return     {boolean}  True if part configured, False otherwise.
    */
   isPartConfigured(configuredPart){
-    var isConfigured = true;
+    let isConfigured = true;
+    const { availableParts } = this.state;
+    if( 0 === availableParts )
+      isConfigured = false;
 
     if( typeof configuredPart.product_type === 'undefined' ||  0 === configuredPart.product_type.value.length || '_' === configuredPart.product_type.value )
       isConfigured = false;
 
-    if( typeof configuredPart.frequency === 'undefined' || 0 === configuredPart.frequency.value.length || '_' === configuredPart.frequency.value )
+    if( typeof configuredPart.frequency === 'undefined' || 0 === configuredPart.frequency.value.length || '_' === configuredPart.frequency.value || '0.0' === configuredPart.frequency.value )
       isConfigured = false;
 
-    if( typeof configuredPart.size === 'undefined' || 0 === configuredPart.size.value.length || '_' === configuredPart.size.value )
-      isConfigured = false;
-
-    if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
+    if( typeof configuredPart.size === 'undefined' || 0 === configuredPart.size.value.length || '_' === configuredPart.size.value.substring(0,1) )
       isConfigured = false;
 
     if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
       isConfigured = false;
 
-    if( typeof configuredPart.load === 'undefined' || 0 === configuredPart.load.value.length || '_' === configuredPart.load.value )
-      isConfigured = false;
-
     if( typeof configuredPart.optemp === 'undefined' || 0 === configuredPart.optemp.value.length || '_' === configuredPart.optemp.value )
       isConfigured = false;
 
+    if( typeof configuredPart.product_type !== 'undefined' ){
+      switch(configuredPart.product_type.value){
+        case 'C':
+          if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
+            isConfigured = false;
+
+          if( typeof configuredPart.load === 'undefined' || 0 === configuredPart.load.value.length || '_' === configuredPart.load.value )
+            isConfigured = false;
+          break;
+
+        case 'O':
+          if( typeof configuredPart.output === 'undefined' || 0 === configuredPart.output.value.length || '__' === configuredPart.output.value )
+            isConfigured = false;
+
+          if( typeof configuredPart.voltage === 'undefined' || 0 === configuredPart.voltage.value.length || '_' === configuredPart.voltage.value )
+            isConfigured = false;
+          break;
+
+        default:
+          // nothing
+      }
+    }
+
     return isConfigured;
+  }
+
+  /**
+   * Updates the shopping cart
+   *
+   * @param      {string}  action  The action (add|delete)
+   * @param      {string}  id      The Id of the part in the cart
+   */
+  updateCart(action, id, option = '', value = ''){
+    let cart = { ...this.state.cart };
+    switch(action){
+      case 'add':
+        let savedPart = {...this.state.configuredPart };
+        // 2. Add to the cart
+        const timestamp = Date.now();
+        cart[`part-${timestamp}`] = savedPart;
+
+        // set state
+        this.setState(
+          {cart, currentView: 'ShoppingCart'},
+          () => this.resetConfiguredPart()
+        )
+        break;
+
+      case 'delete':
+        if( window.confirm('You wish to remove this item (' + cart[id].number.value + ') from your cart?') ){
+          if( cart.hasOwnProperty(id) ){
+            delete cart[id];
+            this.setState({cart})
+          }
+        }
+        break;
+
+      case 'update':
+        let part = cart[id];
+        if(typeof part.options === 'undefined')
+          part.options = {};
+        part.options[option] = value;
+        //console.log('updateCart: value = ' + value);
+        cart[id] = part;
+        this.setState({cart});
+        break;
+
+      default:
+        console.log('updateCart: No action defined for `' + action + '`.')
+    }
   }
 
   /**
@@ -207,6 +357,8 @@ class App extends Component {
    * @param      {obj}    option     The attribute object: {value: '', label: ''}
    */
   updateConfiguredPart( attribute, option ){
+    console.log('updating `'+attribute+'` to :');
+    console.log(option);
 
     const { configuredPart, crystalAECQ200Sizes } = this.state;
     const originalConfiguredPart = configuredPart;
@@ -225,8 +377,61 @@ class App extends Component {
       option.value = '_';
 
     // `product_type` has changed, reset the configuredPart
-    if( 'product_type' === attribute && option.value !== currentValue )
-      this.resetConfiguredPart(configuredPart,option.value);
+    if( 'product_type' === attribute && option.value !== currentValue ){
+      //this.setPartNumber();
+      this.resetConfiguredPart(option); //configuredPart,option.value
+      return;
+    }
+
+    // if `package_type` has changed, reset AdditionalOptions
+    if( 'package_type' === attribute && option.value !== currentValue ){
+      const resetOptions = {
+        size: {value: '___', label: ''},
+        stability: {value: '_', label: ''},
+        load: {value: '_', label: ''},
+        optemp: {value: '_', label: ''},
+        tolerance: {value: '_', label: ''},
+        package_option: {value: '', label: ''}
+      };
+      if( 'Pin-Thru' === option.value ){
+        resetOptions.size = {value: '___', label: ''};
+        resetOptions.package_option = {value: '', label: 'package_option'};
+      } else {
+        resetOptions.size = {value: '_', label: ''};
+        resetOptions.package_option = {value: '__', label: 'package_option'};
+      }
+      Object.keys(resetOptions).map(function(key,index){
+        configuredPart[key] = resetOptions[key];
+        return null;
+      })
+    }
+
+    // if `frequency_unit` has changed, reset AdditionalOptions
+    if( 'frequency_unit' === attribute && option.value !== currentValue ){
+      switch(configuredPart.product_type.value){
+        case 'C':
+          console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 0.032768\n - Set size to 3 chars\n - Delete `load` from configuredPart");
+          configuredPart.product_type.value = 'K'
+          configuredPart.frequency = {value: '0.032768', label: '0.032768'}
+          configuredPart.size = {value: '___', label: ''}
+          delete configuredPart.load
+          break;
+
+        case 'K':
+          console.log('[RESETTING:Crystal] Toggling from kHz to MHz.');
+          configuredPart.product_type.value = 'C'
+          configuredPart.frequency = {value: '0.0', label: ''}
+          configuredPart.load = {value: '_', label: ''}
+          break;
+
+        case 'O':
+          console.log('No reset written for Oscillators when toggling MHz/kHz.');
+          break;
+
+        default:
+          console.log('No reset written for `' +  configuredPart.product_type.label + '` when toggling MHz/kHz.');
+      }
+    }
 
     // Set frequency to a number
     if( 'frequency' === attribute && 0 < option.value.length ){
@@ -242,6 +447,20 @@ class App extends Component {
       }
     }
 
+    // Oscillators: When Voltage is `null`, reset Output when size >= 3
+    if( 'voltage' === attribute && '_' === option.value ){
+      if( 3 <= configuredPart.size.value ){
+        console.log("[RESETING:Output] Conditions:\n - 3 <= configuredPart.size.value")
+        configuredPart.output = {value: '__', label: ''}
+      }
+    }
+
+    // Oscillators: When Output is `null`, reset Voltage && '_' === option.value.substring(0,1)
+    if( 'output' === attribute && '_' === option.value.substring(0,1) ){
+      console.log("[RESETTING:Voltage] Conditions:\n - Output is empty.");
+      configuredPart.voltage = {value: '_', label: ''}
+    }
+
     // Don't update if value hasn't changed
     if( option.value === currentValue )
       return;
@@ -249,21 +468,33 @@ class App extends Component {
     // Update the value of our part attribute
     configuredPart[attribute] = option;
 
-    // When we are changing the `size`, reset the package_option to the default: `BS`
+    // Size Rules
     if( 'size' === attribute ){
       switch(configuredPart.product_type.value){
         case 'C':
-          if( 3 === option.value.length ){ // no package_option when size is 3 chars
-            configuredPart['package_option'].value = '';
+          if( 'Pin-Thru' === configuredPart.package_type.value ){
+            if( '_' === option.value )
+              option.value = '___'
+          } else if( 3 === option.value.length ){ // no package_option when size is 3 chars
+            configuredPart.package_option.value = ''
           } else if( 0 < option.value.length && crystalAECQ200Sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
             // do nothing
           } else if( 0 < option.value.length && ! crystalAECQ200Sizes.includes(option.value) ){
-            configuredPart.package_option.value = 'BS';
+            configuredPart.package_option.value = ( '_' !== option.value )? 'BS' : '__'
           } else {
-            configuredPart['package_option'].value = 'BS';
+            configuredPart.package_option.value = ( '_' !== option.value )? 'BS' : '__'
           }
           break;
+
+        case 'K':
+          console.log("[RESETTING:Size] Updating size value to `___`. Original option:")
+          console.log(option)
+          if( 3 > option.value.length )
+            option.value = '___'
+          break;
+
         default:
+          // When we are changing the `size`, reset the package_option to the default: `BS`
           console.log('No size rules for product_type = `' + configuredPart.product_type.value + '`');
       }
     }
@@ -280,8 +511,10 @@ class App extends Component {
    * @param      {object}  configuredPart          The configured part
    */
   updateOptions( originalConfiguredPart, configuredPart ){
-    if( typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value )
-      return;
+    if( typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value || '_' === configuredPart.product_type.value )
+      return
+
+    console.log('updateOptions('+configuredPart.number.value+')')
 
     axios
       .get(`${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}`)
@@ -293,11 +526,15 @@ class App extends Component {
         const { availableParts } = response.data;
 
         var forceUpdate = false;
-        if( originalConfiguredPart.frequency.value !== configuredPart.frequency.value || '0.0' === configuredPart.frequency.value )
+        if( null === originalConfiguredPart ){
           forceUpdate = true;
+        } else {
+          if( originalConfiguredPart.frequency.value !== configuredPart.frequency.value || '0.0' === configuredPart.frequency.value )
+            forceUpdate = true;
 
-        if( originalConfiguredPart.size.value !== configuredPart.size.value )
-          forceUpdate = true;
+          if( originalConfiguredPart.size.value !== configuredPart.size.value )
+            forceUpdate = true;
+        }
 
         const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp'];
         for (var i = allowedOptions.length - 1; i >= 0; i--) {
@@ -315,88 +552,134 @@ class App extends Component {
    * Resets ${configuredPart} with `_` for all properties
    *
    * @param      {object}  configuredPart   The configured part
-   * @param      {string}  new_product_type The `product_type` code we're switching to
+   * @param      {object}  product_type The `product_type` we're switching to
    */
-  resetConfiguredPart(configuredPart, new_product_type){
-    for(var property in configuredPart){
-      if(configuredPart.hasOwnProperty(property)){
-        var propertyValue = '_';
-        switch(property){
-          case 'frequency':
-            propertyValue = '0.0';
-            break;
+  resetConfiguredPart(product_type){ // configuredPart, new_product_type
+    if(typeof product_type === 'undefined')
+      product_type = {value: '_', label: ''}
 
-          case 'frequency_unit':
-            propertyValue = 'MHz';
-            break;
-
-          case 'output':
-          case 'package_option':
-            propertyValue = '__'
-            break;
-
-          case 'package_type':
-            propertyValue = 'SMD';
-            break;
-
-          default:
-            // nothing
-        }
-        configuredPart[property].value = propertyValue;
-        configuredPart[property].label = '';
-      }
+    let resetPart = {
+      product_type: product_type,
+      frequency: {value: '0.0', label: ''},
+      frequency_unit: {value: 'MHz', label: 'MHz'},
+      package_type: {value: 'SMD', label: 'SMD'},
+      package_option: {value: 'BS', label: ''},
+      size: {value: '_', label: ''},
+      stability: {value: '_', label: ''},
+      load: {value: '_', label: ''},
+      optemp: {value: '_', label: ''},
+      number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______-0.0'}
     }
 
-    switch(new_product_type){
+    switch(product_type.value){
       case 'C':
-        delete configuredPart.voltage;
-        delete configuredPart.output;
-        configuredPart.tolerance = {value: '_', label: ''};
-        configuredPart.package_option = {value: '__', label: ''};
+        delete resetPart.voltage;
+        delete resetPart.output;
+        resetPart.tolerance = {value: '_', label: ''};
+        resetPart.package_option = {value: '__', label: ''};
       break;
 
       case 'O':
-        delete configuredPart.tolerance;
-        delete configuredPart.package_option;
-        configuredPart.voltage = {value: '_', label: ''};
-        configuredPart.output = {value: '__', label: ''};
+        delete resetPart.tolerance;
+        delete resetPart.package_option;
+        delete resetPart.load;
+        resetPart.voltage = {value: '_', label: ''};
+        resetPart.output = {value: '__', label: ''};
       break;
 
       default:
     }
+
+    this.setState(
+      {configuredPart: resetPart, availableParts: 'n/a'},
+      () => this.updateOptions( resetPart, resetPart )
+    );
   }
 
   render() {
     const { configuredPart, partOptions, crystalAECQ200Sizes, oscillatorAECQ200Sizes, availableParts, cart, currentView } = this.state;
+    const editing = cart.hasOwnProperty(configuredPart.cart_id);
+    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value;
     var cartKeys = Object.keys(cart);
     var partsInCart = cartKeys.length;
+
+    const userData = JSON.parse( localStorage.getItem('userData') );
+
+    let thisView = '';
+    // Originally a prop of PartSelector below:
+    // resetConfiguredPart={this.resetConfiguredPart}
+    switch( currentView ){
+      case 'Checkout':
+        thisView = <Checkout
+          validateUser={this.validateUser}
+          logoutUser={this.logoutUser}
+        />
+        break;
+
+      case 'ShoppingCart':
+        thisView = <ShoppingCart
+          cart={cart}
+          setCurrentView={this.setCurrentView}
+          partsInCart={partsInCart}
+          loadPart={this.loadPart}
+          updateCart={this.updateCart}
+        />
+        break;
+
+      default:
+        thisView = <PartSelector
+          addPart={this.addPart}
+          cart={cart}
+          configuredPart={configuredPart}
+          crystalAECQ200Sizes={crystalAECQ200Sizes}
+          editing={editing}
+          isPartConfigured={this.isPartConfigured}
+          oscillatorAECQ200Sizes={oscillatorAECQ200Sizes}
+          partOptions={partOptions}
+          updateConfiguredPart={this.updateConfiguredPart}
+          updateCart={this.updateCart}
+          updateOptions={this.updateOptions}
+          setCurrentView={this.setCurrentView}
+        />
+    }
 
     return (
       <div className="container">
         <div className="row no-gutters">
-          <div className="col-md-3"><h1 className="title">FoxSelect&trade;</h1></div>
-          <div className="col-md-2" style={{textAlign: 'right'}}><p>Configured Part:&nbsp;<br />Available Parts:&nbsp;</p></div>
-          <div className="col-md-2"><p>{ ( configuredPart.number.value )? <code>{configuredPart.number.value}</code> : null }<br/><code>{availableParts}</code></p></div>
+          <div className="col-md-3">
+            <h1 className="title">
+              <img src={logo} alt="FOXSelect™" />
+              { typeof userData !== 'undefined' && null !== userData &&
+              <small style={{fontSize: '14px', display: 'block'}}>User: <em>{userData.user_display_name}</em></small> }
+            </h1>
+          </div>
+          <div className="col-md-2" style={{textAlign: 'right'}}>
+            { 'PartSelector' === currentView &&
+              <p>Configured Part:&nbsp;<br />Available Parts:&nbsp;</p>
+            }
+          </div>
+          <div className="col-md-2">
+            { 'PartSelector' === currentView &&
+            <p>{ ( configuredPart.number.value )? <code><a href={testLink} target="_blank" style={{color: '#666'}}>{configuredPart.number.label}</a></code> : null }<br/><code>{availableParts}</code></p>
+            }
+          </div>
           <div className="col-md-5 text-right">
-            <p>Parts in Cart: <code>{partsInCart}</code> <button disabled={ 'ShoppingCart' === currentView } type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>View Cart</button></p>
+            { 'ShoppingCart' !== currentView &&
+            <p>Parts in Cart: <code>{partsInCart}</code> <button disabled={editing} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>View RFQ</button>
+              { 0 === Object.keys(cart).length && cart.constructor === Object &&
+                <span>
+                  <br/>
+                  <button style={{marginTop: '4px'}} className="btn btn-secondary btn-sm" name="load-samples" type="button" onClick={this.loadSampleCart}>Load Sample Parts</button>
+                </span>
+              }
+            </p> }
           </div>
         </div>
-        { 'ShoppingCart' === currentView ? (
-          <ShoppingCart cart={cart} setCurrentView={this.setCurrentView} partsInCart={partsInCart} />
-        ) : (
-          <PartSelector
-            addPart={this.addPart}
-            configuredPart={configuredPart}
-            crystalAECQ200Sizes={crystalAECQ200Sizes}
-            isPartConfigured={this.isPartConfigured}
-            oscillatorAECQ200Sizes={oscillatorAECQ200Sizes}
-            partOptions={partOptions}
-            resetConfiguredPart={this.resetConfiguredPart}
-            updateConfiguredPart={this.updateConfiguredPart}
-            updateOptions={this.updateOptions}
-            setCurrentView={this.setCurrentView}
-          />
-        )}
+        <hr style={{marginTop: '0'}} />
+        { editing &&
+          'PartSelector' === currentView &&
+          <div className="text-center alert alert-secondary small">NOTE: You are editing a part in your RFQ. If you wish to configure another part, <a href="/select-a-new-part/" onClick={(e) => {e.preventDefault();this.setCurrentView('PartSelector')}}>click here</a>.</div>}
+        {thisView}
       </div>
     );
   }

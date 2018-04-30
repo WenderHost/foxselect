@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import SelectSize from './SelectSize';
-import SelectTolerance from './SelectTolerance';
-import SelectOutput from './SelectOutput';
-import SelectVoltage from './SelectVoltage';
-import SelectStability from './SelectStability';
-import SelectLoad from './SelectLoad';
-import SelectOpTemp from './SelectOpTemp';
+import SelectSize from './selects/SelectSize';
 import CheckboxAECQ200 from './CheckboxAECQ200';
+import SelectTolerance from './selects/SelectTolerance';
+import SelectOutput from './selects/SelectOutput';
+import SelectVoltage from './selects/SelectVoltage';
+import SelectStability from './selects/SelectStability';
+import SelectLoad from './selects/SelectLoad';
+import SelectOpTemp from './selects/SelectOpTemp';
 import SizeOptions from './SizeOptions';
+import VoltageOptions from './VoltageOptions';
 
 class AdditionalOptionsForm extends Component{
   render(){
@@ -31,20 +32,20 @@ class AdditionalOptionsForm extends Component{
             <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
           </div> }
 
-          { typeof configuredPart.size !== 'undefined' && crystalAECQ200Sizes.includes(configuredPart.size.value) && 'C' === configuredPart.product_type.value &&
-            <CheckboxCrystalAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
+          { typeof configuredPart.size !== 'undefined'
+            && aecq200Parts.includes(configuredPart.product_type.value)
+            && aecq200Sizes.includes(configuredPart.size.value)
+            && <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
+          }
 
-          { typeof configuredPart.size !== 'undefined' && oscillatorAECQ200Sizes.includes(configuredPart.size.value) && 'O' === configuredPart.product_type.value &&
-            <CheckboxOscillatorAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
-
-          { typeof partOptions.tolerance !== 'undefined' && 'C' === configuredPart.product_type.value &&
+          { typeof partOptions.tolerance !== 'undefined' && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
           <div className="col-md-2">
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
           </div> }
 
           { typeof partOptions.output !== 'undefined' && 'O' === configuredPart.product_type.value &&
           <div className="col-md-2">
-            <SelectOutput  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
+            <SelectOutput configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
           </div> }
 
           { typeof partOptions.voltage !== 'undefined' && 'O' === configuredPart.product_type.value &&
@@ -67,12 +68,17 @@ class AdditionalOptionsForm extends Component{
             <SelectOpTemp  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} optempOptions={partOptions.optemp} />
           </div> }
         </div>
-        { typeof configuredPart.size !== 'undefined' && 0 !== configuredPart.size.value.length && 'C' === configuredPart.product_type.value &&
-        <div className="form-row">
-          <div className="col-md-6">
-            <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
-          </div>
-        </div> }
+        { typeof configuredPart.size !== 'undefined'
+          && 0 !== configuredPart.size.value.length
+          && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
+          <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
+        { typeof configuredPart.voltage !== 'undefined'
+        && 0 !== configuredPart.voltage.value.length
+        && '_' !== configuredPart.voltage.value
+        && 'O' === configuredPart.product_type.value
+        && 3 <= configuredPart.size.value &&
+          <VoltageOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
+        }
       </div>
     );
   }

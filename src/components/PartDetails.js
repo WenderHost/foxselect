@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { API_ROOT } from '../api-config';
 
 class PartDetails extends Component{
 
@@ -9,13 +8,26 @@ class PartDetails extends Component{
   }
 
   handleClick(e){
-    //const { configuredPart } = this.props;
-    this.props.addPart();
+    const { cart, configuredPart, editing, setCurrentView } = this.props;
+    if( editing ){
+      if( typeof configuredPart.cart_id !== 'undefined' && configuredPart.number.value !== cart[configuredPart.cart_id].number.value ){
+        setCurrentView('UpdateCartPart');
+      } else {
+        setCurrentView('ShoppingCart');
+      }
+    } else {
+      this.props.updateCart('add','');
+    }
   }
 
   render(){
-    const { configuredPart } = this.props;
-    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value;
+    const { cart, configuredPart, editing } = this.props;
+    let buttonText = 'Add to Quote';
+    if( typeof configuredPart.cart_id !== 'undefined' && configuredPart.number.value !== cart[configuredPart.cart_id].number.value ){
+      buttonText = 'Update Part'
+    } else if(editing) {
+      buttonText = 'Return to Quote'
+    }
 
     return(
       <div className="part-details">
@@ -26,62 +38,63 @@ class PartDetails extends Component{
             <label htmlFor="">Model</label><br/>
             {configuredPart.number.value}
           </div>
-          <div className="col-md-6">
+          <div className="col-md-5">
             <label htmlFor="">Details</label>
+            {/*<div>
+              {configuredPart.product_type.label}, {configuredPart.size.label}, {configuredPart.frequency.label}{configuredPart.frequency_unit.label}
+            </div>*/}
+
             <table className="table table-sm table-striped">
               <colgroup>
                 <col style={{width: '35%'}}/>
                 <col style={{width: '65%'}}/>
               </colgroup>
               <tbody>
+                {/* Object.keys(configuredPart).map(key => <tr key={key}><th scope="row">{key}</th><td>{configuredPart[key].label}</td></tr>) */}
                 <tr>
-                  <th scope="row">Frequency</th>
-                  <td>{configuredPart.frequency.value} {configuredPart.frequency_unit.value}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Package Type</th>
-                  <td>{configuredPart.package_type.label}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Package Option</th>
-                  <td>{configuredPart.package_option.value}</td>
+                  <th scope="row">Product Type</th>
+                  <td>{configuredPart.product_type.label} {configuredPart.frequency.value}{configuredPart.frequency_unit.value} - {configuredPart.package_type.value}</td>
                 </tr>
                 <tr>
                   <th scope="row">Size</th>
                   <td>{configuredPart.size.label}</td>
                 </tr>
+                { configuredPart.tolerance &&
                 <tr>
                   <th scope="row">Tolerance</th>
                   <td>{configuredPart.tolerance.label}</td>
                 </tr>
+                }
+                { configuredPart.stability &&
                 <tr>
                   <th scope="row">Stability</th>
                   <td>{configuredPart.stability.label}</td>
                 </tr>
+                }
+                { configuredPart.load &&
                 <tr>
                   <th scope="row">Load</th>
                   <td>{configuredPart.load.label}</td>
                 </tr>
+                }
+                { configuredPart.optemp &&
                 <tr>
                   <th scope="row">Op Temp</th>
                   <td>{configuredPart.optemp.label}</td>
                 </tr>
+                }
               </tbody>
             </table>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <label htmlFor="">Documents</label><br/>
-            <ul>
-              <li><a href="/get-datasheet/#">Data Sheet</a></li>
-              <li><a href="/get-support-docs/#">Support Docs</a></li>
-            </ul>
-            <p><a href={testLink} target="_blank">See JSON &rarr;</a></p>
+            <div><a href="/get-datasheet/#">Data Sheet</a> &middot; <a href="/get-support-docs/#">Support Docs</a></div>
           </div>
         </div>
         <hr/>
         <div className="row">
           <div className="col-md-12 text-right">
-            <button type="button" className="btn btn-primary" onClick={this.handleClick}>Add to Cart</button>
+            <button type="button" className="btn btn-primary" onClick={this.handleClick}>{buttonText}</button>
           </div>
         </div>
       </div>

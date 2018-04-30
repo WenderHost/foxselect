@@ -1,7 +1,7 @@
 import React from 'react';
 
-import SelectProductType from './SelectProductType';
-import SelectFrequency from './SelectFrequency';
+import SelectProductType from './selects/SelectProductType';
+import SelectFrequency from './selects/SelectFrequency';
 import AdditionalOptionsForm from './AdditionalOptionsForm';
 import PartDetails from './PartDetails';
 
@@ -19,22 +19,31 @@ class PartSelector extends React.Component{
    * @param      {object}  e       A changeEvent object
    */
   handleChange(e){
-    this.updateConfiguredPart(e.target.name,e.target);
+    if( window.confirm('Updating this setting will reset your additional options. Continue?') )
+      this.props.updateConfiguredPart(e.target.name,{value: e.target.value, label: e.target.name});
   }
 
   render(){
-    const { addPart, configuredPart, partOptions, crystalAECQ200Sizes, oscillatorAECQ200Sizes, updateConfiguredPart } = this.props;
+    const { cart, configuredPart, editing, partOptions, crystalAECQ200Sizes, oscillatorAECQ200Sizes, updateConfiguredPart } = this.props;
 
     return (
       <div className="PartSelector">
         <form ref={form => this.form = form}>
           <div className="form-row">
             <div className="col-md-2">
-              <SelectProductType updateConfiguredPart={this.props.updateConfiguredPart} />
+              <SelectProductType
+                product_type={configuredPart.product_type}
+                updateConfiguredPart={this.props.updateConfiguredPart}
+              />
             </div>
             <div className="col-md-2">
               <label className="sr-only" htmlFor="frequency">Frequency</label>
-              <SelectFrequency updateConfiguredPart={this.props.updateConfiguredPart} frequencyOptions={partOptions.frequency} />
+              <SelectFrequency
+                frequency={configuredPart.frequency}
+                updateConfiguredPart={this.props.updateConfiguredPart}
+                frequencyOptions={partOptions.frequency}
+                configuredPart={configuredPart}
+              />
             </div>
             <div className="col-md-1">
               <div className="form-check" style={{marginTop: '24px'}}>
@@ -57,7 +66,7 @@ class PartSelector extends React.Component{
                   SMD
                 </label>
               </div>
-              { 'C' === configuredPart.product_type.value &&
+              { ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
               <div className="form-check">
                 <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="Pin-Thru" checked={configuredPart.package_type.value === 'Pin-Thru'} onChange={this.handleChange} />
                 <label className="form-check-label" htmlFor="package_pinthru">
@@ -77,7 +86,7 @@ class PartSelector extends React.Component{
               oscillatorAECQ200Sizes={oscillatorAECQ200Sizes}
             /> }
           { this.props.isPartConfigured(configuredPart) &&
-            <PartDetails configuredPart={configuredPart} addPart={addPart} /> }
+            <PartDetails cart={cart} configuredPart={configuredPart} updateCart={this.props.updateCart} setCurrentView={this.props.setCurrentView} editing={editing} /> }
         </form>
       </div>
     );
