@@ -388,16 +388,19 @@ class App extends Component {
       const resetOptions = {
         size: {value: '___', label: ''},
         stability: {value: '_', label: ''},
-        load: {value: '_', label: ''},
         optemp: {value: '_', label: ''},
         tolerance: {value: '_', label: ''},
         package_option: {value: '', label: ''}
       };
+      if( 'C' === configuredPart.product_type.value )
+        resetOptions.load = {value: '_', label: ''}
+
       if( 'Pin-Thru' === option.value ){
         resetOptions.size = {value: '___', label: ''};
         resetOptions.package_option = {value: '', label: 'package_option'};
       } else {
-        resetOptions.size = {value: '_', label: ''};
+        resetOptions.size.label = '';
+        resetOptions.size.value = ( 'K' === configuredPart.product_type.value )? '___' : '_';
         resetOptions.package_option = {value: '__', label: 'package_option'};
       }
       Object.keys(resetOptions).map(function(key,index){
