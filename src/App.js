@@ -520,7 +520,7 @@ class App extends Component {
     console.log('updateOptions('+configuredPart.number.value+')')
 
     axios
-      .get(`${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}`)
+      .get(`${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}/${configuredPart.frequency_unit.value}`)
       .then(response => {
         //console.log('Axios request returned...');
         //console.log(response.data);
@@ -602,7 +602,7 @@ class App extends Component {
   render() {
     const { configuredPart, partOptions, crystalAECQ200Sizes, oscillatorAECQ200Sizes, availableParts, cart, currentView } = this.state;
     const editing = cart.hasOwnProperty(configuredPart.cart_id);
-    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value;
+    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value;
     var cartKeys = Object.keys(cart);
     var partsInCart = cartKeys.length;
 
