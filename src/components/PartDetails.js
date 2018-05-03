@@ -59,6 +59,18 @@ class PartDetails extends Component{
                   <th scope="row">Size</th>
                   <td>{configuredPart.size.label}</td>
                 </tr>
+                { configuredPart.output &&
+                <tr>
+                  <th scope="row">Output</th>
+                  <td>{configuredPart.output.label}</td>
+                </tr>
+                }
+                { configuredPart.voltage &&
+                <tr>
+                  <th scope="row">Voltage</th>
+                  <td>{configuredPart.voltage.label}</td>
+                </tr>
+                }
                 { configuredPart.tolerance &&
                 <tr>
                   <th scope="row">Tolerance</th>
