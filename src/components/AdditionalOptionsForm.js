@@ -12,7 +12,7 @@ import VoltageOptions from './VoltageOptions';
 
 class AdditionalOptionsForm extends Component{
   render(){
-    const { configuredPart, updateConfiguredPart, partOptions } = this.props;
+    const { aecq200, configuredPart, updateConfiguredPart, partOptions } = this.props;
 
     /**
      * Show AEC-Q200 option if size:
@@ -21,8 +21,6 @@ class AdditionalOptionsForm extends Component{
      * - Crystal-kHz  [122,12A,13A,135,13L]
      * - Oscillator   [1,2,3,5,7]
      */
-    const aecq200Parts = ['C','K','O']
-    const aecq200Sizes = ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
 
     return(
       <div>
@@ -33,8 +31,9 @@ class AdditionalOptionsForm extends Component{
           </div> }
 
           { typeof configuredPart.size !== 'undefined'
-            && aecq200Parts.includes(configuredPart.product_type.value)
-            && aecq200Sizes.includes(configuredPart.size.value)
+            && aecq200.parts.includes(configuredPart.product_type.value)
+            && aecq200.sizes.includes(configuredPart.size.value)
+            && ! ( 'O' === configuredPart.product_type.value && 'kHz' === configuredPart.frequency_unit.value )
             && <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
           }
 
