@@ -11,6 +11,26 @@ class SelectOutput extends Component{
     }
   }
 
+  componentWillReceiveProps(){
+    const { configuredPart, updateConfiguredPart } = this.props;
+    const { savedOutputOption } = this.state;
+
+    /**
+     * Whenever we reset Voltage to "_" with a multi-option Output
+     * selected, we need to reset the Output to the multi-option
+     * value in order to provide all the possible Voltage options.
+     */
+    if( configuredPart.voltage !== null && savedOutputOption !== null ){
+      if(
+        configuredPart.voltage.value === '_' // Voltage is empty
+        && -1 < savedOutputOption.value.indexOf(',') // We have a multi-option Output
+        && -1 < savedOutputOption.value.indexOf(configuredPart.output.value) // Our current Output is in the saved multi-option Output
+        ){
+        updateConfiguredPart('output',savedOutputOption)
+      }
+    }
+  }
+
   handleChange = (selectedOption) => {
     const optionValue = ( selectedOption )? selectedOption : {value: '__', label: ''};
     const { configuredPart } = this.props;
@@ -18,14 +38,16 @@ class SelectOutput extends Component{
     this.setState(
       {savedOutputOption: selectedOption},
       function(){
+
+        // 05/08/2018 (13:40) - The following switch may be unnecessary. Consider deleting...
         const size = configuredPart.size.value;
-        //let updatePart = true;
         switch(size){
           case '3':
           case '5':
-            if( 'HS' === optionValue.value )
-              //updatePart = false;
+            if( 'HS' === optionValue.value ){
+              console.log('Size is `3` and Output = `HS`; setting Output.display = false')
               optionValue.display = false
+            }
             break;
 
           case '7':
@@ -39,13 +61,6 @@ class SelectOutput extends Component{
         }
 
         this.props.updateConfiguredPart('output',optionValue)
-        /*
-        if(updatePart){
-          this.props.updateConfiguredPart('output',optionValue)
-        } else {
-          console.log('Not updating configuredPart.output b/c size is `' + size + '`.')
-        }
-        */
       }
     );
   }
@@ -53,7 +68,7 @@ class SelectOutput extends Component{
   render(){
     const { configuredPart } = this.props;
     let { outputOptions } = this.props;
-    const{ savedOutputOption } = this.state;
+    const { savedOutputOption } = this.state;
     let output = configuredPart.output.value;
     let optionValue = output;
 
