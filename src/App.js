@@ -71,6 +71,10 @@ class App extends Component {
         load: [],
         optemp: []
       },
+      aecq200: {
+        parts: ['C','K','O'],
+        sizes: ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
+      },
       availableParts: 'n/a'
     };
   }
@@ -355,12 +359,13 @@ class App extends Component {
    *
    * @param      {str}    attribute  The configuredPart attribute
    * @param      {obj}    option     The attribute object: {value: '', label: ''}
+   * @param      {bool}   delay       If `true`, don't update state
    */
-  updateConfiguredPart( attribute, option ){
-    console.log('updating `'+attribute+'` to :');
+  updateConfiguredPart( attribute, option, delay = false ){
+    console.log('[updateConfiguredPart] delay = ' + delay + '; updating `'+attribute+'` to :');
     console.log(option);
 
-    const { configuredPart, crystalAECQ200Sizes } = this.state;
+    const { configuredPart, aecq200 } = this.state;
     const originalConfiguredPart = configuredPart;
     const currentValue = (typeof configuredPart[attribute] !== 'undefined')? configuredPart[attribute].value : '';
 
@@ -413,9 +418,9 @@ class App extends Component {
     if( 'frequency_unit' === attribute && option.value !== currentValue ){
       switch(configuredPart.product_type.value){
         case 'C':
-          console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 0.032768\n - Set size to 3 chars\n - Delete `load` from configuredPart");
+          console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 32.768 kHz\n - Set size to 3 chars\n - Delete `load` from configuredPart");
           configuredPart.product_type.value = 'K'
-          configuredPart.frequency = {value: '0.032768', label: '0.032768'}
+          configuredPart.frequency = {value: '32.768', label: '32.768'}
           configuredPart.size = {value: '___', label: ''}
           delete configuredPart.load
           break;
@@ -451,12 +456,14 @@ class App extends Component {
     }
 
     // Oscillators: When Voltage is `null`, reset Output when size >= 3
+    /*
     if( 'voltage' === attribute && '_' === option.value ){
       if( 3 <= configuredPart.size.value ){
         console.log("[RESETING:Output] Conditions:\n - 3 <= configuredPart.size.value")
         configuredPart.output = {value: '__', label: ''}
       }
     }
+    /**/
 
     // Oscillators: When Output is `null`, reset Voltage && '_' === option.value.substring(0,1)
     if( 'output' === attribute && '_' === option.value.substring(0,1) ){
@@ -480,9 +487,9 @@ class App extends Component {
               option.value = '___'
           } else if( 3 === option.value.length ){ // no package_option when size is 3 chars
             configuredPart.package_option.value = ''
-          } else if( 0 < option.value.length && crystalAECQ200Sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
+          } else if( 0 < option.value.length && aecq200.sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
             // do nothing
-          } else if( 0 < option.value.length && ! crystalAECQ200Sizes.includes(option.value) ){
+          } else if( 0 < option.value.length && ! aecq200.sizes.includes(option.value) ){
             configuredPart.package_option.value = ( '_' !== option.value )? 'BS' : '__'
           } else {
             configuredPart.package_option.value = ( '_' !== option.value )? 'BS' : '__'
@@ -502,9 +509,11 @@ class App extends Component {
       }
     }
 
-    this.setPartNumber(); // configuredPart
-    this.setState({configuredPart: configuredPart});
-    this.updateOptions( originalConfiguredPart, configuredPart );
+    if( ! delay ){
+      this.setPartNumber(); // configuredPart
+      this.setState({configuredPart: configuredPart});
+      this.updateOptions( originalConfiguredPart, configuredPart );
+    }
   }
 
   /**
@@ -600,7 +609,7 @@ class App extends Component {
   }
 
   render() {
-    const { configuredPart, partOptions, crystalAECQ200Sizes, oscillatorAECQ200Sizes, availableParts, cart, currentView } = this.state;
+    const { aecq200, configuredPart, partOptions, availableParts, cart, currentView } = this.state;
     const editing = cart.hasOwnProperty(configuredPart.cart_id);
     const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value;
     var cartKeys = Object.keys(cart);
@@ -634,10 +643,9 @@ class App extends Component {
           addPart={this.addPart}
           cart={cart}
           configuredPart={configuredPart}
-          crystalAECQ200Sizes={crystalAECQ200Sizes}
+          aecq200={aecq200}
           editing={editing}
           isPartConfigured={this.isPartConfigured}
-          oscillatorAECQ200Sizes={oscillatorAECQ200Sizes}
           partOptions={partOptions}
           updateConfiguredPart={this.updateConfiguredPart}
           updateCart={this.updateCart}
