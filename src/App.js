@@ -464,6 +464,20 @@ class App extends Component {
       }
     }
     /**/
+    // Voltage rules
+    if( 'voltage' === attribute ){
+      switch( configuredPart.size.value ){
+        case '3':
+        case '5':
+        case '7':
+          if( 'K' === option.value || 'M' === option.value )
+            configuredPart.output = {value: 'HS', label: 'HCMOS'}
+          break
+
+        default:
+          // nothing
+      }
+    }
 
     // Oscillators: When Output is `null`, reset Voltage && '_' === option.value.substring(0,1)
     if( 'output' === attribute && '_' === option.value.substring(0,1) ){
