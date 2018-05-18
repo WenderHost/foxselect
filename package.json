@@ -5,6 +5,7 @@
   "homepage": "/wp-content/themes/business-pro-theme/assets/scripts/foxselect/",
   "dependencies": {
     "axios": "^0.18.0",
+    "core-js": "^2.5.6",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-radio-group": "^3.0.2",
