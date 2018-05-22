@@ -532,7 +532,9 @@ class App extends Component {
               default:
                 // nothing
             }
-
+          } else if( 3 > option.value.length && '_' === option.value.substring(0,1) ){
+            // Default size value for kHz-Crystal-SMD is three underscores
+            option.value = '___'
           }
           break
 
