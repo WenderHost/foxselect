@@ -7,21 +7,22 @@ class CheckboxAECQ200 extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  /*
   componentDidMount(){
     const { configuredPart, updateConfiguredPart } = this.props
     switch(configuredPart.product_type.value){
       case 'K':
         if( -1 < configuredPart.size.value.indexOf(',') ){
           console.log('Size value has a comma. CheckboxAECQ200 setting Size to default')
-          let defaultSize = ''
+          let defaultSize = {value: '', label: ''}
           const currentSize = configuredPart.size.value.substring(0,2)
           switch(currentSize){
             case '12':
-              defaultSize = '122'
+              defaultSize = {value: '122', label: '2.0x1.2 mm'}
               break
 
             case '13':
-              defaultSize = '135'
+              defaultSize = {value: '135', label: '3.2x1.5 mm'}
               break
 
             default:
@@ -33,13 +34,14 @@ class CheckboxAECQ200 extends Component {
 
       default:
     }
-
   }
+  /**/
 
   handleChange(e){
     const { configuredPart, updateConfiguredPart } = this.props
 
     let value = ''
+    let label = ''
     switch(configuredPart.product_type.value){
       case 'C':
         value = ( e.target.checked )? 'BA' : 'BS'
@@ -48,11 +50,17 @@ class CheckboxAECQ200 extends Component {
 
       case 'K':
         switch(configuredPart.size.value){
+          case '122':
+          case '12A':
           case '122,12A':
           case '12A,122':
             value = ( e.target.checked )? '12A' : '122'
+            label = '2.0x1.2 mm'
             break
 
+          case '13A':
+          case '135':
+          case '13L':
           case '13A,135,13L':
           case '135,13A,13L':
           case '13A,13L,135':
@@ -60,13 +68,14 @@ class CheckboxAECQ200 extends Component {
           case '135,13L,13A':
           case '13L,135,13A':
             value = ( e.target.checked )? '13A' : '135'
+            label = '3.2x1.5 mm'
             break
 
           default:
             const defaultValue = ( '12' ===  e.target.value.substring(0,2) )? '122' : '135'
             value = ( e.target.checked )? e.target.value : defaultValue
         }
-        updateConfiguredPart('size',value)
+        updateConfiguredPart('size',{value: value, label: label})
         break;
 
       case 'O':

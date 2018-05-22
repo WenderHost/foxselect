@@ -12,7 +12,8 @@ class SizeOptions extends Component{
   handleChange(value){
     switch(this.props.configuredPart.product_type.value){
       case 'K':
-        this.props.updateConfiguredPart('size',value)
+        const sizeValue = ( 0 <= value.indexOf('13') )? { value: value, label: '3.2x1.5 mm' } : { value: value, label: '2.0x1.2 mm'}
+        this.props.updateConfiguredPart('size',sizeValue)
         break;
 
       default:
@@ -33,11 +34,11 @@ class SizeOptions extends Component{
       case '13L,13A,135':
       case '135,13L,13A':
       case '13L,135,13A':
-        let value = this.props.configuredPart.size.value
+        //let value = this.props.configuredPart.size
         return(
           <div className="alert alert-secondary">
             <p>ESR:</p>
-            <RadioGroup name="size" selectedValue={value} onChange={this.handleChange}>
+            <RadioGroup name="size" selectedValue={size} onChange={this.handleChange}>
               <div className="row">
                 <div className="col-7">
                   <label htmlFor="70KOhm">70 K Ohm  (Standard)</label>

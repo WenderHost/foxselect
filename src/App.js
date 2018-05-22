@@ -292,6 +292,12 @@ class App extends Component {
             isConfigured = false;
           break;
 
+        case 'K':
+          if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
+            isConfigured = false;
+
+          break
+
         case 'O':
           if( typeof configuredPart.output === 'undefined' || 0 === configuredPart.output.value.length || '__' === configuredPart.output.value )
             isConfigured = false;
@@ -362,12 +368,11 @@ class App extends Component {
    * @param      {bool}   delay       If `true`, don't update state
    */
   updateConfiguredPart( attribute, option, delay = false ){
-    console.log('[updateConfiguredPart] delay = ' + delay + '; updating `'+attribute+'` to :');
-    console.log(option);
+    console.log('[updateConfiguredPart] delay = ' + delay + '; updating `'+attribute+'` to :',option)
 
-    const { configuredPart, aecq200 } = this.state;
-    const originalConfiguredPart = configuredPart;
-    const currentValue = (typeof configuredPart[attribute] !== 'undefined')? configuredPart[attribute].value : '';
+    const { configuredPart, aecq200 } = this.state
+    const originalConfiguredPart = configuredPart
+    const currentValue = (typeof configuredPart[attribute] !== 'undefined')? configuredPart[attribute].value : ''
 
     // Account for option = `null`
     if( ! option ){
@@ -511,11 +516,25 @@ class App extends Component {
           break;
 
         case 'K':
-          console.log("[RESETTING:Size] Updating size value to `___`. Original option:")
-          console.log(option)
-          if( 3 > option.value.length )
-            option.value = '___'
-          break;
+          if( -1 < option.value.indexOf(',') ){
+            console.log('Size value has a comma. updateConfiguredPart() setting Size to default:')
+            // The first two chars of the size will determine the default (i.e. 12 or 13):
+            const currentSize = option.value.substring(0,2)
+            switch(currentSize){
+              case '12':
+                configuredPart.size = {value: '122', label: '2.0x1.2 mm'}
+                break
+
+              case '13':
+                configuredPart.size = {value: '135', label: '3.2x1.5 mm'}
+                break
+
+              default:
+                // nothing
+            }
+
+          }
+          break
 
         default:
           // When we are changing the `size`, reset the package_option to the default: `BS`
@@ -668,6 +687,13 @@ class App extends Component {
         />
     }
 
+    let buttonText = 'Return to Quote';
+    if( typeof configuredPart.cart_id !== 'undefined' && configuredPart.number.value !== cart[configuredPart.cart_id].number.value )
+      buttonText = 'Update Part'
+
+    let buttonClass = ( this.isPartConfigured(configuredPart) )? 'btn-primary' : 'btn-secondary'
+    buttonClass = buttonClass + ' btn btn-sm'
+
     return (
       <div className="container">
         <div className="row no-gutters">
@@ -703,7 +729,14 @@ class App extends Component {
         <hr style={{marginTop: '0'}} />
         { editing &&
           'PartSelector' === currentView &&
-          <div className="text-center alert alert-secondary small">NOTE: You are editing a part in your RFQ. If you wish to configure another part, <a href="/select-a-new-part/" onClick={(e) => {e.preventDefault();this.setCurrentView('PartSelector')}}>click here</a>.</div>}
+          <div className="alert alert-warning">
+            <div className="row">
+              <div className="col-10" style={{alignSelf: 'center'}}><strong>NOTE:</strong> <em>You are editing a part in your RFQ.</em> If you wish to configure a new part, <a href="/select-a-new-part/" onClick={(e) => {e.preventDefault();this.setCurrentView('PartSelector')}}>click here</a>.</div>
+              <div className="col-2 text-right">
+                <button type="button" className={buttonClass} disabled={! this.isPartConfigured(configuredPart) } onClick={(e) => {e.preventDefault();this.setCurrentView('ShoppingCart')}}>{buttonText}</button>
+              </div>
+            </div>
+          </div> }
         {thisView}
       </div>
     );
