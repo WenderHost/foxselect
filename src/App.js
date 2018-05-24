@@ -190,7 +190,7 @@ class App extends Component {
           break;
 
         default:
-          console.log('[NOTE] `Size` contains a comma. Setting `Size` label to default: `_`.')
+          console.log('[NOTE] `Size` contains a comma. Setting size.label to default: `_`.')
       }
       product_family.label = 'F' + configuredPart.product_type.value + label
       product_family.value = 'F' + configuredPart.product_type.value + '[' + configuredPart.size.value + ']'
@@ -215,6 +215,10 @@ class App extends Component {
         partNumberProperties = ['output','voltage','stability','optemp'];
         break;
 
+      case 'T':
+        partNumberProperties = ['output','pin_1','voltage','stability','optemp'];
+        break;
+
       default:
         console.log('[WARNING] No Part Number pattern specified for product_type `' + configuredPart.product_type.value + '`');
     }
@@ -225,7 +229,6 @@ class App extends Component {
           /*&& ! configuredPart[property].value.indexOf(',')*/
           /*&& ( typeof configuredPart[property].display === 'undefined' || configuredPart[property].display === true )*/
       ){
-
         if( -1 < configuredPart[property].value.indexOf(',') ){
           console.log('We found a comma in: `' + configuredPart[property].value + '`')
           configuredPart.number.value += '[' + configuredPart[property].value + ']'
@@ -241,7 +244,7 @@ class App extends Component {
             value = ( 'Pin-Thru' === configuredPart.package_type.value )? '' : '__';
             break;
           case 'output':
-            value = '__';
+            value = ('T' === configuredPart.product_type.value)? '_' : '__';
             break;
           default:
             value = '_';
@@ -305,6 +308,17 @@ class App extends Component {
           if( typeof configuredPart.voltage === 'undefined' || 0 === configuredPart.voltage.value.length || '_' === configuredPart.voltage.value )
             isConfigured = false;
           break;
+
+        case 'T':
+            if( typeof configuredPart.output === 'undefined' || 0 === configuredPart.output.value.length || '__' === configuredPart.output.value )
+            isConfigured = false;
+
+          if( typeof configuredPart.voltage === 'undefined' || 0 === configuredPart.voltage.value.length || '_' === configuredPart.voltage.value )
+            isConfigured = false;
+
+          if( typeof configuredPart.pin_1 === 'undefined' || 0 === configuredPart.pin_1.value.length || '_' === configuredPart.pin_1.value )
+            isConfigured = false;
+          break
 
         default:
           // nothing
@@ -583,7 +597,7 @@ class App extends Component {
             forceUpdate = true;
         }
 
-        const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp'];
+        const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp','pin_1'];
         for (var i = allowedOptions.length - 1; i >= 0; i--) {
           var option = allowedOptions[i];
           if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate )
@@ -605,7 +619,7 @@ class App extends Component {
     if(typeof product_type === 'undefined')
       product_type = {value: '_', label: ''}
 
-    let resetPart = {
+    const resetPart = {
       product_type: product_type,
       frequency: {value: '0.0', label: ''},
       frequency_unit: {value: 'MHz', label: 'MHz'},
@@ -633,6 +647,13 @@ class App extends Component {
         resetPart.voltage = {value: '_', label: ''};
         resetPart.output = {value: '__', label: ''};
       break;
+
+      case 'T':
+        delete resetPart.load;
+        resetPart.voltage = {value: '_', label: ''};
+        resetPart.output = {value: '_', label: ''};
+        resetPart.pin_1 = {value: '_', label: ''};
+        break;
 
       default:
     }

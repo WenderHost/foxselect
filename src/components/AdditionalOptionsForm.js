@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SelectSize from './selects/SelectSize';
+import CompensationOptions from './CompensationOptions';
 import CheckboxAECQ200 from './CheckboxAECQ200';
 import SelectTolerance from './selects/SelectTolerance';
 import SelectOutput from './selects/SelectOutput';
@@ -9,6 +10,7 @@ import SelectLoad from './selects/SelectLoad';
 import SelectOpTemp from './selects/SelectOpTemp';
 import SizeOptions from './SizeOptions';
 import VoltageOptions from './VoltageOptions';
+import SelectPin1 from './selects/SelectPin1';
 
 class AdditionalOptionsForm extends Component{
   render(){
@@ -42,12 +44,14 @@ class AdditionalOptionsForm extends Component{
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
           </div> }
 
-          { typeof partOptions.output !== 'undefined' && 'O' === configuredPart.product_type.value &&
+          { typeof partOptions.output !== 'undefined' &&
+            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value ) &&
           <div className="col-md-2">
             <SelectOutput configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
           </div> }
 
-          { typeof partOptions.voltage !== 'undefined' && 'O' === configuredPart.product_type.value &&
+          { typeof partOptions.voltage !== 'undefined' &&
+            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value ) &&
           <div className="col-md-2">
             <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
           </div> }
@@ -66,17 +70,30 @@ class AdditionalOptionsForm extends Component{
           <div className="col-md-2">
             <SelectOpTemp  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} optempOptions={partOptions.optemp} />
           </div> }
+
+          { typeof partOptions.pin_1 !== 'undefined' &&
+          <div className="col-md-2">
+            <SelectPin1 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} pin_1Options={partOptions.pin_1} />
+          </div> }
         </div>
         { typeof configuredPart.size !== 'undefined'
           && 0 !== configuredPart.size.value.length
-          && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
-          <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
+          && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value)
+          && <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
         { typeof configuredPart.voltage !== 'undefined'
         && 0 !== configuredPart.voltage.value.length
         && '_' !== configuredPart.voltage.value
         && 'O' === configuredPart.product_type.value
-        && 3 <= configuredPart.size.value &&
-          <VoltageOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
+        && 3 <= configuredPart.size.value
+        && <VoltageOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
+        }
+        { 'T' === configuredPart.product_type.value
+          && 'Clipped Sine' === configuredPart.output.label
+          && '' !== configuredPart.stability.value
+          && '_' !== configuredPart.stability.value
+          && 'U' !== configuredPart.stability.value
+          && '3' === configuredPart.size.value
+          && <CompensationOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
         }
       </div>
     );

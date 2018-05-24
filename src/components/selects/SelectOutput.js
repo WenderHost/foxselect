@@ -32,44 +32,33 @@ class SelectOutput extends Component{
   }
 
   handleChange = (selectedOption) => {
-    const optionValue = ( selectedOption )? selectedOption : {value: '__', label: ''};
-    const { configuredPart } = this.props;
+    const { configuredPart, updateConfiguredPart } = this.props;
 
-    this.setState(
-      {savedOutputOption: selectedOption},
-      function(){
+    // Update related options
+    switch(configuredPart.product_type.value){
+      case 'T':
+        if( '2' === configuredPart.size.value && null !== selectedOption && 'H' === selectedOption.value )
+          updateConfiguredPart( 'pin_1', { value: 'D', label: 'E/D' }, true );
 
-        // 05/08/2018 (13:40) - The following switch may be unnecessary. Consider deleting...
-        const size = configuredPart.size.value;
-        switch(size){
-          case '3':
-          case '5':
-            if( 'HS' === optionValue.value ){
-              console.log('Size is `3` and Output = `HS`; setting Output.display = false')
-              optionValue.display = false
-            }
-            break;
+        if( '7' === configuredPart.size.value && null !== selectedOption && 'C' === selectedOption.value )
+          updateConfiguredPart( 'pin_1', { value: 'V', label: 'Voltage Control' }, true );
 
-          case '7':
-            if( 'HS' === optionValue.value || 'PS' === optionValue.value || 'LS' === optionValue.value )
-              //updatePart = false;
-              optionValue.display = false
-            break;
+        if( '9' === configuredPart.size.value && null !== selectedOption && 'H' === selectedOption.value )
+          updateConfiguredPart( 'pin_1', { value: 'V', label: 'Voltage Control' }, true );
+        break;
 
-          default:
-            // nothing
-        }
+      default:
+        // nothing
+    }
 
-        this.props.updateConfiguredPart('output',optionValue)
-      }
-    );
+    updateConfiguredPart( 'output', selectedOption )
   }
 
   render(){
     const { configuredPart } = this.props;
     let { outputOptions } = this.props;
     const { savedOutputOption } = this.state;
-    let output = configuredPart.output.value;
+    let output = configuredPart.output;
     let optionValue = output;
 
     if( 3 <= configuredPart.size.value && null !== this.state.savedOutputOption )
@@ -80,9 +69,9 @@ class SelectOutput extends Component{
 
     var className = null;
     if( typeof outputOptions !== 'undefined' ){
-      if( 0 === outputOptions.length && '_' === output ){
+      if( 0 === outputOptions.length && '_' === output.value ){
         className = 'empty';
-      } else if( 0 === outputOptions.length && 0 < output.length ){
+      } else if( 0 === outputOptions.length && 0 < output.value.length ){
         className = 'error';
       }
     }
@@ -91,6 +80,10 @@ class SelectOutput extends Component{
       optionValue = {value: 'HA', label: 'AEC-Q200'};
       outputOptions = [optionValue];
     }
+
+    // If option isn't set, set our drop down to show the placeholder
+    if( null !== optionValue && typeof optionValue.value !== 'undefined' && -1 < optionValue.value.indexOf('_') )
+      optionValue = ''
 
     return(
       <div>

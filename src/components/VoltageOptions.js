@@ -187,20 +187,20 @@ class VoltageOptions extends Component{
     const { configuredPart, updateConfiguredPart } = this.props
     console.log('VoltageOptions::handleChange() updating `output` to ' + value)
 
-    // If no comma in saved value, delay = FALSE, otherwise delay = TRUE
+    // If `comma` in saved value, delay the update. Otherwise update immediately
     const delay = ( -1 < configuredPart.voltage.value.indexOf(',') )? true : false ;
-    updateConfiguredPart('output',{value: value, label: value},delay)
+    updateConfiguredPart( 'output', {value: value, label: value}, delay );
 
     switch(value){
       case 'HL':
         switch(configuredPart.voltage.label){
           case '3.3 Volts':
-            updateConfiguredPart('voltage',{value: 'B', label: '3.3 Volts'})
-            break
+            updateConfiguredPart('voltage',{value: 'B', label: '3.3 Volts'});
+            break;
 
           case '2.5 Volts':
-            updateConfiguredPart('voltage',{value: 'H', label: '2.5 Volts'})
-            break
+            updateConfiguredPart('voltage',{value: 'H', label: '2.5 Volts'});
+            break;
 
           default:
         }
@@ -210,12 +210,12 @@ class VoltageOptions extends Component{
       case 'HS':
         switch(configuredPart.voltage.label){
           case '3.3 Volts':
-            updateConfiguredPart('voltage',{value: 'C', label: '3.3 Volts'})
-            break
+            updateConfiguredPart('voltage',{value: 'C', label: '3.3 Volts'});
+            break;
 
           case '2.5 Volts':
-            updateConfiguredPart('voltage',{value: 'H', label: '2.5 Volts'}) // Why is this `H`? According to 2.5V options, we would expect this to be `J`.
-            break
+            updateConfiguredPart('voltage',{value: 'H', label: '2.5 Volts'}); // Why is this `H`? According to 2.5V options, we would expect this to be `J`.
+            break;
 
           default:
         }

@@ -56,7 +56,7 @@ class SelectSize extends Component{
       optionValue = { value: optionValue.value, label: label }
     }
 
-    if( typeof optionValue.value !== 'undefined' && 0 <= optionValue.value.indexOf('_') )
+    if( null !== optionValue && typeof optionValue.value !== 'undefined' && 0 <= optionValue.value.indexOf('_') )
       optionValue = ''
 
     return(
