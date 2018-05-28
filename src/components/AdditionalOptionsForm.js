@@ -45,13 +45,13 @@ class AdditionalOptionsForm extends Component{
           </div> }
 
           { typeof partOptions.output !== 'undefined' &&
-            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value ) &&
+            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value ) &&
           <div className="col-md-2">
             <SelectOutput configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
           </div> }
 
           { typeof partOptions.voltage !== 'undefined' &&
-            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value ) &&
+            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value ) &&
           <div className="col-md-2">
             <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
           </div> }
@@ -72,6 +72,7 @@ class AdditionalOptionsForm extends Component{
           </div> }
 
           { typeof partOptions.pin_1 !== 'undefined' &&
+            'T' === configuredPart.product_type.value &&
           <div className="col-md-2">
             <SelectPin1 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} pin_1Options={partOptions.pin_1} />
           </div> }

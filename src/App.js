@@ -219,6 +219,10 @@ class App extends Component {
         partNumberProperties = ['output','pin_1','voltage','stability','optemp'];
         break;
 
+      case 'Y':
+        partNumberProperties = ['output','voltage','stability','optemp'];
+        break;
+
       default:
         console.log('[WARNING] No Part Number pattern specified for product_type `' + configuredPart.product_type.value + '`');
     }
@@ -302,7 +306,8 @@ class App extends Component {
           break
 
         case 'O':
-          if( typeof configuredPart.output === 'undefined' || 0 === configuredPart.output.value.length || '__' === configuredPart.output.value )
+        case 'Y':
+          if( typeof configuredPart.output === 'undefined' || 0 === configuredPart.output.value.length || 0 <= configuredPart.output.value.indexOf('_') )
             isConfigured = false;
 
           if( typeof configuredPart.voltage === 'undefined' || 0 === configuredPart.voltage.value.length || '_' === configuredPart.voltage.value )
@@ -653,6 +658,12 @@ class App extends Component {
         resetPart.voltage = {value: '_', label: ''};
         resetPart.output = {value: '_', label: ''};
         resetPart.pin_1 = {value: '_', label: ''};
+        break;
+
+      case 'Y':
+        delete resetPart.load;
+        resetPart.voltage = {value: '_', label: ''};
+        resetPart.output = {value: '_', label: ''};
         break;
 
       default:
