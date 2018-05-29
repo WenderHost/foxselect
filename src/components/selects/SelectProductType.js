@@ -34,8 +34,7 @@ class SelectProductType extends Component{
             { value: 'C', label: 'Crystal' },
             { value: 'O', label: 'Oscillator' },
             { value: 'T', label: 'TCXO' },
-            { value: 'Y', label: 'VC-TCXO' },
-            { value: 'Y', label: 'VCXO' }
+            { value: 'Y', label: 'VC-TCXO/VCXO' }
           ]}
         />
       </div>
