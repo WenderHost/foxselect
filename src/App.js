@@ -215,6 +215,10 @@ class App extends Component {
         partNumberProperties = ['output','voltage','stability','optemp'];
         break;
 
+      case 'S':
+        partNumberProperties = ['enable_type','voltage','spread','optemp'];
+        break;
+
       case 'T':
         partNumberProperties = ['output','pin_1','voltage','stability','optemp'];
         break;
@@ -283,9 +287,6 @@ class App extends Component {
     if( typeof configuredPart.size === 'undefined' || 0 === configuredPart.size.value.length || '_' === configuredPart.size.value.substring(0,1) )
       isConfigured = false;
 
-    if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
-      isConfigured = false;
-
     if( typeof configuredPart.optemp === 'undefined' || 0 === configuredPart.optemp.value.length || '_' === configuredPart.optemp.value )
       isConfigured = false;
 
@@ -297,12 +298,16 @@ class App extends Component {
 
           if( typeof configuredPart.load === 'undefined' || 0 === configuredPart.load.value.length || '_' === configuredPart.load.value )
             isConfigured = false;
+
+          if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
+            isConfigured = false;
           break;
 
         case 'K':
           if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
             isConfigured = false;
-
+          if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
+            isConfigured = false;
           break
 
         case 'O':
@@ -311,6 +316,18 @@ class App extends Component {
             isConfigured = false;
 
           if( typeof configuredPart.voltage === 'undefined' || 0 === configuredPart.voltage.value.length || '_' === configuredPart.voltage.value )
+            isConfigured = false;
+
+          if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
+            isConfigured = false;
+          break;
+
+        case 'S':
+          if( typeof configuredPart.enable_type === 'undefined' || 0 === configuredPart.enable_type.value.length || '_' === configuredPart.enable_type.value )
+            isConfigured = false;
+          if( typeof configuredPart.voltage === 'undefined' || 0 === configuredPart.voltage.value.length || '_' === configuredPart.voltage.value )
+            isConfigured = false;
+          if( typeof configuredPart.spread === 'undefined' || 0 === configuredPart.spread.value.length || '_' === configuredPart.spread.value )
             isConfigured = false;
           break;
 
@@ -602,7 +619,7 @@ class App extends Component {
             forceUpdate = true;
         }
 
-        const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp','pin_1'];
+        const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp','pin_1','enable_type','spread'];
         for (var i = allowedOptions.length - 1; i >= 0; i--) {
           var option = allowedOptions[i];
           if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate )
@@ -652,6 +669,12 @@ class App extends Component {
         resetPart.voltage = {value: '_', label: ''};
         resetPart.output = {value: '__', label: ''};
       break;
+
+      case 'S':
+        resetPart.enable_type = {value: '_', label: ''};
+        resetPart.voltage = {value: '_', label: ''};
+        resetPart.spread = {value: '_', label: ''};
+        break;
 
       case 'T':
         delete resetPart.load;

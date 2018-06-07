@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import SelectSize from './selects/SelectSize';
 import CompensationOptions from './CompensationOptions';
 import CheckboxAECQ200 from './CheckboxAECQ200';
+import SelectEnableType from './selects/SelectEnableType'
 import SelectTolerance from './selects/SelectTolerance';
+import SelectSpread from './selects/SelectSpread';
 import SelectOutput from './selects/SelectOutput';
 import SelectVoltage from './selects/SelectVoltage';
 import SelectStability from './selects/SelectStability';
@@ -39,6 +41,11 @@ class AdditionalOptionsForm extends Component{
             && <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
           }
 
+          { typeof partOptions.enable_type !== 'undefined' && 'S' === configuredPart.product_type.value &&
+          <div className="col-md-2">
+            <SelectEnableType configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} enableTypeOptions={partOptions.enable_type} />
+          </div> }
+
           { typeof partOptions.tolerance !== 'undefined' && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
           <div className="col-md-2">
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
@@ -51,9 +58,14 @@ class AdditionalOptionsForm extends Component{
           </div> }
 
           { typeof partOptions.voltage !== 'undefined' &&
-            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value ) &&
+            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value || 'S' === configuredPart.product_type.value ) &&
           <div className="col-md-2">
             <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
+          </div> }
+
+          { typeof partOptions.spread !== 'undefined' && 'S' === configuredPart.product_type.value &&
+          <div className="col-md-2">
+            <SelectSpread configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} spreadOptions={partOptions.spread} />
           </div> }
 
           { typeof partOptions.stability !== 'undefined' &&
