@@ -4,6 +4,7 @@ import SelectProductType from './selects/SelectProductType';
 import SelectFrequency from './selects/SelectFrequency';
 import AdditionalOptionsForm from './AdditionalOptionsForm';
 import PartDetails from './PartDetails';
+import { API_ENV } from '../api-config';
 
 class PartSelector extends React.Component{
 
@@ -86,7 +87,8 @@ class PartSelector extends React.Component{
               partOptions={partOptions}
               aecq200={aecq200}
             /> }
-          { this.props.isPartConfigured(configuredPart) &&
+          { this.props.isPartConfigured(configuredPart)
+            && 'web' === API_ENV &&
             <PartDetails cart={cart} configuredPart={configuredPart} updateCart={this.props.updateCart} setCurrentView={this.props.setCurrentView} editing={editing} /> }
         </form>
       </div>

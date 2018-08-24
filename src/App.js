@@ -8,7 +8,7 @@ import logo from './logo.svg';
 
 // Server Communication
 import axios from 'axios';
-import { API_ROOT } from './api-config';
+import { API_ROOT, API_ENV } from './api-config';
 
 class App extends Component {
   constructor(){
@@ -599,6 +599,11 @@ class App extends Component {
 
     console.log('updateOptions('+configuredPart.number.value+')')
 
+    if( 'salesforce' === API_ENV ){
+      const { dataService } = this.props;
+      dataService.setPartNumber( configuredPart.number.value )
+    }
+
     axios
       .get(`${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}/${configuredPart.frequency_unit.value}`)
       .then(response => {
@@ -753,6 +758,7 @@ class App extends Component {
 
     return (
       <div className="container">
+        { ( 'web' === API_ENV ) &&
         <div className="row no-gutters">
           <div className="col-md-3">
             <h1 className="title">
@@ -782,7 +788,7 @@ class App extends Component {
               }
             </p> }
           </div>
-        </div>
+        </div> }
         <hr style={{marginTop: '0'}} />
         { editing &&
           'PartSelector' === currentView &&

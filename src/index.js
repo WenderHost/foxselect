@@ -1,20 +1,35 @@
-import React from 'react';
-import { render } from 'react-dom';
-import { unregister } from './registerServiceWorker';
-import 'core-js/es7/array';
+import React, { Component } from 'react'
+import { render } from 'react-dom'
+import { unregister } from './registerServiceWorker'
+import 'core-js/es7/array'
 
-import './css/style.css';
-import App from './App';
+import './css/style.css'
+import App from './App'
 
-const Root = () => {
-  return (
-    <div>
-      <App />
-    </div>
-  );
+class Root extends Component{
+  constructor(){
+    super()
+
+    this.state = {
+      dataService: {}
+    }
+  }
+
+  passDataService( dataService ){
+    this.setState({dataService: dataService})
+  }
+
+  render(){
+    const { dataService } = this.state;
+
+    return(
+      <div>
+        <App dataService={dataService} />
+      </div>
+    )
+  }
 }
+render(<Root ref={(FoxSelect) => {window.FoxSelect = FoxSelect}} />,document.querySelector('#root'))
 
-
-render(<Root />,document.querySelector('#root'));
-//registerServiceWorker();
-unregister();
+//registerServiceWorker()
+unregister()

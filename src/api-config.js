@@ -1,5 +1,4 @@
 let apiHost;
-let apiRoot;
 const apiVersion = 'v1';
 const hostname = window && window.location && window.location.hostname;
 
@@ -17,10 +16,10 @@ switch( hostname ){
     apiHost = 'http://foxelectronics.loco/'
 }
 
-if( -1 < apiHost.indexOf( 'force' ) ){
-  apiRoot = `${apiHost}services/apexrest/PartService/`
-} else {
-  apiRoot = `${apiHost}wp-json/foxparts/${apiVersion}/get_options/`
-}
+const apiEnv = ( -1 < hostname.indexOf( 'force' ) )? 'salesforce' : 'web'
 
-export const API_ROOT = apiRoot;
+export const API_HOST = hostname;
+export const API_ENV = apiEnv;
+export const API_ROOT = `${apiHost}wp-json/foxparts/${apiVersion}/get_options/`;
+
+//console.log('API_HOST',API_HOST,"\nAPI_ENV ", API_ENV,"\nAPI_ROOT",API_ROOT)
