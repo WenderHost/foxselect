@@ -262,7 +262,7 @@ class App extends Component {
       }
     }
     configuredPart.number.value += '-' + configuredPart.frequency.value;
-    configuredPart.number.label += '-' + configuredPart.frequency.value;
+    configuredPart.number.label += configuredPart.frequency.value;
     this.setState({configuredPart: {number: configuredPart.number}});
   }
 
@@ -601,7 +601,7 @@ class App extends Component {
 
     if( 'salesforce' === API_ENV ){
       const { dataService } = this.props;
-      dataService.setPartNumber( configuredPart.number.value )
+      dataService.setPartNumber( configuredPart.number.label )
     }
 
     axios
@@ -656,7 +656,7 @@ class App extends Component {
       stability: {value: '_', label: ''},
       load: {value: '_', label: ''},
       optemp: {value: '_', label: ''},
-      number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______-0.0'}
+      number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______0.0'}
     }
 
     switch(product_type.value){
