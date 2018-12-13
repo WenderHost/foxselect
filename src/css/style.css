@@ -1,67 +1,61 @@
-/*
-body{
-  padding: 20px;
-  background: #eee;
+.twbs{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.428571429;
+  color: #333333;
+  background-color: white;
 }
-*/
-/*
-.container{
-  background-color: #fff;
-  padding: 20px 20px;
-  box-shadow: 1px 1px 1px rgba(0,0,0,0.75);
-}
-*/
-.btn{
+.twbs .btn{
   margin: 0 2px;
 }
-.btn:first-child{
+.twbs .btn:first-child{
   margin-left: 0;
 }
-.btn:last-child{
+.twbs .btn:last-child{
   margin-right: 0;
 }
-.btn-primary{
+.twbs .btn-primary{
   background-color: #0d649b;
   border-color: #0d649b;
 }
-.btn-primary:hover{
+.twbs .btn-primary:hover{
   background-color: #fff;
   color: #0d649b;
 }
-.cart-item-options .btn-sm{
+.twbs .cart-item-options .btn-sm{
   padding: .1rem .25rem;
   font-size: .7rem;
 }
-p > code{
+.twbs p > code{
   background-color: #eee;
   padding: 2px 4px;
   color: #666;
   border-radius: 3px;
 }
-label{
+.twbs label{
   font-size: 13px;
   cursor: pointer;
 }
-div[class^=col-] label:only-child{
+.twbs div[class^=col-] label:only-child{
   display: block;
 }
-.form-row{
+.twbs .form-row{
   margin-bottom: 10px;
 }
-.size-options{
+.twbs .size-options{
   margin-top: 20px;
   border: 1px solid #eee;
   padding: 20px;
 }
 
 /* Select states */
-.empty .Select-control{
+.twbs .empty .Select-control{
   background-color: #eee;
 }
-.error .Select-control{
+.twbs .error .Select-control{
   background-color: #f7b3af;
 }
-.Select.error.has-value.Select--single > .Select-control .Select-value .Select-value-label,
-.Select.error.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label{
+.twbs .Select.error.has-value.Select--single > .Select-control .Select-value .Select-value-label,
+.twbs .Select.error.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label{
   color: #666;
 }
