@@ -44,11 +44,6 @@ class LoginForm extends Component{
             <button type="button" className="btn btn-primary" name="checkout-guest" onClick={this.handleClick}>Login</button>
           </div>
         </div>
-        <div className="form-row">
-          <div className="col">
-            <p>If you would like to create an account, <a href="/create-your-account/">click here</a>.</p>
-          </div>
-        </div>
       </form>
     )
   }

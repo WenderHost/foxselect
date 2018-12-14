@@ -16,5 +16,6 @@ switch( apiEnv ){
 export const API_HOST = hostname;
 export const API_ENV = apiEnv;
 export const API_ROOT = `${apiHost}/wp-json/foxparts/${apiVersion}/get_options/`;
+export const AUTH_ROOT = `${apiHost}/wp-json/jwt-auth/v1/token`;
 
-console.log('API_HOST', API_HOST,"\nAPI_ENV ", API_ENV,"\nAPI_ROOT", API_ROOT)
+console.log('API_HOST', API_HOST,"\nAPI_ENV ", API_ENV,"\nAPI_ROOT", API_ROOT,"\nAUTH_ROOT",AUTH_ROOT)

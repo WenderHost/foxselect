@@ -8,7 +8,7 @@ import logo from './logo.svg';
 
 // Server Communication
 import axios from 'axios';
-import { API_ROOT, API_ENV } from './api-config';
+import { API_ROOT, API_ENV, AUTH_ROOT } from './api-config';
 
 class App extends Component {
   constructor(){
@@ -94,14 +94,7 @@ class App extends Component {
    * @param      {string}  password  The password
    */
   validateUser(username,password){
-    const { wpvars } = window;
-
-    if( typeof wpvars !== 'undefined' ){
-      console.log('wpvars.root = ' + wpvars.root );
-    } else {
-      console.log('wpvars is `undefined`.');
-    }
-    let request = `${wpvars.root}${wpvars.authroute}`
+    let request = AUTH_ROOT;
     console.log('request = ' + request )
     axios.post(request,{
         username: username,
