@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import LoginForm from './LoginForm';
 import SelectState from './selects/SelectState';
 import SelectCompanyType from './selects/SelectCompanyType';
+import ReactPasswordStrength from 'react-password-strength';
 
 class Checkout extends Component{
 
@@ -28,10 +29,10 @@ class Checkout extends Component{
     return(
       <div className="checkout">
         <div className="row">
-          <div className="col-md">
+          <div className="col-lg">
             {account}
           </div>
-          <div className="col-md">
+          <div className="col-lg">
             <h3>Create an Account</h3>
             <form>
               <div className="form-row">
@@ -44,9 +45,20 @@ class Checkout extends Component{
               </div>
               <div className="form-row">
                 <div className="col">
-                  <input type="email" className="form-control" placeholder="Email"/>
+                  <input type="email" className="form-control" placeholder="Your company email"/>
                 </div>
               </div>
+              <div className="form-row">
+                  <div className="col">
+                    <ReactPasswordStrength
+                      style={{ border: "none" }}
+                      inputProps={{ className: "form-control", placeholder: "Password" }}
+                      minLength={5}
+                      minScore={2}
+                    />
+                  </div>
+              </div>
+              <hr />
               <div className="form-row">
                 <div className="col-md-9">
                   <input type="text" className="form-control" placeholder="Company/Account Name"/>
@@ -71,7 +83,7 @@ class Checkout extends Component{
               <hr/>
               <div className="form-row">
                 <div className="col text-right">
-                  <button type="button" className="btn btn-primary" name="checkout-guest" onClick={this.handleClick}>Continue</button>
+                  <button type="button" className="btn btn-primary" name="checkout-guest" onClick={this.handleClick}>Register</button>
                 </div>
               </div>
             </form>

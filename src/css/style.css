@@ -59,3 +59,8 @@
 .twbs .Select.error.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label{
   color: #666;
 }
+
+/* React Password Strength */
+.ReactPasswordStrength .ReactPasswordStrength-strength-desc{
+  top: -4px;
+}
