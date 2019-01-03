@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import WP from './WordPressAPI';
+import { AUTH_ROOT } from '../api-config';
 
 class LoginForm extends Component{
   constructor(props){
@@ -21,7 +23,7 @@ class LoginForm extends Component{
 
   handleClick(e){
     const { email, password } = this.state;
-    return this.props.validateUser(email,password);
+    return WP.validateUser( AUTH_ROOT, email, password );
   }
 
   render(){

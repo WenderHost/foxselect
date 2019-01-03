@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
 
+// Alerts
+import Alert from 'react-s-alert';
+import 'react-s-alert/dist/s-alert-default.css';
+import 'react-s-alert/dist/s-alert-css-effects/slide.css';
+
+// Components
 import PartSelector from './components/PartSelector';
 import ShoppingCart from './components/ShoppingCart';
 import Checkout from './components/Checkout';
@@ -7,17 +13,17 @@ import sampleCart from './sample-cart';
 import logo from './logo.svg';
 
 // Server Communication
+//import WordPressAPI from './components/WordPressAPI';
 import axios from 'axios';
-import { API_ROOT, API_ENV, AUTH_ROOT } from './api-config';
+import { API_ROOT, API_ENV } from './api-config';
 
 class App extends Component {
   constructor(){
     super();
 
-    this.validateUser = this.validateUser.bind(this);
     this.loadPart = this.loadPart.bind(this);
     this.loadSampleCart = this.loadSampleCart.bind(this);
-    this.logoutUser = this.logoutUser.bind(this);
+    this.hydrateStateWithLocalStorage = this.hydrateStateWithLocalStorage.bind(this);
     this.setCurrentView = this.setCurrentView.bind(this);
     this.setPartNumber = this.setPartNumber.bind(this);
     this.isPartConfigured = this.isPartConfigured.bind(this);
@@ -29,7 +35,7 @@ class App extends Component {
     // initial state
     this.state = {
       cart: {},
-      currentView: 'PartSelector',
+      currentView: 'Checkout',
       configuredPart: {
         product_type: {value: '_', label: ''},
         frequency: {value: '0.0', label: ''},
@@ -75,37 +81,59 @@ class App extends Component {
         parts: ['C','K','O'],
         sizes: ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
       },
-      availableParts: 'n/a'
+      availableParts: 'n/a',
+      user: null
     };
   }
 
-  /**
-   * Logs out a user from the app
-   */
-  logoutUser(){
-    localStorage.removeItem('userData');
-    this.setCurrentView('Checkout');
+  componentDidMount(){
+    this.hydrateStateWithLocalStorage();
+
+    // Add event listener to save cart to localStorage
+    // when user leaves/refreshes page
+    window.addEventListener(
+      'beforeunload',
+      this.saveCartToLocalStorage.bind(this)
+    )
   }
 
-  /**
-   * Validates a user
-   *
-   * @param      {string}  username  The username
-   * @param      {string}  password  The password
-   */
-  validateUser(username,password){
-    let request = AUTH_ROOT;
-    console.log('request = ' + request )
-    axios.post(request,{
-        username: username,
-        password: password
-      })
-      .then(response => {
-        console.log('Saving userData to `localStorage`...');
-        localStorage.setItem('userData', JSON.stringify( response.data ) );
-        this.setCurrentView('Checkout');
-      })
-      .catch(error => console.log(error))
+  componentWillUnmount(){
+    window.removeEventListener(
+      'beforeunload',
+      this.saveCartToLocalStorage.bind(this)
+    )
+
+    // Saves if component has a chance to unmount
+    this.saveCartToLocalStorage();
+  }
+
+  saveCartToLocalStorage(){
+    if( this.state.cart )
+      localStorage.setItem('fs-cart', JSON.stringify( this.state.cart ) );
+  }
+
+  hydrateStateWithLocalStorage(){
+    if( localStorage.hasOwnProperty('userData') ){
+      let user = localStorage.getItem('userData');
+
+      try {
+        user = JSON.parse( user );
+        this.setState({ user: user });
+      } catch (e) {
+        this.setState({ user: null });
+      }
+    }
+
+    if( localStorage.hasOwnProperty('fs-cart') ){
+      let cart = localStorage.getItem('fs-cart');
+
+      try {
+        cart = JSON.parse( cart );
+        this.setState({ cart: cart });
+      } catch (e) {
+        this.setState({ cart: null });
+      }
+    }
   }
 
   /**
@@ -697,13 +725,11 @@ class App extends Component {
   }
 
   render() {
-    const { aecq200, configuredPart, partOptions, availableParts, cart, currentView } = this.state;
+    const { aecq200, configuredPart, partOptions, availableParts, cart, currentView, user } = this.state;
     const editing = cart.hasOwnProperty(configuredPart.cart_id);
     const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value;
     var cartKeys = Object.keys(cart);
     var partsInCart = cartKeys.length;
-
-    const userData = JSON.parse( localStorage.getItem('userData') );
 
     let thisView = '';
     // Originally a prop of PartSelector below:
@@ -711,8 +737,9 @@ class App extends Component {
     switch( currentView ){
       case 'Checkout':
         thisView = <Checkout
-          validateUser={this.validateUser}
-          logoutUser={this.logoutUser}
+          user={user}
+          createUser={this.createUser}
+          /*logoutUser={this.logoutUser}*/
         />
         break;
 
@@ -756,8 +783,8 @@ class App extends Component {
           <div className="col-md-3">
             <h1 className="title">
               <img src={logo} alt="FOXSelect™" />
-              { typeof userData !== 'undefined' && null !== userData &&
-              <small style={{fontSize: '14px', display: 'block'}}>User: <em>{userData.user_display_name}</em></small> }
+              { typeof user !== 'undefined' && null !== user &&
+              <small style={{fontSize: '14px', display: 'block'}}>User: <em>{user.user_display_name}</em></small> }
             </h1>
           </div>
           <div className="col-md-2" style={{textAlign: 'right'}}>
@@ -767,7 +794,7 @@ class App extends Component {
           </div>
           <div className="col-md-2">
             { 'PartSelector' === currentView &&
-            <p>{ ( configuredPart.number.value )? <code><a href={testLink} target="_blank" style={{color: '#666'}}>{configuredPart.number.label}</a></code> : null }<br/><code>{availableParts}</code></p>
+            <p>{ ( configuredPart.number.value )? <code><a href={testLink} target="_blank" rel="noopener noreferrer" style={{color: '#666'}}>{configuredPart.number.label}</a></code> : null }<br/><code>{availableParts}</code></p>
             }
           </div>
           <div className="col-md-5 text-right">
@@ -794,6 +821,7 @@ class App extends Component {
             </div>
           </div> }
         {thisView}
+        <Alert stack={{limit: 3}} />
       </div>
     );
   }

@@ -1,29 +1,38 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
+import WP from './WordPressAPI';
 import SelectState from './selects/SelectState';
 import SelectCompanyType from './selects/SelectCompanyType';
 import ReactPasswordStrength from 'react-password-strength';
 
 class Checkout extends Component{
 
-  render(){
-    let userData = JSON.parse( localStorage.getItem('userData') );
-    //console.log('userData = ');
-    //console.log(userData);
+  constructor(){
+    super();
+    this.handleClick = this.handleClick.bind(this);
+  }
 
-    const account = userData ? (
+  handleClick(e){
+    return this.props.createUser();
+  }
+
+  render(){
+    const { user } = this.props;
+    console.log('[CHECKOUT] user', user);
+
+    const account = user ? (
       <div>
         <h3>Your Account Details</h3>
-        <p>Welcome back <em>{userData.user_display_name}</em>.</p>
-        <p>Your email: <em>{userData.user_email}</em>.</p>
+        <p>Welcome back <em>{user.user_display_name}</em>.</p>
+        <p>Your email: <em>{user.user_email}</em>.</p>
         <div className="text-right">
           <hr/>
-          <button className="btn btn-primary" type="button" onClick={this.props.logoutUser}>Logout</button>
+          <button className="btn btn-primary" type="button" onClick={WP.logoutUser}>Logout</button>
         </div>
       </div>
 
     ) : (
-      <LoginForm validateUser={this.props.validateUser} />
+      <LoginForm />
     );
 
     return(
