@@ -7,58 +7,83 @@ import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 let WordPressAPI = {
+
+  /**
+   * Creates an user via the WP REST API.
+   *
+   * @param      {string}  url     Our WordPress REST API endpoint
+   * @param      {object}  user    The user object
+   * @param      {string}  token   API authentication token
+   */
   createUser : function(url,user,token){
-    //const wpApiToken = localStorage.getItem('wpApiToken');
+    token.then( token => {
+      // TODO: Validate the token before trying to create the user
 
-    /*
-    let example_user = {
-      username: 'foxselect@michaelwender.com',
-      name: 'Foxy Mike',
-      first_name: 'Foxy',
-      last_name: 'Mike',
-      email: 'foxselect@michaelwender.com',
-      password: 'testing123'
-    }
-    */
+      /**
+       * Creating user via standard call to REST API
+       */
+      const config = {
+        method: 'post',
+        url: url + 'wp/v2/users',
+        data: user,
+        headers: {'Authorization': 'Bearer ' + token }
+      }
+      console.log('[createUser] config = ', config)
 
-    const config = {
-      method: 'post',
-      url: url + 'wp/v2/users',
-      data: user,
-      headers: {'Authorization': 'Bearer ' + token }
-    }
-    console.log('[createUser] config = ', config)
-
-    axios(config)
-    .then( response => {
-      console.log('[WP REST] User created.', response.data )
-    })
-    .catch( error => {
-      console.log( error );
+      axios(config)
+      .then( response => {
+        console.log('[WP REST] User created.', response.data )
+      })
+      .catch( error => {
+        console.log( error );
+      });
     });
   },
 
   getAppToken : function(url,user,pass){
-    let token = false;
+    if( localStorage.hasOwnProperty('wpApiToken') ){
+      let wpApiToken = localStorage.getItem('wpApiToken')
 
-    axios({
-      method: 'post',
-      url: url,
-      data: {
-        username: user,
-        password: pass
-      }
-    })
-    .then( response => {
-      console.log('[WP] Success! Storing token...', response.data )
-      localStorage.setItem('wpApiToken', response.data.token )
-      token = response.data.token;
-    })
-    .catch( error => {
-      console.log('[WP] Error! Unable to retrieve token. ', error )
-    })
+      const validPromise = WordPressAPI.validateAppToken( url + '/validate', wpApiToken )
+        .then( result => {
+          if( result.data ){
+            return result.data.data.token;
+          } else {
+            // Our token is not valid so we need to
+            // 1) delete the token in localStorage, and
+            // 2) get a new token.
+            localStorage.removeItem('wpApiToken');
+            let newTokenPromise = WordPressAPI.getAppToken(url,user,pass).then( result => {
+              return result;
+            });
+            return newTokenPromise;
+          }
+        })
+        .catch( error => {
+          console.log('[WP.validateAppToken] Token is NOT valid.', error );
+        });
 
-    return token;
+      return validPromise;
+    } else {
+      const tokenPromise = axios({
+        method: 'post',
+        url: url,
+        data: {
+          username: user,
+          password: pass
+        }
+      })
+      .then( response => {
+        console.log('[WP.getAppToken] New token retrieved.', response.data )
+        localStorage.setItem('wpApiToken', response.data.token )
+        return response.data.token
+      })
+      .catch( error => {
+        console.log('[WP.getAppToken] Error! Unable to retrieve token. ', error )
+      });
+
+      return tokenPromise;
+    }
   },
 
   logoutUser: function(){
@@ -74,20 +99,22 @@ let WordPressAPI = {
   },
 
   validateAppToken: function(url,token){
-    const valid = axios({
+    const validPromise = axios({
       method: 'post',
       url: url,
       headers: {'Authorization': 'Bearer ' + token }
     })
     .then( response => {
-      return true;
+      response.data.data.token = token;
+      console.log('[WP.validateAppToken] Token is valid.', response );
+      return response;
     })
     .catch( error => {
-      //console.log('[WP] App Token is not valid.');
-      return false;
+      console.log('[WP.validateAppToken] Token is NOT valid.', error );
+      return error;
     })
 
-    return valid;
+    return validPromise;
   },
 
   /**

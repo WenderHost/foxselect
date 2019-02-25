@@ -25,20 +25,10 @@ export const API_USER = process.env.REACT_APP_API_USER;
 export const API_PASS = process.env.REACT_APP_API_PASS;
 
 // Connect to WP REST API
-let wpApiToken = null
-if( localStorage.hasOwnProperty( 'wpApiToken' ) )
-  wpApiToken = localStorage.getItem('wpApiToken')
+export let API_TOKEN = WP.getAppToken( AUTH_ROOT, API_USER, API_PASS ).then(function(result){
+  //console.log('[api-config] WP.getAppToken has returned:', result );
+  return result;
+});
 
-if( typeof wpApiToken === 'undefined' || null === wpApiToken ){
-  wpApiToken = WP.getAppToken( AUTH_ROOT, API_USER, API_PASS );
-} else {
-  let valid = WP.validateAppToken( AUTH_ROOT + '/validate', wpApiToken );
-  if( ! valid ){
-    wpApiToken = WP.getAppToken( AUTH_ROOT, API_USER, API_PASS );
-  } else {
-    console.log('[WP] App Token is valid.');
-  }
-}
-export const API_TOKEN = wpApiToken;
 
 console.log('API_HOST', API_HOST,"\nAPI_ENV ", API_ENV,"\nAPI_ROOT", API_ROOT,"\nAUTH_ROOT",AUTH_ROOT,'\nAPI_TOKEN',API_TOKEN,'\nAPI_USER',API_USER)

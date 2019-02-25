@@ -14,16 +14,23 @@ class StateSelect extends Component{
   }
 
   handleChange(selectedOption){
+    const target = {};
+    target.name = this.props.name;
+    target.value = ( null !== selectedOption )? selectedOption.value : '';
+    const e = {};
+    e.target = target;
+    this.props.handleChange(e);
     this.setState({selectedOption});
   }
 
   render(){
     const { selectedOption } = this.state;
     const value = selectedOption && selectedOption.value;
+    const { name } = this.props;
 
     return(
       <Select
-        name="state"
+        name={name}
         value={value}
         onChange={this.handleChange}
         placeholder="State..."

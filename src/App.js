@@ -13,9 +13,9 @@ import sampleCart from './sample-cart';
 import logo from './logo.svg';
 
 // Server Communication
-//import WordPressAPI from './components/WordPressAPI';
+//import WP from './components/WordPressAPI';
 import axios from 'axios';
-import { API_ROOT, API_ENV } from './api-config';
+import { API_ROOT, API_ENV, API_TOKEN } from './api-config';
 
 class App extends Component {
   constructor(){
@@ -35,7 +35,7 @@ class App extends Component {
     // initial state
     this.state = {
       cart: {},
-      currentView: 'Checkout',
+      currentView: '',
       configuredPart: {
         product_type: {value: '_', label: ''},
         frequency: {value: '0.0', label: ''},
@@ -107,11 +107,20 @@ class App extends Component {
     this.saveCartToLocalStorage();
   }
 
+  /**
+   * Saves the FOXSelect cart to localStorage under `fs-cart`
+   */
   saveCartToLocalStorage(){
     if( this.state.cart )
       localStorage.setItem('fs-cart', JSON.stringify( this.state.cart ) );
   }
 
+  /**
+   * Load the following from the browser's localStorage
+   *
+   *  - userData
+   *  - FOXSelect Cart
+   */
   hydrateStateWithLocalStorage(){
     if( localStorage.hasOwnProperty('userData') ){
       let user = localStorage.getItem('userData');
@@ -724,6 +733,12 @@ class App extends Component {
     );
   }
 
+  checkAppToken(){
+    API_TOKEN.then( token => {
+      console.log('API_TOKEN = ', token);
+    });
+  }
+
   render() {
     const { aecq200, configuredPart, partOptions, availableParts, cart, currentView, user } = this.state;
     const editing = cart.hasOwnProperty(configuredPart.cart_id);
@@ -806,6 +821,7 @@ class App extends Component {
                   <button style={{marginTop: '4px'}} className="btn btn-secondary btn-sm" name="load-samples" type="button" onClick={this.loadSampleCart}>Load Sample Parts</button>
                 </span>
               }
+              <button className="btn btn-secondary btn-sm" name="check-token" type="button" onClick={this.checkAppToken.bind(this)}>Check App Token</button>
             </p> }
           </div>
         </div> }
