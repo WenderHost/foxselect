@@ -12,7 +12,7 @@ class LoginForm extends Component{
     }
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
   }
 
   handleChange(e){
@@ -21,7 +21,7 @@ class LoginForm extends Component{
     this.setState(formValue);
   }
 
-  handleClick(e){
+  handleLogin(e){
     const { email, password } = this.state;
     return WP.validateUser( AUTH_ROOT, email, password );
   }
@@ -43,7 +43,7 @@ class LoginForm extends Component{
         <hr/>
         <div className="form-row">
           <div className="col text-right">
-            <button type="button" className="btn btn-primary" name="checkout-guest" onClick={this.handleClick}>Login</button>
+            <button type="button" className="btn btn-primary" name="checkout-guest" onClick={this.handleLogin}>Login</button>
           </div>
         </div>
       </form>

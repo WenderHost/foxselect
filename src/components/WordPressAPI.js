@@ -11,11 +11,12 @@ let WordPressAPI = {
   /**
    * Creates an user via the WP REST API.
    *
-   * @param      {string}  url     Our WordPress REST API endpoint
-   * @param      {object}  user    The user object
-   * @param      {string}  token   API authentication token
+   * @param      {string}  url        Our WordPress REST API endpoint
+   * @param      {object}  user       The user object
+   * @param      {string}  token      API authentication token
+   * @param      {string}  auth_root  The Authorization URI
    */
-  createUser : function(url,user,token){
+  createUser : function(url,user,token,auth_root){
     token.then( token => {
       // TODO: Validate the token before trying to create the user
 
@@ -33,6 +34,7 @@ let WordPressAPI = {
       axios(config)
       .then( response => {
         console.log('[WP REST] User created.', response.data )
+        this.validateUser( auth_root, user.email, user.password )
       })
       .catch( error => {
         console.log( error );

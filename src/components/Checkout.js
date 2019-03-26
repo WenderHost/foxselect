@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import LoginForm from './LoginForm';
-import WP from './WordPressAPI';
-import SelectState from './selects/SelectState';
-import SelectCompanyType from './selects/SelectCompanyType';
-import ReactPasswordStrength from 'react-password-strength';
-import { API_REST, API_TOKEN } from '../api-config';
+import CartItem from './CartItem';
+//import SelectState from './selects/SelectState';
+import Select from 'react-select';
+//import WP from './WordPressAPI';
+//import { API_REST, API_TOKEN } from '../api-config';
+import { stateOptions } from './data/data';
+
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 
 class Checkout extends Component{
 
@@ -12,162 +16,231 @@ class Checkout extends Component{
     super();
 
     this.state = {
-      new_user: {
-        username: '',
-        name: '',
-        first_name: '',
-        last_name: '',
-        email: '',
-        password: null,
-        company_name: '',
-        company_type: '',
-        company_street: '',
-        company_city: '',
-        company_state: ''
-      }
+      different_shipping_address: false
     }
+
     this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handlePassword = this.handlePassword.bind(this);
-  }
-
-  handleClick(e){
-    console.log('[Checkout.handleClick] Creating user...');
-    const { new_user } = this.state;
-
-    const user = {};
-    const meta = {};
-    for( var property in new_user ){
-      if( new_user.hasOwnProperty( property ) ){
-        if( -1 < property.indexOf('company_') ){
-          meta[property] = new_user[property];
-        } else {
-          user[property] = new_user[property];
-        }
-      }
-    }
-    user['meta'] = meta;
-
-    return WP.createUser( API_REST, user, API_TOKEN );
+    this.handlePrototypeDate = this.handlePrototypeDate.bind(this);
+    this.handleProductionDate = this.handleProductionDate.bind(this);
+    this.handleAddressState = this.handleAddressState.bind(this);
+    this.handleShippingAddress = this.handleShippingAddress.bind(this);
   }
 
   handleChange(e){
-    const { new_user } = this.state;
-    new_user[e.target.name] = e.target.value;
+    //const { shipping_address } = this.props
+    const { rfq } = this.props
 
-    new_user.name = ( '' !== new_user.first_name && '' !== new_user.last_name )? new_user.first_name + ' ' + new_user.last_name : '';
-    new_user.username = ( '' !== new_user.email )? new_user.email : '';
-
-    this.setState({new_user: new_user});
-  }
-
-  handlePassword( status, result ){
-    if( status.isValid ){
-      const { new_user } = this.state;
-      new_user['password'] = status.password;
-      this.setState({new_user: new_user});
+    const address_fields = ['company','contact','street','city','state','zip']
+    if( typeof e.target.name !== undefined && address_fields.includes( e.target.name ) ){
+      rfq.shipping_address[e.target.name] = e.target.value
+    } else if( typeof e.target.name !== undefined && 'distys' === e.target.name ){
+      console.log('[handleChange] rfq.distys.includes(e.target.value)', rfq.distys.includes(e.target.value))
+      if( ! rfq.distys.includes(e.target.value) ){
+        rfq.distys.push(e.target.value)
+      } else {
+        var index = rfq.distys.indexOf(e.target.value)
+        var spliced = rfq.distys.splice(index,1)
+        console.log('[handleChange] after splice distys = ', rfq.distys, 'spliced = ', spliced)
+      }
+    } else if( typeof e.target.name !== undefined ) {
+      rfq[e.target.name] = e.target.value
     }
 
+    //if( typeof e.target.name !== undefined )
+    //  shipping_address[e.target.name] = e.target.value
+
+    //this.props.updateShippingAddress(shipping_address)
+    this.props.updateRFQ( rfq )
+  }
+
+  handlePrototypeDate( date ){
+    const { rfq } = this.props
+    rfq.prototype_date = date
+    this.props.updateRFQ( rfq )
+  }
+
+  handleProductionDate( date ){
+    const { rfq } = this.props
+    rfq.production_date = date
+    this.props.updateRFQ( rfq )
+  }
+
+  /**
+   * onChange handler for our Address:State selector
+   */
+  handleAddressState(e){
+    const { shipping_address } = this.props
+    shipping_address['state'] = e.value
+    this.props.updateShippingAddress(shipping_address)
+  }
+
+  /**
+   * Sets `different_shipping_address` which controls appearance
+   * of "Different Shipping Address" form
+   */
+  handleShippingAddress(e){
+    this.setState({different_shipping_address: e.target.checked})
   }
 
   render(){
-    const { user } = this.props;
-    const { new_user } = this.state;
-    //console.log('[CHECKOUT] user', user);
+    const { different_shipping_address } = this.state
+    const { user, rfq } = this.props
+    //let project = { name: 'Test Project Name', description: '', prototype_date: prototype_date, production_date: production_date }
+    const disty_row_styles = { margin: '0 0 20px 6px'}
 
-    /**
-     * If we're logged in, show the user details (dashboard)
-     */
-    const account = user ? (
-      <div>
-        <h3>Your Account Details</h3>
-        <p>Welcome back <em>{user.user_display_name}</em>.</p>
-        <table className="table table-sm">
-          <tbody>
-            <tr>
-              <td>Your email:</td>
-              <td>{user.user_email}</td>
-            </tr>
-            <tr>
-              <td>Your status:</td>
-              <td>{user.status}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div className="text-right">
-          <hr/>
-          <button className="btn btn-primary" type="button" onClick={WP.logoutUser}>Logout</button>
+    let defaultValue = user.company_state
+    if( null !== rfq.shipping_address.state ){
+      for( var i = 0; i < stateOptions.length; i++ ){
+        var option = stateOptions[i]
+        //console.log('defaultValue = ', defaultValue, 'option.value = ', option.value)
+        if( defaultValue === option.value )
+          defaultValue = option
+      }
+    }
+
+    const careOfStyle = {lineHeight: '2.4'}
+    const shippingAddressFields = different_shipping_address ? (
+        <div className="shipping-form">
+          <div className="form-row">
+            <div className="col-md-12">
+              <input type="text" className="form-control" placeholder="Company Name" autoComplete="off" name="company" value={rfq.shipping_address.company} onChange={this.handleChange} />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="col-md-1" style={careOfStyle}>c/o</div>
+            <div className="col-md-11">
+              <input type="text" className="form-control" placeholder="Contact" name="contact" value={rfq.shipping_address.contact} onChange={this.handleChange} />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="col">
+              <input type="text" className="form-control" placeholder="Address" name="street" value={rfq.shipping_address.street} onChange={this.handleChange} />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="col-md-5">
+              <input type="text" className="form-control" placeholder="City" name="city" value={rfq.shipping_address.city} onChange={this.handleChange} />
+            </div>
+            <div className="col-md-4">
+              <Select
+                onChange={this.handleAddressState}
+                placeholder="State..."
+                options={stateOptions}
+                defaultValue={defaultValue}
+              />
+            </div>
+            <div className="col-md-3">
+              <input type="text" className="form-control" placeholder="Zip" name="zip" value={rfq.shipping_address.zip} onChange={this.handleChange} />
+            </div>
+          </div>
         </div>
-      </div>
-
-    ) : (
-      <LoginForm />
-    );
+      ) : (
+        <p>{user.company_name}<br />c/o {user.user_display_name}<br />{user.company_street}<br />{user.company_city}, {user.company_state} {user.company_zip}</p>
+      )
 
     return(
-      <div className="checkout">
+
+      <div className="checkout container">
         <div className="row">
-          <div className="col-lg">
-            {account}
-          </div>
-          <div className="col-lg">
-            <h3>Create an Account</h3>
-            <form>
-              <div className="form-row">
-                <div className="col">
-                  <input type="text" className="form-control" placeholder="First name" name="first_name" value={new_user.first_name} onChange={this.handleChange} />
+          <div className="col-md-12">
+            <h3>Your Order</h3>
+            <div className="row">
+              <div className="col-md-6">
+                <div className="alert alert-secondary">{user.user_display_name}<br/>{user.user_email}</div>
+                {/* PROJECT DETAILS */}
+                <h4>Project Details</h4>
+                <div className="form-group">
+                  <label htmlFor="project_name">Name</label>
+                  <input type="text" className="form-control" placeholder="Project Name" name="project_name" value={rfq.project_name} onChange={this.handleChange} />
                 </div>
-                <div className="col">
-                  <input type="text" className="form-control" placeholder="Last name" name="last_name" value={new_user.last_name} onChange={this.handleChange} />
+                <div className="form-group">
+                  <label htmlFor="project_description">Description (optional)</label>
+                  <textarea className="form-control" name="project_description" rows="3" value={rfq.project_description} onChange={this.handleChange}></textarea>
                 </div>
-              </div>
-              <div className="form-row">
-                <div className="col">
-                  <input type="email" className="form-control" placeholder="Your company email" autoComplete="off" name="email" value={new_user.email} onChange={this.handleChange} />
-                </div>
-              </div>
-              <div className="form-row">
-                  <div className="col">
-                    <ReactPasswordStrength
-                      style={{ border: "none" }}
-                      inputProps={{ className: "form-control", placeholder: "Password", autoComplete: "new-password" }}
-                      minLength={5}
-                      minScore={2}
-                      changeCallback={this.handlePassword}
-                    />
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <label htmlFor="project_prototype_date">Prototype Date</label><br />
+                      <DatePicker
+                        selected={rfq.prototype_date}
+                        onChange={this.handlePrototypeDate}
+                        className="form-control"
+                        placeholderText="Click to select a date"
+                      />
+                    </div>
                   </div>
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <label htmlFor="project_production_date">Production Date</label><br />
+                      <DatePicker
+                        selected={rfq.production_date}
+                        onChange={this.handleProductionDate}
+                        className="form-control"
+                        placeholderText="Click to select a date"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <h4>Distributors</h4>
+                <div className="row" style={disty_row_styles}>
+                  <div className="col">
+                    <input type="checkbox" className="form-check-input" id="distributor_avnet" name="distys" value="avnet" checked={rfq.distys.includes('avnet')} onChange={this.handleChange} />
+                    <label htmlFor="distributor_avnet" className="form-check-label">Avnet</label>
+                  </div>
+                  <div className="col">
+                    <input type="checkbox" className="form-check-input" id="distributor_mouser" name="distys" value="mouser" checked={rfq.distys.includes('mouser')} onChange={this.handleChange} />
+                    <label htmlFor="distributor_mouser" className="form-check-label">Mouser</label>
+                  </div>
+                  <div className="col">
+                    <input type="checkbox" className="form-check-input" id="distributor_digikey" name="distys" value="digikey" checked={rfq.distys.includes('digikey')} onChange={this.handleChange} />
+                    <label htmlFor="distributor_digikey" className="form-check-label">Digikey</label>
+                  </div>
+                  <div className="col">
+                    <input type="checkbox" className="form-check-input" id="distributor_future" name="distys" value="future" checked={rfq.distys.includes('future')} onChange={this.handleChange} />
+                    <label htmlFor="distributor_future" className="form-check-label">Future</label>
+                  </div>
+                  <div className="col">
+                    <input type="checkbox" className="form-check-input" id="distributor_arrow" name="distys" value="arrow" checked={rfq.distys.includes('arrow')} onChange={this.handleChange} />
+                    <label htmlFor="distributor_arrow" className="form-check-label">Arrow</label>
+                  </div>
+                  <div className="col">
+                    <input type="checkbox" className="form-check-input" id="distributor_newark" name="distys" value="newark" checked={rfq.distys.includes('newark')} onChange={this.handleChange} />
+                    <label htmlFor="distributor_newark" className="form-check-label">Newark</label>
+                  </div>
+                </div>
+                {/* /PROJECT DETAILS*/}
               </div>
-              <hr />
-              <div className="form-row">
-                <div className="col-md-9">
-                  <input type="text" className="form-control" placeholder="Company/Account Name" autoComplete="off" name="company_name" value={new_user.company_name} onChange={this.handleChange} />
-                </div>
-                <div className="col-md-3">
-                  <SelectCompanyType handleChange={this.handleChange} name="company_type" value={new_user.company_type} />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="col">
-                  <input type="text" className="form-control" placeholder="Address" name="company_street" value={new_user.company_street} onChange={this.handleChange} />
+              <div className="col-md-6">
+                <h4>Account Address</h4>
+                <p>{user.company_name}<br />c/o {user.user_display_name}<br />{user.company_street}<br />{user.company_city}, {user.company_state} {user.company_zip}</p>
+                <h4>Shipping Address</h4>
+                {shippingAddressFields}
+                <div className="form-group form-check">
+                  <input type="checkbox" className="form-check-input" id="differentShippingAddress" value="true" checked={!!different_shipping_address} onChange={this.handleShippingAddress} />
+                  <label className="form-check-label" htmlFor="differentShippingAddress">Use a different shipping address.</label>
                 </div>
               </div>
-              <div className="form-row">
-                <div className="col-md-8">
-                  <input type="text" className="form-control" placeholder="City" name="company_city" value={new_user.company_city} onChange={this.handleChange} />
-                </div>
-                <div className="col-md-4">
-                  <SelectState handleChange={this.handleChange} name="company_state" value={new_user.company_state} />
-                </div>
-              </div>
-              <hr/>
-              <div className="form-row">
-                <div className="col text-right">
-                  <button type="button" className="btn btn-primary" name="register-user" onClick={this.handleClick}>Register</button>
-                </div>
-              </div>
-            </form>
+
+            </div>
           </div>
         </div>
+        <button type="button" className="btn btn-primary" name="submit-rfq" onClick={this.handleClick}>Submit</button>
+        <br />
+        <div className="row d-none d-md-flex">
+          <div className="col-md-3"><small>Part No.</small></div>
+          <div className="col-md-5"><small>Desc</small></div>
+          <div className="col-md-4"><small>Options</small></div>
+        </div>
+        { 0 < this.props.partsInCart ? (
+          Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)
+        ) : (
+          <div>
+            <hr/>
+            <p className="text-center">Your RFQ is empty.</p>
+            <p className="text-center"><button type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.props.setCurrentView('PartSelector')}>Continue Configuring Your Parts</button></p>
+            <hr/>
+          </div>
+        ) }
       </div>
     )
   }

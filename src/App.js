@@ -6,6 +6,7 @@ import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 // Components
+import Login from './components/Login';
 import PartSelector from './components/PartSelector';
 import ShoppingCart from './components/ShoppingCart';
 import Checkout from './components/Checkout';
@@ -13,7 +14,7 @@ import sampleCart from './sample-cart';
 import logo from './logo.svg';
 
 // Server Communication
-//import WP from './components/WordPressAPI';
+import WP from './components/WordPressAPI';
 import axios from 'axios';
 import { API_ROOT, API_ENV, API_TOKEN } from './api-config';
 
@@ -31,6 +32,8 @@ class App extends Component {
     this.updateCart = this.updateCart.bind(this);
     this.updateConfiguredPart = this.updateConfiguredPart.bind(this);
     this.updateOptions = this.updateOptions.bind(this);
+    this.updateShippingAddress = this.updateShippingAddress.bind(this); // Gets replaced by updateRFQ
+    this.updateRFQ = this.updateRFQ.bind(this); // This should replace updateShippingAddress()
 
     // initial state
     this.state = {
@@ -82,7 +85,22 @@ class App extends Component {
         sizes: ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
       },
       availableParts: 'n/a',
-      user: null
+      user: null,
+      rfq: {
+        project_name: '',
+        project_description: '',
+        shipping_address: {
+          company: '',
+          contact: '',
+          street: '',
+          city: '',
+          state: '',
+          zip: ''
+        },
+        prototype_date: '',
+        production_date: '',
+        distys: []
+      }
     };
   }
 
@@ -95,6 +113,11 @@ class App extends Component {
       'beforeunload',
       this.saveCartToLocalStorage.bind(this)
     )
+    // Save `currentView` to localStorage
+    window.addEventListener(
+      'beforeunload',
+      this.saveCurrentViewToLocalStorage.bind(this)
+    )
   }
 
   componentWillUnmount(){
@@ -102,9 +125,14 @@ class App extends Component {
       'beforeunload',
       this.saveCartToLocalStorage.bind(this)
     )
+    window.removeEventListener(
+      'beforeunload',
+      this.saveCurrentViewToLocalStorage.bind(this)
+    )
 
     // Saves if component has a chance to unmount
     this.saveCartToLocalStorage();
+    this.saveCurrentViewToLocalStorage();
   }
 
   /**
@@ -116,33 +144,82 @@ class App extends Component {
   }
 
   /**
+   * Saves our currentView to local storage.
+   */
+  saveCurrentViewToLocalStorage(){
+    if( this.state.currentView )
+      localStorage.setItem('currentView', JSON.stringify( this.state.cart ) );
+  }
+
+  /**
    * Load the following from the browser's localStorage
    *
    *  - userData
    *  - FOXSelect Cart
+   *  - currentView
    */
   hydrateStateWithLocalStorage(){
-    if( localStorage.hasOwnProperty('userData') ){
-      let user = localStorage.getItem('userData');
+    let user = null
+    let cart = null
+    let currentView = ''
 
-      try {
-        user = JSON.parse( user );
-        this.setState({ user: user });
-      } catch (e) {
-        this.setState({ user: null });
-      }
+    if( localStorage.hasOwnProperty('userData') )
+      user = localStorage.getItem('userData')
+    if( localStorage.hasOwnProperty('fs-cart') )
+      cart = localStorage.getItem('fs-cart')
+
+    try{
+      user = JSON.parse( user )
+      console.log('[App.js] user = ', user)
+    } catch(e) {
+      console.log('[App.js] Unable to JSON.parse localStorage `user`.');
+    }
+    try{
+      cart = JSON.parse( cart )
+    } catch(e){
+      console.log('[App.js] Unable to JSON.parse localStorage `cart`.')
     }
 
-    if( localStorage.hasOwnProperty('fs-cart') ){
-      let cart = localStorage.getItem('fs-cart');
-
-      try {
-        cart = JSON.parse( cart );
-        this.setState({ cart: cart });
-      } catch (e) {
-        this.setState({ cart: null });
-      }
+    // If our user is logged in and the page reloads, the currentView
+    // will be empty. Therefore, we will set the view to the Checkout
+    // screen as this handles the flow of "User logs in and then the
+    // app loads the Checkout screen".
+    if( typeof cart !== 'undefined' && null !== cart ){
+      let partsInCart = ( Object.keys(cart) ).length
+      if( typeof user !== 'undefined' && null !== user && 0 < partsInCart )
+        currentView = 'Checkout'
     }
+
+    const saved_shipping_address = ( user && user.company_name ) ? ( {
+      company: user.company_name,
+      contact: user.user_display_name,
+      street: user.company_street,
+      city: user.company_city,
+      state: user.company_state,
+      zip: user.company_zip
+    } ) : ({
+      company: '',
+      contact: '',
+      street: '',
+      city: '',
+      state: '',
+      zip: ''
+    })
+
+    // 03/21/2019 (12:07) - I've copied the RFQ data model from the
+    // state definition I have inside this class's constructor. Is
+    // this the best way to be doing this?
+    let rfq = {
+        project_name: '',
+        project_description: '',
+        shipping_address: saved_shipping_address,
+        prototype_date: '',
+        production_date: '',
+        distys: []
+    }
+
+    if( null !== user || null !== cart || '' !== currentView )
+      this.setState({user: user, cart: cart, currentView: currentView, rfq: rfq })
   }
 
   /**
@@ -173,8 +250,14 @@ class App extends Component {
    */
   setCurrentView(view){
     let viewObj = {currentView: view};
+    const { user } = this.state;
 
     switch(view){
+
+      case 'Checkout':
+        view = ( typeof user !== 'undefined' && null !== user )? 'Checkout' : 'Login' ;
+        viewObj = {currentView: view};
+        break;
 
       case 'PartSelector':
         this.resetConfiguredPart();
@@ -666,6 +749,14 @@ class App extends Component {
       .catch(error => console.log(error))
   }
 
+  updateShippingAddress( shipping_address ){
+    this.setState({rfq: {shipping_address: shipping_address} })
+  }
+
+  updateRFQ( rfq ){
+    this.setState({rfq: rfq})
+  }
+
   /**
    * Resets ${configuredPart} with `_` for all properties
    *
@@ -752,9 +843,21 @@ class App extends Component {
     switch( currentView ){
       case 'Checkout':
         thisView = <Checkout
+          cart={cart}
+          partsInCart={partsInCart}
+          loadPart={this.loadPart}
+          updateCart={this.updateCart}
           user={user}
+          shipping_address={this.state.rfq.shipping_address}
+          rfq={this.state.rfq}
+          updateShippingAddress={this.updateShippingAddress}
+          updateRFQ={this.updateRFQ}
+        />
+        break;
+
+      case 'Login':
+        thisView = <Login
           createUser={this.createUser}
-          /*logoutUser={this.logoutUser}*/
         />
         break;
 
@@ -813,16 +916,20 @@ class App extends Component {
             }
           </div>
           <div className="col-md-5 text-right">
-            { 'ShoppingCart' !== currentView &&
-            <p>Parts in Cart: <code>{partsInCart}</code> <button disabled={editing} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>View RFQ</button>
+
+            <p>
+              { 'ShoppingCart' !== currentView &&
+              <span>Parts in Cart: <code>{partsInCart}</code> <button disabled={editing} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>View RFQ</button></span> }
+
               { 0 === Object.keys(cart).length && cart.constructor === Object &&
                 <span>
                   <br/>
                   <button style={{marginTop: '4px'}} className="btn btn-secondary btn-sm" name="load-samples" type="button" onClick={this.loadSampleCart}>Load Sample Parts</button>
                 </span>
               }
-              <button className="btn btn-secondary btn-sm" name="check-token" type="button" onClick={this.checkAppToken.bind(this)}>Check App Token</button>
-            </p> }
+              { typeof user !== 'undefined' && null !== user &&
+                <button className="btn btn-secondary btn-sm" name="check-token" type="button" onClick={WP.logoutUser}>Log Out</button> }
+            </p>
           </div>
         </div> }
         <hr style={{marginTop: '0'}} />
