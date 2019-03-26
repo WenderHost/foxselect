@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Creatable } from 'react-select';
-import 'react-select/dist/react-select.css';
 
 class SelectFrequency extends Component{
   constructor(){
