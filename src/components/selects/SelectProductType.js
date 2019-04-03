@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
+import { productTypeOptions } from '../data/data';
 
 class SelectProductType extends Component{
   constructor(){
@@ -29,13 +30,7 @@ class SelectProductType extends Component{
           value={value}
           onChange={this.handleChange}
           placeholder="Product type..."
-          options={[
-            { value: 'C', label: 'Crystal' },
-            { value: 'O', label: 'Oscillator' },
-            { value: 'T', label: 'TCXO' },
-            { value: 'Y', label: 'VC-TCXO/VCXO' },
-            { value: 'S', label: 'SSO' },
-          ]}
+          options={productTypeOptions}
         />
       </div>
     );
