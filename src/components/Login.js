@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
 import WP from './WordPressAPI';
-import SelectState from './selects/SelectState';
-import SelectCompanyType from './selects/SelectCompanyType';
+import Select from 'react-select';
+import { companyTypeOptions, stateOptions } from './data/data';
 import ReactPasswordStrength from 'react-password-strength';
 import { AUTH_ROOT, API_REST, API_TOKEN } from '../api-config';
 
@@ -27,9 +27,11 @@ class Login extends Component{
         company_zip: ''
       }
     }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleRegister = this.handleRegister.bind(this);
-    this.handlePassword = this.handlePassword.bind(this);
+    this.handleChange = this.handleChange.bind(this)
+    this.handleChangeCompanyType = this.handleChangeCompanyType.bind(this)
+    this.handleChangeCompanyState = this.handleChangeCompanyState.bind(this)
+    this.handleRegister = this.handleRegister.bind(this)
+    this.handlePassword = this.handlePassword.bind(this)
   }
 
   handleRegister(e){
@@ -53,13 +55,25 @@ class Login extends Component{
   }
 
   handleChange(e){
-    const { new_user } = this.state;
-    new_user[e.target.name] = e.target.value;
+    const { new_user } = this.state
+    new_user[e.target.name] = e.target.value
 
     new_user.name = ( '' !== new_user.first_name && '' !== new_user.last_name )? new_user.first_name + ' ' + new_user.last_name : '';
     new_user.username = ( '' !== new_user.email )? new_user.email : '';
 
     this.setState({new_user: new_user});
+  }
+
+  handleChangeCompanyType(e){
+    const { new_user } = this.state
+    new_user.company_type = e.value
+    this.setState({new_user: new_user})
+  }
+
+  handleChangeCompanyState(e){
+    const { new_user } = this.state
+    new_user.company_state = e.value
+    this.setState({new_user: new_user})
   }
 
   handlePassword( status, result ){
@@ -75,6 +89,24 @@ class Login extends Component{
     const { user } = this.props;
     const { new_user } = this.state;
     //console.log('[CHECKOUT] user', user);
+
+    let companyTypeValue = new_user.company_type
+    if( '' !== companyTypeValue ){
+      for( let i = 0; i < companyTypeOptions.length; i++ ){
+        let option = companyTypeOptions[i]
+        if( companyTypeValue === option.value )
+          companyTypeValue = option
+      }
+    }
+
+    let stateValue = new_user.company_state
+    if( '' !== stateValue ){
+      for( let i = 0; i < stateOptions.length; i++ ){
+        let option = stateOptions[i]
+        if( stateValue === option.value )
+          stateValue = option
+      }
+    }
 
     /**
      * If we're logged in, show the user details (dashboard)
@@ -144,7 +176,13 @@ class Login extends Component{
                   <input type="text" className="form-control" placeholder="Company/Account Name" autoComplete="off" name="company_name" value={new_user.company_name} onChange={this.handleChange} />
                 </div>
                 <div className="col-md-3">
-                  <SelectCompanyType handleChange={this.handleChange} name="company_type" value={new_user.company_type} />
+                  <Select
+                    name="company_type"
+                    onChange={this.handleChangeCompanyType}
+                    placeholder="Type..."
+                    options={companyTypeOptions}
+                    value={companyTypeValue}
+                  />
                 </div>
               </div>
               <div className="form-row">
@@ -157,7 +195,13 @@ class Login extends Component{
                   <input type="text" className="form-control" placeholder="City" name="company_city" value={new_user.company_city} onChange={this.handleChange} />
                 </div>
                 <div className="col-md-4">
-                  <SelectState handleChange={this.handleChange} name="company_state" value={new_user.company_state} />
+                  <Select
+                    name="company_state"
+                    onChange={this.handleChangeCompanyState}
+                    placeholder="State..."
+                    options={stateOptions}
+                    value={stateValue}
+                  />
                 </div>
                 <div className="col-md-3">
                   <input type="text" className="form-control" placeholder="Zip" name="company_zip" value={new_user.company_zip} onChange={this.handleChange} />
