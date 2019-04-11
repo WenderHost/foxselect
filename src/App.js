@@ -109,48 +109,41 @@ class App extends Component {
   componentDidMount(){
     this.hydrateStateWithLocalStorage();
 
-    // Add event listener to save cart to localStorage
-    // when user leaves/refreshes page
+    // Event listening for:
+    //
+    // - Saving cart to localStorage
+    // - Saving RFQ to localStorage
+    // - Saving currentView to localStorage
+    //
+    // Saving the above to localStorage allows us to
+    // persist the app's state across refreshing or
+    // leaving the app.
     window.addEventListener(
       'beforeunload',
-      this.saveCartToLocalStorage.bind(this)
-    )
-    // Save `currentView` to localStorage
-    window.addEventListener(
-      'beforeunload',
-      this.saveCurrentViewToLocalStorage.bind(this)
+      this.saveStateToLocalStoreage.bind(this)
     )
   }
 
   componentWillUnmount(){
     window.removeEventListener(
       'beforeunload',
-      this.saveCartToLocalStorage.bind(this)
-    )
-    window.removeEventListener(
-      'beforeunload',
-      this.saveCurrentViewToLocalStorage.bind(this)
+      this.saveStateToLocalStoreage.bind(this)
     )
 
     // Saves if component has a chance to unmount
-    this.saveCartToLocalStorage();
-    this.saveCurrentViewToLocalStorage();
+    this.saveStateToLocalStoreage()
   }
 
   /**
-   * Saves the FOXSelect cart to localStorage under `fs-cart`
+   * Saves various parts of our State to local storage.
    */
-  saveCartToLocalStorage(){
+  saveStateToLocalStoreage(){
     if( this.state.cart )
-      localStorage.setItem('fs-cart', JSON.stringify( this.state.cart ) );
-  }
-
-  /**
-   * Saves our currentView to local storage.
-   */
-  saveCurrentViewToLocalStorage(){
+      localStorage.setItem('foxselect-cart', JSON.stringify( this.state.cart ) )
+    if( this.state.rfq )
+      localStorage.setItem('foxselect-rfq', JSON.stringify( this.state.rfq ) )
     if( this.state.currentView )
-      localStorage.setItem('currentView', JSON.stringify( this.state.cart ) );
+      localStorage.setItem('foxselect-currentView', JSON.stringify( this.state.cart ) );
   }
 
   /**
@@ -158,66 +151,54 @@ class App extends Component {
    *
    *  - userData
    *  - FOXSelect Cart
+   *  - FOXSelect RFQ
    *  - currentView
    */
   hydrateStateWithLocalStorage(){
     let user = null
     let cart = null
+    let rfq = null
     let currentView = ''
 
-    if( localStorage.hasOwnProperty('userData') )
-      user = localStorage.getItem('userData')
-    if( localStorage.hasOwnProperty('fs-cart') )
-      cart = localStorage.getItem('fs-cart')
+    if( localStorage.hasOwnProperty('foxselect-userdata') )
+      user = localStorage.getItem('foxselect-userdata')
+
+    if( localStorage.hasOwnProperty('foxselect-cart') )
+      cart = localStorage.getItem('foxselect-cart')
+
+    if( localStorage.hasOwnProperty('foxselect-rfq') )
+      rfq = localStorage.getItem('foxselect-rfq')
+
+    if( localStorage.hasOwnProperty('foxselect-currentview') )
+      currentView = localStorage.getItem('foxselect-currentview')
 
     try{
       user = JSON.parse( user )
-      console.log('[App.js] user = ', user)
     } catch(e) {
-      console.log('[App.js] Unable to JSON.parse localStorage `user`.');
+      console.log('[App.js] Unable to JSON.parse localStorage `foxselect-userdata`.');
     }
+
     try{
       cart = JSON.parse( cart )
     } catch(e){
-      console.log('[App.js] Unable to JSON.parse localStorage `cart`.')
+      console.log('[App.js] Unable to JSON.parse localStorage `foxselect-cart`.')
     }
 
-    // If our user is logged in and the page reloads, the currentView
-    // will be empty. Therefore, we will set the view to the Checkout
-    // screen as this handles the flow of "User logs in and then the
-    // app loads the Checkout screen".
-    if( typeof cart !== 'undefined' && null !== cart ){
-      let partsInCart = ( Object.keys(cart) ).length
-      if( typeof user !== 'undefined' && null !== user && 0 < partsInCart )
-        currentView = 'Checkout'
+    try{
+      rfq = JSON.parse( rfq )
+    } catch(e){
+      console.log('[App.js] Unable to JSON.parse localStorage `foxselect-rfq`.')
     }
 
-    const saved_shipping_address = ( user && user.company_name ) ? ( {
-      company: user.company_name,
-      contact: user.user_display_name,
-      street: user.company_street,
-      city: user.company_city,
-      state: user.company_state,
-      zip: user.company_zip
-    } ) : ({
-      company: '',
-      contact: '',
-      street: '',
-      city: '',
-      state: '',
-      zip: ''
-    })
-
-    // 03/21/2019 (12:07) - I've copied the RFQ data model from the
-    // state definition I have inside this class's constructor. Is
-    // this the best way to be doing this?
-    let rfq = {
-        project_name: '',
-        project_description: '',
-        shipping_address: saved_shipping_address,
-        prototype_date: '',
-        production_date: '',
-        distys: []
+    // In WordPressAPI.js::validateUser(), we set
+    // localStorage.foxselect-currentview === `loggedin` before
+    // reloading the page. Therefore, when the page loads with
+    // `loggedin` saved as the currentView, we know to immediately
+    // set the currentView to `Checkout` to complete the flow of
+    // "User logs in and then the app loads the Checkout screen".
+    if( 'loggedin' === currentView ){
+      currentView = 'Checkout'
+      localStorage.setItem('foxselect-currentview', '')
     }
 
     if( null !== user || null !== cart || '' !== currentView )
