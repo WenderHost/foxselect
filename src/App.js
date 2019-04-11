@@ -896,12 +896,12 @@ class App extends Component {
             </h1>
           </div>
           <div className="col-md-2" style={{textAlign: 'right'}}>
-            { 'PartSelector' === currentView &&
+            { '' === currentView &&
               <p>Configured Part:&nbsp;<br />Available Parts:&nbsp;</p>
             }
           </div>
           <div className="col-md-2">
-            { 'PartSelector' === currentView &&
+            { '' === currentView &&
             <p>{ ( configuredPart.number.value )? <code><a href={testLink} target="_blank" rel="noopener noreferrer" style={{color: '#666'}}>{configuredPart.number.label}</a></code> : null }<br/><code>{availableParts}</code></p>
             }
           </div>
