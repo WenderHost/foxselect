@@ -733,7 +733,9 @@ class App extends Component {
   }
 
   updateShippingAddress( shipping_address ){
-    this.setState({rfq: {shipping_address: shipping_address} })
+    const { rfq } = this.state
+    rfq.shipping_address = shipping_address
+    this.setState({rfq: rfq })
   }
 
   updateRFQ( rfq ){
