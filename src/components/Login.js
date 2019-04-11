@@ -49,7 +49,7 @@ class Login extends Component{
         }
       }
     }
-    user['meta'] = meta;
+    user['meta'] = meta
 
     WP.createUser( API_REST, user, API_TOKEN, AUTH_ROOT );
   }

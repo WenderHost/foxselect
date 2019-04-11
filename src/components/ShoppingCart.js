@@ -25,11 +25,11 @@ class ShoppingCart extends Component{
 
   render(){
     return(
-      <div className="container">
+      <div className="containerX">
+        <h1>Your Cart</h1>
         <div className="row d-none d-md-flex">
-          <div className="col-md-3"><small>Part No.</small></div>
-          <div className="col-md-5"><small>Desc</small></div>
-          <div className="col-md-4"><small>Options</small></div>
+          <div className="col-md-2"><small>Part No.</small></div>
+          <div className="col-md-8"><small>Desc</small></div>
         </div>
         { 0 < this.props.partsInCart ? (
           Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)
@@ -42,8 +42,7 @@ class ShoppingCart extends Component{
           </div>
         ) }
         { 0 < this.props.partsInCart &&
-          <div className="text-right">
-            <hr/>
+          <div className="text-right" style={{paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.1)'}}>
             <button type="button" className="btn btn-primary" name="continue-shopping" onClick={this.handleClick}>Select a New Part</button>
             <button type="button" className="btn btn-success" name="checkout" onClick={this.handleClick}>Checkout</button>
           </div> }
@@ -51,5 +50,5 @@ class ShoppingCart extends Component{
     );
   }
 }
-
+//export { ShoppingCart };
 export default ShoppingCart;

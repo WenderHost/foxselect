@@ -64,3 +64,30 @@
 .ReactPasswordStrength .ReactPasswordStrength-strength-desc{
   top: -4px;
 }
+
+/* Titles */
+.twbs h1.section-title{
+  margin-bottom: 2rem;
+}
+.twbs h3.section-title{
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+/* Part Options in Cart */
+.twbs .cart-part{
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding: 24px 16px;
+}
+.twbs .cart-part:nth-child(even){
+  background-color: #f6f6f6;
+}
+.twbs .cart-part:last-child{
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.twbs .datepicker-sm{
+  margin-right: 4px;
+  padding: 0 .5rem 0 .2rem;
+  max-width: 94px;
+  text-align: right;
+}
