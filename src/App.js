@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 
 // Alerts
 import Alert from 'react-s-alert';
@@ -6,10 +6,6 @@ import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 // Components
-import Login from './components/Login';
-import PartSelector from './components/PartSelector';
-import ShoppingCart from './components/ShoppingCart';
-import Checkout from './components/Checkout';
 import sampleCart from './sample-cart';
 import logo from './logo.svg';
 
@@ -17,6 +13,12 @@ import logo from './logo.svg';
 import WP from './components/WordPressAPI';
 import axios from 'axios';
 import { API_ROOT, API_ENV, API_TOKEN } from './api-config';
+
+// Lazy load the following components for performance
+const Login = React.lazy(() => import('./components/Login'))
+const PartSelector = React.lazy(() => import('./components/PartSelector'))
+const ShoppingCart = React.lazy(() => import('./components/ShoppingCart'))
+const Checkout = React.lazy(() => import('./components/Checkout'))
 
 class App extends Component {
   constructor(){
@@ -842,49 +844,54 @@ class App extends Component {
     // resetConfiguredPart={this.resetConfiguredPart}
     switch( currentView ){
       case 'Checkout':
-        thisView = <Checkout
-          cart={cart}
-          partsInCart={partsInCart}
-          loadPart={this.loadPart}
-          updateCart={this.updateCart}
-          user={user}
-          shipping_address={this.state.rfq.shipping_address}
-          rfq={this.state.rfq}
-          updateShippingAddress={this.updateShippingAddress}
-          updateRFQ={this.updateRFQ}
-        />
+        thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
+          <Checkout
+            cart={cart}
+            partsInCart={partsInCart}
+            loadPart={this.loadPart}
+            updateCart={this.updateCart}
+            user={user}
+            rfq={this.state.rfq}
+            updateRFQ={this.updateRFQ}
+          />
+        </Suspense>
         break;
 
       case 'Login':
-        thisView = <Login
-          createUser={this.createUser}
-        />
+        thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
+          <Login />
+        </Suspense>
+
         break;
 
       case 'ShoppingCart':
-        thisView = <ShoppingCart
-          cart={cart}
-          setCurrentView={this.setCurrentView}
-          partsInCart={partsInCart}
-          loadPart={this.loadPart}
-          updateCart={this.updateCart}
-        />
+        thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
+          <ShoppingCart
+            cart={cart}
+            setCurrentView={this.setCurrentView}
+            partsInCart={partsInCart}
+            loadPart={this.loadPart}
+            updateCart={this.updateCart}
+          />
+        </Suspense>
         break;
 
       default:
-        thisView = <PartSelector
-          addPart={this.addPart}
-          cart={cart}
-          configuredPart={configuredPart}
-          aecq200={aecq200}
-          editing={editing}
-          isPartConfigured={this.isPartConfigured}
-          partOptions={partOptions}
-          updateConfiguredPart={this.updateConfiguredPart}
-          updateCart={this.updateCart}
-          updateOptions={this.updateOptions}
-          setCurrentView={this.setCurrentView}
-        />
+        thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
+          <PartSelector
+            addPart={this.addPart}
+            cart={cart}
+            configuredPart={configuredPart}
+            aecq200={aecq200}
+            editing={editing}
+            isPartConfigured={this.isPartConfigured}
+            partOptions={partOptions}
+            updateConfiguredPart={this.updateConfiguredPart}
+            updateCart={this.updateCart}
+            updateOptions={this.updateOptions}
+            setCurrentView={this.setCurrentView}
+          />
+        </Suspense>
     }
 
     let buttonText = 'Return to Quote';
