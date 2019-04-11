@@ -89,7 +89,7 @@ let WordPressAPI = {
   },
 
   logoutUser: function(){
-    localStorage.removeItem('userData');
+    localStorage.removeItem('foxselect-userdata');
     Alert.info('You have been logged out.',{
       position: 'top',
       effect: 'slide',
@@ -97,6 +97,26 @@ let WordPressAPI = {
       onClose: function(){
         window.location.reload();
       }
+    });
+  },
+
+  submitRFQ: function(url,rfq,cart,user,token){
+    token.then( token => {
+
+      /**
+       * Send the RFQ to WordPress
+       */
+      const config = {
+        headers: {'Authorization': 'Bearer ' + token }
+      }
+
+      axios.post(url, {rfq: rfq, cart: cart, user: user}, config)
+      .then( response => {
+        console.log('[WP REST] Response from /postRFQ/', response.data )
+      })
+      .catch( error => {
+        console.log( error );
+      });
     });
   },
 
@@ -112,7 +132,7 @@ let WordPressAPI = {
       return response;
     })
     .catch( error => {
-      console.log('[WP.validateAppToken] Token is NOT valid.', error );
+      console.log('[WP.validateAppToken] Token is NOT valid.',"Tried:\n\n---\n" + token + "\n---\n\nand got:\n\n", error );
       return error;
     })
 
@@ -136,8 +156,9 @@ let WordPressAPI = {
       }
     })
     .then(response => {
-      console.log('Saving userData to `localStorage`...', response.data);
-      localStorage.setItem('userData', JSON.stringify( response.data ) );
+      console.log('Saving userData to `localStorage`...', response.data)
+      localStorage.setItem('foxselect-userdata', JSON.stringify( response.data ) )
+      localStorage.setItem('foxselect-currentview', 'loggedin')
       Alert.success('Login was successful.',{
         position: 'top',
         effect: 'slide',
