@@ -2,6 +2,26 @@ import React, { Component } from 'react';
 import CartItemOptions from './CartItemOptions';
 
 class CartItem extends Component{
+  constructor(){
+    super()
+    this.handleClick = this.handleClick.bind(this)
+  }
+
+  handleClick(e){
+    switch(e.target.name){
+      case 'delete':
+        this.props.updateCart('delete',this.props.id);
+        break;
+      case 'edit':
+        this.props.loadPart(this.props.id);
+        break;
+      default:
+        // nothing
+        console.log('CartItemOptions: No action defined for `' + e.target.name + '`. CartItemID: ' + this.props.id);
+    }
+
+  }
+
   render(){
     const { id, part } = this.props;
 
@@ -16,22 +36,22 @@ class CartItem extends Component{
     }
 
     return(
-      <div>
-        <hr/>
+      <div className="cart-part">
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-lg-2">
             <small className="d-none d-sm-block d-md-none">Part No.</small>
-            {part.number.value}
+            <strong>{part.number.value}</strong>
           </div>
-          <div className="col-md-5">
+          <div className="col-lg-8">
             <small className="d-none d-sm-block d-md-none" style={{marginTop: '8px'}}>Desc</small>
             {cartItemDetail}
           </div>
-          <div className="col-md-4">
-            <small className="d-none d-sm-block d-md-none" style={{marginTop: '8px'}}>Options</small>
-            <CartItemOptions id={id} part={part} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />
+          <div className="col-lg-2 text-md-right">
+            <button type="button" name="edit" className="btn btn-primary btn-sm" onClick={this.handleClick}>Edit</button>
+            <button type="button" name="delete" className="btn btn-danger btn-sm" onClick={this.handleClick}>Delete</button>
           </div>
         </div>
+        <CartItemOptions id={id} part={part} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />
       </div>
     )
   }
