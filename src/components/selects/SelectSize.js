@@ -29,11 +29,19 @@ class SelectSize extends Component{
     if( 0 === sizeOptions.length )
       optionValue = savedSizeOption;
 
-    let className = null;
+    let backgroundColor = null
     if( 0 === sizeOptions.length && '_' === size.value ){
-      className = 'empty';
-    } else if ( 0 === sizeOptions.length && 0 < size.value.length ){
-      className = 'error';
+      backgroundColor = '#eee'
+    } else if( 0 === sizeOptions.length && 0 < size.value.length ){
+      backgroundColor = 'salmon'
+    } else if( 0 < sizeOptions.length && '_' === size.value ){
+      // do nothing
+    } else if( 0 < sizeOptions.length && '_' !== size.value && 0 < size.value.length ){
+      // typically  here we would set the `optionValue` = our stored configuredPart.size
+    }
+
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
     }
 
     /**
@@ -58,18 +66,34 @@ class SelectSize extends Component{
     if( null !== optionValue && typeof optionValue.value !== 'undefined' && 0 <= optionValue.value.indexOf('_') )
       optionValue = ''
 
+    /**
+     * 04/11/2019 (06:42) - I'm not sure how the following is working with the
+     * `value` attribute commented out. When I uncomment it, I get the following
+     * Warning when trying to set Size:
+     *
+     * Warning: A component is changing an uncontrolled input of type hidden to be
+     * controlled. Input elements should not switch from uncontrolled to
+     * controlled (or vice versa). Decide between using a controlled or
+     * uncontrolled input element for the lifetime of the component.
+     *
+     * Commenting out `value` removes the above error. Curiously, I don't get an
+     * error about `optionValue` not being used, and the size select keeps getting
+     * set correctly.
+     */
+
     return(
       <div>
         <label htmlFor="size">Size</label>
         <Select
           name="size"
-          value={optionValue}
+          /*value={optionValue}*/
+          isClearable
           onChange={this.handleChange}
           placeholder="Size..."
           autoBlur={true}
           matchPos="start"
           options={sizeOptions}
-          className={className}
+          styles={customStyles}
         />
       </div>
     );
