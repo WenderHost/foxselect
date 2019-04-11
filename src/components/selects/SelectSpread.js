@@ -3,34 +3,33 @@ import Select from 'react-select';
 
 class SelectSpread extends Component{
 
-  constructor(){
-    super();
-    this.state = {
-      savedSpreadOption: {}
-    }
-  }
-
   handleChange = (selectedOption) => {
-    this.setState(
-      {savedSpreadOption: selectedOption},
-      () => this.props.updateConfiguredPart('spread',selectedOption)
-    );
+    this.props.updateConfiguredPart('spread',selectedOption)
   }
 
   render(){
-    const { configuredPart, spreadOptions } = this.props;
-    const { savedSpreadOption } = this.state;
-    let spread = configuredPart.spread.value;
-    let optionValue = spread;
+    const { configuredPart, spreadOptions } = this.props
+    const spreadValue = configuredPart.spread.value
 
-    if( 0 === spreadOptions.length )
-      optionValue = savedSpreadOption;
+    let optionValue = null
+    let backgroundColor = null
+    if( 0 === spreadOptions.length && '_' === spreadValue ){
+      // No options available, and spread isn't set
+      backgroundColor = '#eee'
+    } else if( 0 === spreadOptions.length && 0 < spreadValue.length ){
+      // No options available, and spread is set
+      backgroundColor = 'salmon'
+      optionValue = configuredPart.spread
+    } else if( 0 < spreadOptions.length && '_' === spreadValue ){
+      // Options available, and spread is not set
+      // Do nothing so placeholder text will show
+    } else if( 0 < spreadOptions.length && '_' !== spreadValue && 0 < spreadValue.length ){
+      // Options available, and spread is set
+      optionValue = configuredPart.spread
+    }
 
-    var className = null;
-    if( 0 === spreadOptions.length && '_' === spread ){
-      className = 'empty';
-    } else if ( 0 === spreadOptions.length && 0 < spread.length ){
-      className = 'error';
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
     }
 
     return(
@@ -42,7 +41,8 @@ class SelectSpread extends Component{
           onChange={this.handleChange}
           placeholder="Spread Range..."
           options={spreadOptions}
-          className={className}
+          styles={customStyles}
+          isClearable
         />
       </div>
     );

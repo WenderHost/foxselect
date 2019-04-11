@@ -4,20 +4,32 @@ import Select from 'react-select';
 class SelectPin1 extends Component{
 
   handleChange = (selectedOption) => {
-    const { updateConfiguredPart } = this.props
-    updateConfiguredPart( 'pin_1', selectedOption )
+    this.props.updateConfiguredPart( 'pin_1', selectedOption )
   }
 
   render(){
-    const { configuredPart, pin_1Options } = this.props;
-    let pin_1 = configuredPart.pin_1.value;
-    let optionValue = pin_1;
+    const { configuredPart, pin_1Options } = this.props
+    const pin_1Value = configuredPart.pin_1.value
 
-    let className = null;
-    if( 0 === pin_1Options.length && '_' === pin_1 ){
-      className = 'empty';
-    } else if( 0 === pin_1Options.length && 0 < pin_1.length ){
-      className = 'error';
+    let optionValue = null
+    let backgroundColor = null
+    if( 0 === pin_1Options.length && '_' === pin_1Value ){
+      // No options available, and pin_1 isn't set
+      backgroundColor = '#eee'
+    } else if( 0 === pin_1Options.length && 0 < pin_1Value.length ){
+      // No options available, and pin_1 is set
+      backgroundColor = 'salmon'
+      optionValue = configuredPart.pin_1
+    } else if( 0 < pin_1Options.length && '_' === pin_1Value ){
+      // Options available, and pin_1 is not set
+      // Do nothing so placeholder text will show
+    } else if( 0 < pin_1Options.length && '_' !== pin_1Value && 0 < pin_1Value.length ){
+      // Options available, and pin_1 is set
+      optionValue = configuredPart.pin_1
+    }
+
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
     }
 
     return(
@@ -27,10 +39,11 @@ class SelectPin1 extends Component{
           name="pin_1"
           value={optionValue}
           onChange={this.handleChange}
-          placeholder="Pin 1 Connection..."
+          placeholder="Connection..."
           matchPos="start"
           options={pin_1Options}
-          className={className}
+          styles={customStyles}
+          isClearable
         />
       </div>
     );

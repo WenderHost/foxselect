@@ -95,6 +95,7 @@ class SelectOutput extends Component{
           matchPos="start"
           options={outputOptions}
           className={className}
+          isClearable
         />
       </div>
     );

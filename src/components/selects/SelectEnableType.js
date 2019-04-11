@@ -3,35 +3,33 @@ import Select from 'react-select';
 
 class SelectEnableType extends Component{
 
-  constructor(){
-    super();
-    this.state = {
-      savedEnableTypeOption: {}
-    }
-  }
-
   handleChange = (selectedOption) => {
-    this.setState(
-      {savedEnableTypeOption: selectedOption},
-      () => this.props.updateConfiguredPart('enable_type',selectedOption)
-    );
+    this.props.updateConfiguredPart('enable_type',selectedOption)
   }
 
   render(){
-    const { configuredPart, enableTypeOptions } = this.props;
-    const { savedEnableTypeOption } = this.state;
-    var enable_type = configuredPart.enable_type.value;
-    var optionValue = enable_type;
+    const { configuredPart, enableTypeOptions } = this.props
+    const enableTypeValue = configuredPart.enable_type.value
 
+    let optionValue = null
+    let backgroundColor = null
+    if( 0 === enableTypeOptions.length && '_' === enableTypeValue ){
+      // No options available, and enableType isn't set
+      backgroundColor = '#eee'
+    } else if( 0 === enableTypeOptions.length && 0 < enableTypeValue.length ){
+      // No options available, and enableType is set
+      backgroundColor = 'salmon'
+      optionValue = configuredPart.enableType
+    } else if( 0 < enableTypeOptions.length && '_' === enableTypeValue ){
+      // Options available, and enableType is not set
+      // Do nothing so placeholder text will show
+    } else if( 0 < enableTypeOptions.length && '_' !== enableTypeValue && 0 < enableTypeValue.length ){
+      // Options available, and enableType is set
+      optionValue = configuredPart.enableType
+    }
 
-    if( 0 === enableTypeOptions.length )
-      optionValue = savedEnableTypeOption;
-
-    var className = null;
-    if( 0 === enableTypeOptions.length && '_' === enable_type ){
-      className = 'empty';
-    } else if ( 0 === enableTypeOptions.length && 0 < enable_type.length ){
-      className = 'error';
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
     }
 
     return(
@@ -43,7 +41,8 @@ class SelectEnableType extends Component{
           onChange={this.handleChange}
           placeholder="E/D Type..."
           options={enableTypeOptions}
-          className={className}
+          styles={customStyles}
+          isClearable
         />
       </div>
     );

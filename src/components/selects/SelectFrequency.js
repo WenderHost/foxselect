@@ -104,6 +104,7 @@ class SelectFrequency extends Component{
           options={frequencyOptions}
           resetValue={undefined}
           disabled={disabled}
+          isClearable
         />
       </div>
     );

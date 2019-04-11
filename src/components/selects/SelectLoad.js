@@ -10,7 +10,14 @@ class SelectLoad extends Component{
 
   render(){
     const { configuredPart } = this.props
-    const optionValue = configuredPart.load.value
+    const loadValue = configuredPart.load.value
+
+    let optionValue = null
+    if( '_' === loadValue ){
+      // nothing
+    } else if( '_' !== loadValue && 0 < loadValue.length ){
+      optionValue = configuredPart.load
+    }
 
     return(
       <div>

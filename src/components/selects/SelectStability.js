@@ -3,23 +3,7 @@ import Select from 'react-select';
 
 class SelectStability extends Component{
 
-  /*
-  constructor(){
-    super();
-
-    this.state = {
-      savedStabilityOption: {}
-    }
-  }
-  /**/
-
   handleChange = (selectedStability) => {
-    /*
-    this.setState(
-      {savedStabilityOption: selectedStability},
-      () => this.props.updateConfiguredPart('stability',selectedStability)
-    );
-    */
     const { configuredPart, updateConfiguredPart } = this.props
 
     // Update related options
@@ -103,39 +87,38 @@ class SelectStability extends Component{
   }
 
   render(){
-    const { configuredPart, stabilityOptions } = this.props;
-    //const { savedStabilityOption } = this.state;
-    let { stability } = configuredPart;
-    //var optionValue = stability;
+    const { configuredPart, stabilityOptions } = this.props
+    let stabilityValue = configuredPart.stability.value
 
-    // When we have no stability options, set `value` == the option
-    // value that matches our `configuredPart.size`.
-    /*
-    if( 0 === stabilityOptions.length )
-      optionValue = savedStabilityOption;
-    /**/
-
-    var className = null;
-    if( 0 === stabilityOptions.length && '_' === stability.value ){
-      className = 'empty';
-    } else if( 0 === stabilityOptions.length && 0 < stability.value.length ){
-      className = 'error';
+    let optionValue = null
+    let backgroundColor = null
+    if( 0 === stabilityOptions.length && '_' === stabilityValue ){
+      backgroundColor = '#eee'
+    } else if( 0 === stabilityOptions.length && 0 < stabilityValue.length ){
+      backgroundColor = 'salmon'
+      optionValue = configuredPart.stability
+    } else if( 0 < stabilityOptions.length && '_' === stabilityValue ){
+      // nothing...
+    } else if( 0 < stabilityOptions.length && '_' !== stabilityValue && 0 < stabilityValue.length ){
+      optionValue = configuredPart.stability
     }
 
-    if( typeof stability !== 'undefined' && '_' === stability.value )
-      stability = null;
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
+    }
 
     return(
       <div>
         <label htmlFor="stability">Stability</label>
         <Select
           name="stability"
-          value={stability}
+          value={optionValue}
+          isClearable
           onChange={this.handleChange}
           placeholder="Stability..."
           matchPos="start"
           options={stabilityOptions}
-          className={className}
+          styles={customStyles}
         />
       </div>
     );

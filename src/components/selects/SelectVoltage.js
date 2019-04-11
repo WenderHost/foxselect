@@ -3,35 +3,33 @@ import Select from 'react-select';
 
 class SelectVoltage extends Component{
 
-  constructor(){
-    super()
-    this.state = {
-      savedVoltageOption: {}
-    }
-  }
-
   handleChange = (selectedOption) => {
-    this.setState(
-      {savedVoltageOption: selectedOption},
-      () => this.props.updateConfiguredPart('voltage',selectedOption)
-    );
+    this.props.updateConfiguredPart('voltage',selectedOption)
   }
 
   render(){
-    const { configuredPart, voltageOptions } = this.props;
-    const{ savedVoltageOption } = this.state;
-    let voltage = configuredPart.voltage.value;
-    let optionValue = voltage;
+    const { configuredPart, voltageOptions } = this.props
+    const voltageValue = configuredPart.voltage.value
 
-    // When we have no voltage options, set `value` === the option value that matches our `configuredPart.size`
-    if( typeof voltageOptions === 'undefined' || 0 === voltageOptions.length )
-      optionValue = savedVoltageOption;
+    let optionValue = null
+    let backgroundColor = null
+    if( 0 === voltageOptions.length && '_' === voltageValue ){
+      // No options available, and voltage isn't set
+      backgroundColor = '#eee'
+    } else if( 0 === voltageOptions.length && 0 < voltageValue.length ){
+      // No options available, and voltage is set
+      backgroundColor = 'salmon'
+      optionValue = configuredPart.voltage
+    } else if( 0 < voltageOptions.length && '_' === voltageValue ){
+      // Options available, and voltage is not set
+      // Do nothing so placeholder text will show
+    } else if( 0 < voltageOptions.length && '_' !== voltageValue && 0 < voltageValue.length ){
+      // Options available, and voltage is set
+      optionValue = configuredPart.voltage
+    }
 
-    let className = null;
-    if( 0 === voltageOptions.length && '_' === voltage ){
-      className = 'empty';
-    } else if( 0 === voltageOptions.length && 0 < voltage.length ){
-      className = 'error';
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
     }
 
     return(
@@ -40,11 +38,12 @@ class SelectVoltage extends Component{
         <Select
           name="voltage"
           value={optionValue}
+          isClearable
           onChange={this.handleChange}
           placeholder="Voltage..."
           matchPos="start"
           options={voltageOptions}
-          className={className}
+          styles={customStyles}
         />
       </div>
     );
