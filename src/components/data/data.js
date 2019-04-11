@@ -1,3 +1,10 @@
+export const companyTypeOptions = [
+  { value: 'Oem', label: 'Oem' },
+  { value: 'Cem', label: 'Cem' },
+  { value: 'Distributor', label: 'Distributor' },
+  { value: 'Rep', label: 'Rep' }
+]
+
 export const loadOptions = [
   { value: 'B', label: '6 pF' },
   { value: 'C', label: '4 pF' },
