@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import CartItem from './CartItem';
-//import SelectState from './selects/SelectState';
 import Select from 'react-select';
-//import WP from './WordPressAPI';
-//import { API_REST, API_TOKEN } from '../api-config';
+import WP from './WordPressAPI';
+import { API_REST, API_TOKEN } from '../api-config';
 import { stateOptions } from './data/data';
 
 import DatePicker from 'react-datepicker';
@@ -12,18 +11,26 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 class Checkout extends Component{
 
-  constructor(){
-    super();
+  constructor(props){
+    super(props)
+
+    let differentShippingAddress = false
+    const { rfq, user } = this.props
+    const shippingAddressString = rfq.shipping_address.company + rfq.shipping_address.contact + rfq.shipping_address.street + rfq.shipping_address.city + rfq.shipping_address.state + rfq.shipping_address.zip
+    const userAddressString = user.company_name + user.first_name + ' ' + user.last_name + user.company_street + user.company_city + user.company_state + user.company_zip
+    if( '' !== shippingAddressString && shippingAddressString !== userAddressString )
+      differentShippingAddress = true
 
     this.state = {
-      different_shipping_address: false
+      different_shipping_address: differentShippingAddress
     }
 
     this.handleChange = this.handleChange.bind(this);
     this.handlePrototypeDate = this.handlePrototypeDate.bind(this);
     this.handleProductionDate = this.handleProductionDate.bind(this);
-    this.handleAddressState = this.handleAddressState.bind(this);
-    this.handleShippingAddress = this.handleShippingAddress.bind(this);
+    this.handleShippingAddressState = this.handleShippingAddressState.bind(this);
+    this.handleClickDifferentShippingAddress = this.handleClickDifferentShippingAddress.bind(this);
+    this.handleSubmission = this.handleSubmission.bind(this);
   }
 
   handleChange(e){
@@ -68,25 +75,55 @@ class Checkout extends Component{
   /**
    * onChange handler for our Address:State selector
    */
-  handleAddressState(e){
+  handleShippingAddressState(e){
+    /*
     const { shipping_address } = this.props
     shipping_address['state'] = e.value
     this.props.updateShippingAddress(shipping_address)
+    */
+    const { rfq } = this.props
+    rfq.shipping_address.state = e.value
+    this.props.updateRFQ( rfq )
   }
 
   /**
    * Sets `different_shipping_address` which controls appearance
    * of "Different Shipping Address" form
    */
-  handleShippingAddress(e){
-    this.setState({different_shipping_address: e.target.checked})
+  handleClickDifferentShippingAddress(e){
+    const { rfq } = this.props
+    if( ! e.target.checked ){
+      rfq.shipping_address = {
+        company: '',
+        contact: '',
+        street: '',
+        city: '',
+        state: '',
+        zip: ''
+      }
+      this.props.updateRFQ( rfq )
+      this.setState({different_shipping_address: false})
+    } else {
+      this.setState({different_shipping_address: true})
+    }
+
+    //this.setState({different_shipping_address: e.target.checked})
+  }
+
+  /**
+   * Sends the RFQ to our API which in turn submits it to the
+   * FOX SalesForce API.
+   */
+  handleSubmission(){
+    const { rfq, cart, user } = this.props
+    WP.submitRFQ(API_REST + 'foxelectronics/v1/postRFQ', rfq, cart, user, API_TOKEN )
   }
 
   render(){
     const { different_shipping_address } = this.state
     const { user, rfq } = this.props
-    //let project = { name: 'Test Project Name', description: '', prototype_date: prototype_date, production_date: production_date }
-    const disty_row_styles = { margin: '0 0 20px 6px'}
+    const prototype_date = new Date( rfq.prototype_date )
+    const production_date = new Date( rfq.production_date )
 
     let defaultValue = user.company_state
     if( null !== rfq.shipping_address.state ){
@@ -98,7 +135,6 @@ class Checkout extends Component{
       }
     }
 
-    const careOfStyle = {lineHeight: '2.4'}
     const shippingAddressFields = different_shipping_address ? (
         <div className="shipping-form">
           <div className="form-row">
@@ -107,7 +143,7 @@ class Checkout extends Component{
             </div>
           </div>
           <div className="form-row">
-            <div className="col-md-1" style={careOfStyle}>c/o</div>
+            <div className="col-md-1" style={{lineHeight: '2.4'}}>c/o</div>
             <div className="col-md-11">
               <input type="text" className="form-control" placeholder="Contact" name="contact" value={rfq.shipping_address.contact} onChange={this.handleChange} />
             </div>
@@ -123,7 +159,7 @@ class Checkout extends Component{
             </div>
             <div className="col-md-4">
               <Select
-                onChange={this.handleAddressState}
+                onChange={this.handleShippingAddressState}
                 placeholder="State..."
                 options={stateOptions}
                 defaultValue={defaultValue}
@@ -141,12 +177,33 @@ class Checkout extends Component{
     return(
 
       <div className="checkout container">
+        <h1 className="section-title">Checkout</h1>
+
+        <h3 className="section-title">Your Parts</h3>
+        <div className="row d-none d-md-flex">
+          <div className="col-md-2"><small>Part No.</small></div>
+          <div className="col-md-10"><small>Desc</small></div>
+        </div>
+        <div style={{marginBottom: '3rem'}}>
+        { 0 < this.props.partsInCart ? (
+          Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)
+        ) : (
+          <div>
+            <hr/>
+            <p className="text-center">Your RFQ is empty.</p>
+            <p className="text-center"><button type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.props.setCurrentView('PartSelector')}>Continue Configuring Your Parts</button></p>
+            <hr/>
+          </div>
+        ) }
+        </div>
+
+        <h3 className="section-title">Your Order Details</h3>
         <div className="row">
           <div className="col-md-12">
-            <h3>Your Order</h3>
             <div className="row">
               <div className="col-md-6">
-                <div className="alert alert-secondary">{user.user_display_name}<br/>{user.user_email}</div>
+                <h4>Customer</h4>
+                <p>{user.user_display_name} (<a href="mailto:{user.user_email}">{user.user_email}</a>)</p>
                 {/* PROJECT DETAILS */}
                 <h4>Project Details</h4>
                 <div className="form-group">
@@ -162,7 +219,7 @@ class Checkout extends Component{
                     <div className="form-group">
                       <label htmlFor="project_prototype_date">Prototype Date</label><br />
                       <DatePicker
-                        selected={rfq.prototype_date}
+                        selected={prototype_date}
                         onChange={this.handlePrototypeDate}
                         className="form-control"
                         placeholderText="Click to select a date"
@@ -173,7 +230,7 @@ class Checkout extends Component{
                     <div className="form-group">
                       <label htmlFor="project_production_date">Production Date</label><br />
                       <DatePicker
-                        selected={rfq.production_date}
+                        selected={production_date}
                         onChange={this.handleProductionDate}
                         className="form-control"
                         placeholderText="Click to select a date"
@@ -182,7 +239,7 @@ class Checkout extends Component{
                   </div>
                 </div>
                 <h4>Distributors</h4>
-                <div className="row" style={disty_row_styles}>
+                <div className="row" style={{ margin: '0 0 20px 6px'}}>
                   <div className="col">
                     <input type="checkbox" className="form-check-input" id="distributor_avnet" name="distys" value="avnet" checked={rfq.distys.includes('avnet')} onChange={this.handleChange} />
                     <label htmlFor="distributor_avnet" className="form-check-label">Avnet</label>
@@ -216,7 +273,7 @@ class Checkout extends Component{
                 <h4>Shipping Address</h4>
                 {shippingAddressFields}
                 <div className="form-group form-check">
-                  <input type="checkbox" className="form-check-input" id="differentShippingAddress" value="true" checked={!!different_shipping_address} onChange={this.handleShippingAddress} />
+                  <input type="checkbox" className="form-check-input" id="differentShippingAddress" value="true" checked={!!different_shipping_address} onChange={this.handleClickDifferentShippingAddress} />
                   <label className="form-check-label" htmlFor="differentShippingAddress">Use a different shipping address.</label>
                 </div>
               </div>
@@ -224,23 +281,11 @@ class Checkout extends Component{
             </div>
           </div>
         </div>
-        <button type="button" className="btn btn-primary" name="submit-rfq" onClick={this.handleClick}>Submit</button>
-        <br />
-        <div className="row d-none d-md-flex">
-          <div className="col-md-3"><small>Part No.</small></div>
-          <div className="col-md-5"><small>Desc</small></div>
-          <div className="col-md-4"><small>Options</small></div>
+        <div className="alert alert-secondary text-center">
+          <button type="button" className="btn btn-primary" name="submit-rfq" onClick={this.handleSubmission}>Submit to FOX</button>
         </div>
-        { 0 < this.props.partsInCart ? (
-          Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)
-        ) : (
-          <div>
-            <hr/>
-            <p className="text-center">Your RFQ is empty.</p>
-            <p className="text-center"><button type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.props.setCurrentView('PartSelector')}>Continue Configuring Your Parts</button></p>
-            <hr/>
-          </div>
-        ) }
+        <br />
+
       </div>
     )
   }
