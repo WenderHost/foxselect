@@ -99,8 +99,8 @@ class App extends Component {
           state: '',
           zip: ''
         },
-        prototype_date: '',
-        production_date: '',
+        prototype_date: new Date(),
+        production_date: new Date(),
         distys: []
       }
     };
