@@ -43,30 +43,40 @@ let WordPressAPI = {
   },
 
   getAppToken : function(url,user,pass){
-    if( localStorage.hasOwnProperty('wpApiToken') ){
-      let wpApiToken = localStorage.getItem('wpApiToken')
+    if( localStorage.hasOwnProperty('foxselect-wp_api_token') ){
+      let wpApiToken = localStorage.getItem('foxselect-wp_api_token')
+
+      console.log('[WP.getAppToken] Attempting to validate our token.')
 
       const validPromise = WordPressAPI.validateAppToken( url + '/validate', wpApiToken )
-        .then( result => {
-          if( result.data ){
-            return result.data.data.token;
-          } else {
-            // Our token is not valid so we need to
-            // 1) delete the token in localStorage, and
-            // 2) get a new token.
-            localStorage.removeItem('wpApiToken');
-            let newTokenPromise = WordPressAPI.getAppToken(url,user,pass).then( result => {
-              return result;
-            });
-            return newTokenPromise;
-          }
-        })
-        .catch( error => {
-          console.log('[WP.validateAppToken] Token is NOT valid.', error );
-        });
+      .then( result => {
+        //console.log('[WP.getAppToken] We returned a response from WP.validateAppToken...', "\nresult = ", result)
+
+        // 04/18/2019 (11:49) - `result` can actually be a string indicating an Error
+        // When I'm testing on localhost, Chrome retrictions for non-https endpoints
+        // always result in validateAppToken failing with a 403.
+
+        if( result.data ){
+          return result.data.data.token;
+        } else {
+          // Our token is not valid so we need to
+          // 1) delete the token in localStorage, and
+          // 2) get a new token.
+          //console.log('[WP.getAppToken] removing `foxselect-wp_api_token` and calling _self to generate a new token.', "\nurl = ", url)
+          localStorage.removeItem('foxselect-wp_api_token');
+          let newTokenPromise = WordPressAPI.getAppToken(url,user,pass).then( result => {
+            return result;
+          });
+          return newTokenPromise;
+        }
+      })
+      .catch( error => {
+        console.log('[WP.getAppToken calling WP.validateAppToken] Token is NOT valid.', error );
+      });
 
       return validPromise;
     } else {
+      //console.log('[WP.getAppToken] foxselect-wp_api_token not found in localStorage. Attempting to retrieve a new one from:', "\nurl = ", url)
       const tokenPromise = axios({
         method: 'post',
         url: url,
@@ -77,11 +87,11 @@ let WordPressAPI = {
       })
       .then( response => {
         console.log('[WP.getAppToken] New token retrieved.', response.data )
-        localStorage.setItem('wpApiToken', response.data.token )
+        localStorage.setItem('foxselect-wp_api_token', response.data.token )
         return response.data.token
       })
       .catch( error => {
-        console.log('[WP.getAppToken] Error! Unable to retrieve token. ', error )
+        console.log("[WP.getAppToken] Error! Unable to retrieve token.\n", error )
       });
 
       return tokenPromise;
@@ -132,7 +142,7 @@ let WordPressAPI = {
       return response;
     })
     .catch( error => {
-      console.log('[WP.validateAppToken] Token is NOT valid.',"Tried:\n\n---\n" + token + "\n---\n\nand got:\n\n", error );
+      console.log('[WP.validateAppToken] Token is NOT valid.') //,"\nTried:\n\n---\n" + token + "\n---\n\nand got:\n\n", error );
       return error;
     })
 
