@@ -1,24 +1,14 @@
 import WP from './components/WordPressAPI'
 
-let apiHost;
 const apiVersion = 'v1';
 const hostname = window && window.location && window.location.hostname;
 
 const apiEnv = ( -1 < hostname.indexOf( 'force' ) )? 'salesforce' : 'web'
 
-switch( apiEnv ){
-  case 'salesforce':
-    apiHost = 'https://foxonline.wenderhost.com'
-    break
-
-  default:
-    apiHost = ( 'localhost' === hostname || 'foxelectronics.loco' === hostname )? 'http://foxelectronics.loco' : 'https://foxonline.wenderhost.com'
-}
-
 export const API_ENV = apiEnv;
-export const API_ROOT = `${apiHost}/wp-json/foxparts/${apiVersion}/get_options/`;
-export const AUTH_ROOT = `${apiHost}/wp-json/jwt-auth/v1/token`;
-export const API_REST = `${apiHost}/wp-json/`;
+export const API_ROOT = `${process.env.REACT_APP_WPAPI_EP}/wp-json/foxparts/${apiVersion}/get_options/`;
+export const AUTH_ROOT = `${process.env.REACT_APP_WPAPI_EP}/wp-json/jwt-auth/v1/token`;
+export const API_REST = `${process.env.REACT_APP_WPAPI_EP}/wp-json/`;
 export const API_USER = process.env.REACT_APP_API_USER;
 export const API_PASS = process.env.REACT_APP_API_PASS;
 
