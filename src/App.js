@@ -143,7 +143,7 @@ class App extends Component {
     if( this.state.rfq )
       localStorage.setItem('foxselect-rfq', JSON.stringify( this.state.rfq ) )
     if( this.state.currentView )
-      localStorage.setItem('foxselect-currentView', JSON.stringify( this.state.cart ) );
+      localStorage.setItem('foxselect-currentview', JSON.stringify( this.state.currentView ) );
   }
 
   /**
