@@ -6,7 +6,7 @@ import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 // Components
-import sampleCart from './sample-cart';
+import { sampleCart } from './components/data/data'
 import logo from './logo.svg';
 
 // Server Communication
