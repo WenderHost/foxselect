@@ -86,7 +86,7 @@ let WordPressAPI = {
         }
       })
       .then( response => {
-        console.log('[WP.getAppToken] New token retrieved.', response.data )
+        console.log('[WP.getAppToken] New token retrieved.' )
         localStorage.setItem('foxselect-wp_api_token', response.data.token )
         return response.data.token
       })
