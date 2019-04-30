@@ -541,6 +541,9 @@ class App extends Component {
       } else if( -1 < propsToUpdate.indexOf('package_option') ){
         this.updateConfiguredPart( 'package_option', window.configuredPart['package_option'] )
         return
+      } else if( -1 < propsToUpdate.indexOf('output') ){
+        this.updateConfiguredPart( 'output', window.configuredPart['output'] )
+        return
       } else if( 0 === propsToUpdate.length ){
         this.setState({checkExternalConfiguredPart: false})
       }
