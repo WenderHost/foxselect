@@ -1,8 +1,50 @@
+export const aecq200Options = {
+  parts: ['C','K','O'],
+  sizes: ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
+}
+
 export const companyTypeOptions = [
   { value: 'Oem', label: 'Oem' },
   { value: 'Cem', label: 'Cem' },
   { value: 'Distributor', label: 'Distributor' },
   { value: 'Rep', label: 'Rep' }
+]
+
+export const defaultConfiguredPart = {
+  product_type: {value: '_', label: ''},
+  frequency: {value: '0.0', label: ''},
+  frequency_unit: {value: 'mhz', label: 'MHz'}, // label: frequency_unit -- changed to MHz
+  package_type: {value: 'smd', label: 'SMD'},
+  package_option: {value: '_', label: ''}, // {value: 'BS', label: 'package_option'},
+  size: {value: '_', label: ''},
+  stability: {value: '_', label: ''},
+  load: {value: '_', label: ''},
+  optemp: {value: '_', label: ''},
+  number: {value: '_________', label: '_________'}
+}
+
+export const frequencyOptions = [
+  { value: '3.2', label: '3.2' },
+  { value: '3.579', label: '3.579' },
+  { value: '3.579545', label: '3.579545' },
+  { value: '3.6', label: '3.6' },
+  { value: '3.6864', label: '3.6864' },
+  { value: '4', label: '4' },
+  { value: '6', label: '6' },
+  { value: '8', label: '8' },
+  { value: '9', label: '9' },
+  { value: '9.6', label: '9.6' },
+  { value: '9.8', label: '9.8' },
+  { value: '10', label: '10'},
+  { value: '12', label: '12'},
+  { value: '14', label: '14'},
+  { value: '14.7456', label: '14.7456'},
+  { value: '16', label: '16'},
+  { value: '20', label: '20'},
+  { value: '23.9', label: '23.9'},
+  { value: '26', label: '26'},
+  { value: '30', label: '30'},
+  { value: '98.304', label: '98.304'}
 ]
 
 export const loadOptions = [

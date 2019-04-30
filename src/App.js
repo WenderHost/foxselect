@@ -6,7 +6,7 @@ import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 // Components
-import { sampleCart } from './components/data/data'
+import { sampleCart, aecq200Options, defaultConfiguredPart, frequencyOptions } from './components/data/data'
 import logo from './logo.svg';
 
 // Server Communication
@@ -36,56 +36,24 @@ class App extends Component {
     this.updateOptions = this.updateOptions.bind(this);
     this.updateShippingAddress = this.updateShippingAddress.bind(this); // Gets replaced by updateRFQ
     this.updateRFQ = this.updateRFQ.bind(this); // This should replace updateShippingAddress()
+    this.updateConfiguredPartViaGlobalVar = this.updateConfiguredPartViaGlobalVar.bind(this)
+    this.updateFirstPartOption = this.updateFirstPartOption.bind(this)
+    this.handleLogOut = this.handleLogOut.bind(this)
 
     // initial state
     this.state = {
       cart: {},
       currentView: '',
-      configuredPart: {
-        product_type: {value: '_', label: ''},
-        frequency: {value: '0.0', label: ''},
-        frequency_unit: {value: 'MHz', label: 'frequency_unit'},
-        package_type: {value: 'SMD', label: 'package_type'},
-        package_option: {value: 'BS', label: 'package_option'},
-        size: {value: '_', label: ''},
-        stability: {value: '_', label: ''},
-        load: {value: '_', label: ''},
-        optemp: {value: '_', label: ''},
-        number: {value: '_________', label: '_________'}
-      },
+      configuredPart: defaultConfiguredPart,
+      checkExternalConfiguredPart: true,
       partOptions: {
-        frequency: [
-          { value: '3.2', label: '3.2' },
-          { value: '3.579', label: '3.579' },
-          { value: '3.579545', label: '3.579545' },
-          { value: '3.6', label: '3.6' },
-          { value: '3.6864', label: '3.6864' },
-          { value: '4', label: '4' },
-          { value: '6', label: '6' },
-          { value: '8', label: '8' },
-          { value: '9', label: '9' },
-          { value: '9.6', label: '9.6' },
-          { value: '9.8', label: '9.8' },
-          { value: '10', label: '10'},
-          { value: '12', label: '12'},
-          { value: '14', label: '14'},
-          { value: '14.7456', label: '14.7456'},
-          { value: '16', label: '16'},
-          { value: '20', label: '20'},
-          { value: '23.9', label: '23.9'},
-          { value: '26', label: '26'},
-          { value: '30', label: '30'},
-          { value: '98.304', label: '98.304'}
-        ],
+        frequency: frequencyOptions,
         size: [],
         stability: [],
         load: [],
         optemp: []
       },
-      aecq200: {
-        parts: ['C','K','O'],
-        sizes: ['1','2','3','4','5','6','7','122','12A','122,12A','12A,122','13A','135','13L','13A,135,13L','135,13A,13L','13A,13L,135','13L,13A,135','135,13L,13A','13L,135,13A']
-      },
+      aecq200: aecq200Options,
       availableParts: 'n/a',
       user: null,
       rfq: {
@@ -106,6 +74,9 @@ class App extends Component {
     };
   }
 
+  /**
+   * Called after this component has been rendered for the first time
+   */
   componentDidMount(){
     this.hydrateStateWithLocalStorage();
 
@@ -122,6 +93,8 @@ class App extends Component {
       'beforeunload',
       this.saveStateToLocalStoreage.bind(this)
     )
+
+    this.updateFirstPartOption()
   }
 
   componentWillUnmount(){
@@ -143,7 +116,7 @@ class App extends Component {
     if( this.state.rfq )
       localStorage.setItem('foxselect-rfq', JSON.stringify( this.state.rfq ) )
     if( this.state.currentView )
-      localStorage.setItem('foxselect-currentview', JSON.stringify( this.state.currentView ) );
+      localStorage.setItem('foxselect-currentview', this.state.currentView );
   }
 
   /**
@@ -162,33 +135,30 @@ class App extends Component {
 
     if( localStorage.hasOwnProperty('foxselect-userdata') )
       user = localStorage.getItem('foxselect-userdata')
-
-    if( localStorage.hasOwnProperty('foxselect-cart') )
-      cart = localStorage.getItem('foxselect-cart')
-
-    if( localStorage.hasOwnProperty('foxselect-rfq') )
-      rfq = localStorage.getItem('foxselect-rfq')
-
-    if( localStorage.hasOwnProperty('foxselect-currentview') )
-      currentView = localStorage.getItem('foxselect-currentview')
-
     try{
       user = JSON.parse( user )
     } catch(e) {
       console.log('[App.js] Unable to JSON.parse localStorage `foxselect-userdata`.');
     }
 
+    if( localStorage.hasOwnProperty('foxselect-cart') )
+      cart = localStorage.getItem('foxselect-cart')
     try{
       cart = JSON.parse( cart )
     } catch(e){
       console.log('[App.js] Unable to JSON.parse localStorage `foxselect-cart`.')
     }
 
+    if( localStorage.hasOwnProperty('foxselect-rfq') )
+      rfq = localStorage.getItem('foxselect-rfq')
     try{
       rfq = JSON.parse( rfq )
     } catch(e){
       console.log('[App.js] Unable to JSON.parse localStorage `foxselect-rfq`.')
     }
+
+    if( localStorage.hasOwnProperty('foxselect-currentview') )
+      currentView = localStorage.getItem('foxselect-currentview')
 
     // In WordPressAPI.js::validateUser(), we set
     // localStorage.foxselect-currentview === `loggedin` before
@@ -231,7 +201,7 @@ class App extends Component {
    *
    * @param      {string}  view    A string defining the current view
    */
-  setCurrentView(view){
+  setCurrentView( view, removeConfiguredPartCartId = true, clearPart = false ){
     let viewObj = {currentView: view};
     const { user } = this.state;
 
@@ -243,7 +213,17 @@ class App extends Component {
         break;
 
       case 'PartSelector':
-        this.resetConfiguredPart();
+        if( removeConfiguredPartCartId ){
+          console.log('We are removing the Cart ID.')
+          const { configuredPart } = this.state
+          delete configuredPart.cart_id
+        }
+        if( clearPart ){
+          // clear the part in response to the "Clear" button next to the part number
+          //console.log('Need to clear the part.')
+          this.resetConfiguredPart();
+        }
+        //this.resetConfiguredPart();
         break;
 
       case 'UpdateCartPart':
@@ -268,7 +248,7 @@ class App extends Component {
    *
    * @param      {object}  configuredPart  The configured part
    */
-  setPartNumber(){
+  setPartNumber( returnPartNo = false ){
     let { configuredPart } = {...this.state};
 
     if( '_' === configuredPart.product_type.value){
@@ -359,7 +339,11 @@ class App extends Component {
     }
     configuredPart.number.value += '-' + configuredPart.frequency.value;
     configuredPart.number.label += configuredPart.frequency.value;
-    this.setState({configuredPart: {number: configuredPart.number}});
+    if( returnPartNo ){
+      return {value: configuredPart.number.value, label: configuredPart.number.label }
+    } else {
+      this.setState({configuredPart: {number: configuredPart.number}});
+    }
   }
 
   /**
@@ -461,6 +445,7 @@ class App extends Component {
         const timestamp = Date.now();
         cart[`part-${timestamp}`] = savedPart;
 
+        localStorage.setItem('foxselect-cart', JSON.stringify( cart ) )
         // set state
         this.setState(
           {cart, currentView: 'ShoppingCart'},
@@ -484,11 +469,81 @@ class App extends Component {
         part.options[option] = value;
         //console.log('updateCart: value = ' + value);
         cart[id] = part;
+        localStorage.setItem('foxselect-cart', JSON.stringify( cart ) )
         this.setState({cart});
         break;
 
       default:
         console.log('updateCart: No action defined for `' + action + '`.')
+    }
+  }
+
+  /**
+   * Called via `componentDidMount()`. Updates our initial part options when we are configuring via an external window.configuredPart
+   */
+  updateFirstPartOption(){
+    if( ! window.configuredPart )
+      return
+
+    console.log('window.configuredPart is set.',window.configuredPart,' Configuring our first part options...')
+
+    if( window.configuredPart.hasOwnProperty('product_type') ){
+      console.log('window.configuredPart.product_type = ', window.configuredPart.product_type )
+
+      // EXCEPTION TO THE RULE:
+      // Switching the `product_type` from `C` to `K`
+      // is handled when we switch the `frequency_type` from `mhz` to `khz`.
+      // So we switch `K` to `C` here to let our logic take of this later.
+      if( 'K' === window.configuredPart.product_type.value )
+        window.configuredPart.product_type.value = 'C'
+
+      this.updateConfiguredPart( 'product_type', window.configuredPart.product_type )
+    }
+  }
+
+  /**
+   * Updates configuredPart via global window.configuredPart
+   */
+  updateConfiguredPartViaGlobalVar(){
+    if( window.configuredPart ){
+      let propsToUpdate = []
+      for( var property in window.configuredPart ){
+        if( this.state.configuredPart[property].value !== window.configuredPart[property].value ){
+          propsToUpdate.push(property)
+        }
+      }
+      console.log('We need to update these properties: ', propsToUpdate)
+
+      // Works for:
+      // Doesn't work for: C3BS (parts with AEC-Q200 option)
+      /*
+      if( typeof window.configuredPart.package_option !== 'undefined' ){ // && -1 < propsToUpdate.indexOf('package_option')
+        console.log('`package_option` is set. We need to remove `package_option` and set `size` = size + package_option.')
+        window.configuredPart.size.value = window.configuredPart.size.value + window.configuredPart.package_option.value
+        delete window.configuredPart.package_option
+        var index = propsToUpdate.indexOf('package_option')
+        propsToUpdate.splice(index,1)
+        console.log('We need to update these properties: ', propsToUpdate)
+      }
+      /**/
+
+
+      // Order of precedence for updating part options:
+      if( -1 < propsToUpdate.indexOf('frequency_unit') ){
+        this.updateConfiguredPart( 'frequency_unit', window.configuredPart['frequency_unit'] )
+        return
+      } else if( -1 < propsToUpdate.indexOf('package_type') ){
+        this.updateConfiguredPart( 'package_type', window.configuredPart['package_type'] )
+        return
+      } else if( -1 < propsToUpdate.indexOf('size') ){
+        this.updateConfiguredPart( 'size', window.configuredPart['size'] )
+        return
+      } else if( -1 < propsToUpdate.indexOf('package_option') ){
+        this.updateConfiguredPart( 'package_option', window.configuredPart['package_option'] )
+        return
+      } else if( 0 === propsToUpdate.length ){
+        this.setState({checkExternalConfiguredPart: false})
+      }
     }
   }
 
@@ -520,7 +575,6 @@ class App extends Component {
 
     // `product_type` has changed, reset the configuredPart
     if( 'product_type' === attribute && option.value !== currentValue ){
-      //this.setPartNumber();
       this.resetConfiguredPart(option); //configuredPart,option.value
       return;
     }
@@ -537,7 +591,7 @@ class App extends Component {
       if( 'C' === configuredPart.product_type.value )
         resetOptions.load = {value: '_', label: ''}
 
-      if( 'Pin-Thru' === option.value ){
+      if( 'pin-thru' === option.value.toLowerCase() ){
         resetOptions.size = {value: '___', label: ''};
         resetOptions.package_option = {value: '', label: 'package_option'};
       } else {
@@ -551,9 +605,13 @@ class App extends Component {
       })
     }
 
+
+
     // if `frequency_unit` has changed, reset AdditionalOptions
     if( 'frequency_unit' === attribute && option.value !== currentValue ){
-      switch(configuredPart.product_type.value){
+      //const product_type_value = ( typeof window.configuredPart !== 'undefined' && this.state.checkExternalConfiguredPart )? window.configuredPart.product_type.value : configuredPart.product_type.value
+
+      switch( configuredPart.product_type.value ){
         case 'C':
           console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 32.768 kHz\n - Set size to 3 chars\n - Delete `load` from configuredPart");
           configuredPart.product_type.value = 'K'
@@ -567,10 +625,6 @@ class App extends Component {
           configuredPart.product_type.value = 'C'
           configuredPart.frequency = {value: '0.0', label: ''}
           configuredPart.load = {value: '_', label: ''}
-          break;
-
-        case 'O':
-          console.log('No reset written for Oscillators when toggling MHz/kHz.');
           break;
 
         default:
@@ -677,9 +731,10 @@ class App extends Component {
     }
 
     if( ! delay ){
-      this.setPartNumber(); // configuredPart
-      this.setState({configuredPart: configuredPart});
-      this.updateOptions( originalConfiguredPart, configuredPart );
+      const partNumber = this.setPartNumber( true ) // configuredPart
+      configuredPart.number = partNumber
+      this.setState({configuredPart: configuredPart, currentView: 'PartSelector'})
+      this.updateOptions( originalConfiguredPart, configuredPart )
     }
   }
 
@@ -690,7 +745,7 @@ class App extends Component {
    * @param      {object}  configuredPart          The configured part
    */
   updateOptions( originalConfiguredPart, configuredPart ){
-    if( typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value || '_' === configuredPart.product_type.value )
+    if( typeof configuredPart.number === 'undefined' || typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value || '_' === configuredPart.product_type.value )
       return
 
     console.log('updateOptions('+configuredPart.number.value+')')
@@ -700,11 +755,11 @@ class App extends Component {
       dataService.setPartNumber( configuredPart.number.label )
     }
 
+    let axiosUrl = `${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}/${configuredPart.frequency_unit.value}`
+
     axios
-      .get(`${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}/${configuredPart.frequency_unit.value}`)
+      .get(axiosUrl)
       .then(response => {
-        //console.log('Axios request returned...');
-        //console.log(response.data);
 
         const { partOptions } = this.state;
         const { availableParts } = response.data;
@@ -727,7 +782,23 @@ class App extends Component {
             partOptions[option] = response.data.partOptions[option];
         }
 
-        this.setState({partOptions: partOptions, availableParts: availableParts});
+
+
+       // If window.configuredPart, we should compare our configuredPart with
+        // window.configuredPart, and keep updating configuredPart one option at a
+        // time until we match window.configuredPart
+        //*
+        if( window.configuredPart && this.state.checkExternalConfiguredPart ){
+          console.log('[App.js] updateOptions('+axiosUrl+') Axios request returned and window.configuredPart is set.')
+          this.setState(
+            {partOptions: partOptions, availableParts: availableParts},
+            () => this.updateConfiguredPartViaGlobalVar()
+          )
+        } else {
+          this.setState({partOptions: partOptions, availableParts: availableParts})
+        }
+        /**/
+
       })
       .catch(error => console.log(error))
   }
@@ -752,11 +823,12 @@ class App extends Component {
     if(typeof product_type === 'undefined')
       product_type = {value: '_', label: ''}
 
+    //*
     const resetPart = {
       product_type: product_type,
       frequency: {value: '0.0', label: ''},
-      frequency_unit: {value: 'MHz', label: 'MHz'},
-      package_type: {value: 'SMD', label: 'SMD'},
+      frequency_unit: {value: 'mhz', label: 'MHz'},
+      package_type: {value: 'smd', label: 'SMD'},
       package_option: {value: 'BS', label: ''},
       size: {value: '_', label: ''},
       stability: {value: '_', label: ''},
@@ -764,6 +836,9 @@ class App extends Component {
       optemp: {value: '_', label: ''},
       number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______0.0'}
     }
+    /**/
+
+    //const resetPart = JSON.parse( JSON.stringify( defaultConfiguredPart ) )
 
     switch(product_type.value){
       case 'C':
@@ -815,16 +890,27 @@ class App extends Component {
     });
   }
 
+  handleLogOut(){
+    const logout = WP.logoutUser()
+    if( logout )
+      this.hydrateStateWithLocalStorage()
+  }
+
   render() {
-    const { aecq200, configuredPart, partOptions, availableParts, cart, currentView, user } = this.state;
-    const editing = cart.hasOwnProperty(configuredPart.cart_id);
-    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value;
-    var cartKeys = Object.keys(cart);
-    var partsInCart = cartKeys.length;
+    const { aecq200, configuredPart, partOptions, availableParts, cart, user } = this.state
+    let { currentView } = this.state
+    const editing = cart.hasOwnProperty(configuredPart.cart_id)
+    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value
+    var cartKeys = Object.keys(cart)
+    var partsInCart = cartKeys.length
 
     let thisView = '';
     // Originally a prop of PartSelector below:
     // resetConfiguredPart={this.resetConfiguredPart}
+
+    if( typeof currentView !== 'undefined' && 'Checkout' === currentView && user === null )
+      currentView = 'Login'
+
     switch( currentView ){
       case 'Checkout':
         thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
@@ -842,7 +928,7 @@ class App extends Component {
 
       case 'Login':
         thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
-          <Login />
+          <Login hydrateStateWithLocalStorage={this.hydrateStateWithLocalStorage} />
         </Suspense>
 
         break;
@@ -877,59 +963,63 @@ class App extends Component {
         </Suspense>
     }
 
-    let buttonText = 'Return to Quote';
+    let buttonText = 'Return to Cart';
     if( typeof configuredPart.cart_id !== 'undefined' && configuredPart.number.value !== cart[configuredPart.cart_id].number.value )
       buttonText = 'Update Part'
 
     let buttonClass = ( this.isPartConfigured(configuredPart) )? 'btn-primary' : 'btn-secondary'
     buttonClass = buttonClass + ' btn btn-sm'
 
+    //const disableClear = ( ('_' || 'F') === configuredPart.number.value.substring(0,1) ) ? 'disabled' : false ;
+    //console.log('disableClear =', disableClear, 'configuredPart.number.value.substring(0,1) =', configuredPart.number.value.substring(0,1));
+
     return (
       <div className="container">
         { ( 'web' === API_ENV ) &&
-        <div className="row no-gutters">
-          <div className="col-md-3">
-            <h1 className="title">
-              <img src={logo} alt="FOXSelect™" />
-              { typeof user !== 'undefined' && null !== user &&
-              <small style={{fontSize: '14px', display: 'block'}}>User: <em>{user.user_display_name}</em></small> }
-            </h1>
-          </div>
-          <div className="col-md-2" style={{textAlign: 'right'}}>
-            { '' === currentView &&
-              <p>Configured Part:&nbsp;<br />Available Parts:&nbsp;</p>
-            }
-          </div>
-          <div className="col-md-2">
-            { '' === currentView &&
-            <p>{ ( configuredPart.number.value )? <code><a href={testLink} target="_blank" rel="noopener noreferrer" style={{color: '#666'}}>{configuredPart.number.label}</a></code> : null }<br/><code>{availableParts}</code></p>
-            }
-          </div>
-          <div className="col-md-5 text-right">
-
-            <p>
-              { 'ShoppingCart' !== currentView &&
-              <span>Parts in Cart: <code>{partsInCart}</code> <button disabled={editing} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>View RFQ</button></span> }
-
-              { 0 === Object.keys(cart).length && cart.constructor === Object &&
+        <div>
+          <div className="row no-gutters">
+            <div className="col-md-3">
+              <h1 className="title">
+                <a href="#part-selector" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector')}}><img src={logo} alt="FOXSelect™" /></a>
+              </h1>
+            </div>
+            <div className="col-md-9 nav-foxselect">
                 <span>
-                  <br/>
-                  <button style={{marginTop: '4px'}} className="btn btn-secondary btn-sm" name="load-samples" type="button" onClick={this.loadSampleCart}>Load Sample Parts</button>
+                  <button disabled={'PartSelector' === currentView} type="button" className="btn btn-primary btn-sm" onClick={() => this.setCurrentView('PartSelector')}>Part Selector</button>
                 </span>
-              }
-              { typeof user !== 'undefined' && null !== user &&
-                <button className="btn btn-secondary btn-sm" name="check-token" type="button" onClick={WP.logoutUser}>Log Out</button> }
-            </p>
+                <span>
+                  <button disabled={editing || ('ShoppingCart' === currentView)} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>Your Cart ({partsInCart} parts)</button>
+                </span>
+
+                {/* { 0 === Object.keys(cart).length && cart.constructor === Object &&
+                  <span>
+                    <br/>
+                    <button style={{marginTop: '4px'}} className="btn btn-secondary btn-sm" name="load-samples" type="button" onClick={this.loadSampleCart}>Load Sample Parts</button>
+                  </span>
+                } */}
+            </div>
           </div>
-        </div> }
-        <hr style={{marginTop: '0'}} />
+          <div className="row meta-foxselect no-gutters">
+            <div className="col-md-4">
+              Configured Part: <code><a href={testLink} target="_blank" rel="noopener noreferrer">{configuredPart.number.label}</a></code>
+              <button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>
+            </div>
+            <div className="col-md-auto">Available Parts: <code>{availableParts}</code></div>
+            <div className="col text-md-right">
+              { typeof user !== 'undefined' && user !== null &&
+              <span>User: <em>{user.user_display_name}</em> <a className="btn btn-sm btn-secondary" role="button" href="#logout" onClick={(e) => {e.preventDefault(); this.handleLogOut();}}>Log Out</a></span> }
+              { ( typeof user === 'undefined' || user === null )  &&
+              <a className="btn btn-sm btn-secondary" role="button" href="#logout" onClick={(e) => {e.preventDefault(); this.setCurrentView('Login');}}>Log In</a> }
+            </div>
+          </div>
+        </div> } {/* ( 'web' === API_ENV ) */}
         { editing &&
           'PartSelector' === currentView &&
           <div className="alert alert-warning">
             <div className="row">
-              <div className="col-10" style={{alignSelf: 'center'}}><strong>NOTE:</strong> <em>You are editing a part in your RFQ.</em> If you wish to configure a new part, <a href="/select-a-new-part/" onClick={(e) => {e.preventDefault();this.setCurrentView('PartSelector')}}>click here</a>.</div>
+              <div className="col-10" style={{alignSelf: 'center'}}><strong>NOTE:</strong> <em>You are editing a part in your Cart.</em> If you wish to configure a new part, <a href="/select-a-new-part/" onClick={(e) => {e.preventDefault();this.setCurrentView('PartSelector')}}>click here</a>.</div>
               <div className="col-2 text-right">
-                <button type="button" className={buttonClass} disabled={! this.isPartConfigured(configuredPart) } onClick={(e) => {e.preventDefault();this.setCurrentView('ShoppingCart')}}>{buttonText}</button>
+                <button type="button" className={buttonClass} disabled={! this.isPartConfigured(configuredPart) } onClick={(e) => {e.preventDefault(); let nextView = ('Update Part' === buttonText)? 'UpdateCartPart' : 'ShoppingCart';this.setCurrentView(nextView)}}>{buttonText}</button>
               </div>
             </div>
           </div> }

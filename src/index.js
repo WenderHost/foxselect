@@ -38,12 +38,15 @@ export var init = function(el, service){
     ),el)
 }
 
-let FoxSelect = {}
+// Test jQuery buttons by forcing `apiEnv` to web and uncommenting code in index.js
+//apiEnv = 'web'
 if( 'web' === apiEnv || 'salesforce' === apiEnv ){
-  FoxSelect.init = init;
-  window.FoxSelect = FoxSelect;
+  let FoxSelect = {}
+  FoxSelect.init = init
+  window.FoxSelect = FoxSelect
 } else {
   init(document.querySelector('#root'),null)
 }
+
 
 unregister()

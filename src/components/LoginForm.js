@@ -22,8 +22,15 @@ class LoginForm extends Component{
   }
 
   handleLogin(e){
-    const { email, password } = this.state;
-    return WP.validateUser( AUTH_ROOT, email, password );
+    const { email, password } = this.state
+    const validatedUser = WP.validateUser( AUTH_ROOT, email, password )
+
+    validatedUser.then( data => {
+      if( typeof data !== 'undefined' && typeof data.name !== 'undefined' && data.name === 'Error' ){
+      } else {
+        this.props.hydrateStateWithLocalStorage()
+      }
+    })
   }
 
   render(){

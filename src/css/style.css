@@ -5,6 +5,66 @@
   color: #333333;
   background-color: white;
 }
+
+.twbs .nav-foxselect{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.twbs .nav-foxselect span{
+  margin-left: 12px;
+}
+.twbs .nav-foxselect span:first-child{
+  margin-left: 0;
+}
+.twbs .meta-foxselect{
+  background-color: #eee;
+  border-radius: 3px;
+  color: #666;
+  font-size: 14px;
+  margin: 10px 0;
+  padding: 4px 8px;
+}
+.twbs .meta-foxselect .btn-sm{
+  font-size: 11px;
+  padding: 2px 6px;
+}
+.twbs .meta-foxselect code{
+  background-color: #fff;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+.twbs .meta-foxselect code,
+.twbs .meta-foxselect code a{
+  color: #666;
+}
+.twbs .col-frequency{
+  padding-right: 4px;
+}
+
+@media screen and (max-width: 991px){
+  .twbs .PartSelector .col-xl-4,
+  .twbs .additional-options-form .col-lg-2{
+    margin-bottom: 1rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .twbs .nav-foxselect{
+    justify-content: center;
+  }
+  .twbs h1.title{
+    text-align: center;
+  }
+  .twbs h1.title img{
+    max-width: 50%;
+    margin: 0 auto;
+  }
+  .twbs .col-frequency{
+    padding-right: 15px;
+  }
+}
+
 .twbs .btn{
   margin: 0 2px;
 }

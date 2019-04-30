@@ -17,4 +17,4 @@ export let API_TOKEN = WP.getAppToken( AUTH_ROOT, API_USER, API_PASS ).then(func
   return result;
 });
 
-console.log("API_ENV ", API_ENV,"\nAPI_ROOT", API_ROOT,"\nAUTH_ROOT",AUTH_ROOT,'\nAPI_TOKEN',API_TOKEN,'\nAPI_USER',API_USER)
+//console.log("API_ENV ", API_ENV,"\nAPI_ROOT", API_ROOT,"\nAUTH_ROOT",AUTH_ROOT,'\nAPI_TOKEN',API_TOKEN,'\nAPI_USER',API_USER)

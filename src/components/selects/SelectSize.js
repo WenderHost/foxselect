@@ -3,31 +3,36 @@ import Select from 'react-select';
 
 class SelectSize extends Component{
 
+  /*
   constructor(){
     super();
     this.state = {
       savedSizeOption: {}
     }
   }
+  */
 
   handleChange = (selectedOption) => {
     console.log('selectedOption = ',selectedOption)
+    /*
     this.setState(
       {savedSizeOption: selectedOption},
       () => this.props.updateConfiguredPart('size',selectedOption)
     );
+    */
+    this.props.updateConfiguredPart('size',selectedOption)
   }
 
   render(){
     const { configuredPart, sizeOptions } = this.props;
-    const { savedSizeOption } = this.state;
+    //const { savedSizeOption } = this.state;
     const size = configuredPart.size;
     let optionValue = size;
 
     // When we have no size options, set `value` ===
     // the option value that matches our `configuredPart.size`
-    if( 0 === sizeOptions.length )
-      optionValue = savedSizeOption;
+    //if( 0 === sizeOptions.length )
+      //optionValue = savedSizeOption;
 
     let backgroundColor = null
     if( 0 === sizeOptions.length && '_' === size.value ){
@@ -58,9 +63,15 @@ class SelectSize extends Component{
      * while updating this SizeSelect's value to be the selected option of
      * the three possible options.
      */
+    /*
     if( 1 === sizeOptions.length && sizeOptions[0].value.indexOf(',') && -1 === optionValue.value.indexOf(',') && null !== this.state.savedSizeOption ){
       let label = ( typeof savedSizeOption.label !== 'undefined' )? savedSizeOption.label : optionValue.label
       optionValue = { value: optionValue.value, label: label }
+    }
+    */
+    if( 1 === sizeOptions.length && sizeOptions[0].value.indexOf(',') && -1 === optionValue.value.indexOf(',') ){
+      //let label = ( typeof savedSizeOption.label !== 'undefined' )? savedSizeOption.label : optionValue.label
+      optionValue = { value: optionValue.value, label: optionValue.label }
     }
 
     if( null !== optionValue && typeof optionValue.value !== 'undefined' && 0 <= optionValue.value.indexOf('_') )
@@ -86,7 +97,7 @@ class SelectSize extends Component{
         <label htmlFor="size">Size</label>
         <Select
           name="size"
-          /*value={optionValue}*/
+          value={optionValue}
           isClearable
           onChange={this.handleChange}
           placeholder="Size..."

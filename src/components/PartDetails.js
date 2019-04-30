@@ -26,7 +26,7 @@ class PartDetails extends Component{
     if( typeof configuredPart.cart_id !== 'undefined' && configuredPart.number.value !== cart[configuredPart.cart_id].number.value ){
       buttonText = 'Update Part'
     } else if(editing) {
-      buttonText = 'Return to Quote'
+      buttonText = 'Return to Cart'
     }
 
     return(

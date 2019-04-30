@@ -21,7 +21,7 @@ class PartSelector extends React.Component{
    */
   handleChange(e){
     if( window.confirm('Updating this setting will reset your additional options. Continue?') )
-      this.props.updateConfiguredPart(e.target.name,{value: e.target.value, label: e.target.name});
+      this.props.updateConfiguredPart(e.target.name,{value: e.target.value, label: e.target.value});
   }
 
   render(){
@@ -31,52 +31,65 @@ class PartSelector extends React.Component{
       <div className="PartSelector">
         <form ref={form => this.form = form}>
           <div className="form-row">
-            <div className="col-md-2">
+            <div className="col-xl-4">
               <SelectProductType
                 product_type={configuredPart.product_type}
                 updateConfiguredPart={this.props.updateConfiguredPart}
               />
             </div>
-            <div className="col-md-2">
-              <label className="sr-only" htmlFor="frequency">Frequency</label>
+            <div className="col-xl-8">
+              {/*<label className="sr-only" htmlFor="frequency">Frequency</label>
               <SelectFrequency
                 frequency={configuredPart.frequency}
                 updateConfiguredPart={this.props.updateConfiguredPart}
                 frequencyOptions={partOptions.frequency}
                 configuredPart={configuredPart}
-              />
-            </div>
-            <div className="col-md-1">
-              <div className="form-check" style={{marginTop: '24px'}}>
-                <input className="form-check-input" type="radio" name="frequency_unit" value="MHz" id="MHz" checked={configuredPart.frequency_unit.value === 'MHz'} onChange={this.handleChange} />
-                <label className="form-check-label" htmlFor="MHz">
-                  MHz
-                </label>
+              />*/}
+              <div className="row">
+                <div className="col-md-6 col-frequency">
+                  <SelectFrequency
+                    frequency={configuredPart.frequency}
+                    updateConfiguredPart={this.props.updateConfiguredPart}
+                    frequencyOptions={partOptions.frequency}
+                    configuredPart={configuredPart}
+                  />
+                </div>
+                <div className="col-sm-2">
+                  <label className="" htmlFor="frequency_unit">Unit</label>
+                  <div className="form-check">
+                    <input className="form-check-input" type="radio" name="frequency_unit" value="mhz" id="MHz" checked={configuredPart.frequency_unit.value === 'mhz'} onChange={this.handleChange} />
+                    <label className="form-check-label" htmlFor="MHz">
+                      MHz
+                    </label>
+                  </div>
+                  { typeof configuredPart.product_type !== 'undefined' &&
+                    ('T' !== configuredPart.product_type.value && 'Y' !== configuredPart.product_type.value && 'S' !== configuredPart.product_type.value && ( 'C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value ) ) &&
+                  <div className="form-check">
+                    <input className="form-check-input" type="radio" name="frequency_unit" value="khz" id="kHz" checked={configuredPart.frequency_unit.value === 'khz'} onChange={this.handleChange} />
+                    <label className="form-check-label" htmlFor="kHz">
+                      kHz
+                    </label>
+                  </div> }
+                </div>
+                <div className="col-sm-3">
+                  <label className="" htmlFor="package_type">Package Type</label>
+                  <div className="form-check">
+                    <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="smd" checked={configuredPart.package_type.value.toLowerCase() === 'smd'} onChange={this.handleChange} />
+                    <label className="form-check-label" htmlFor="package_smd">
+                      SMD
+                    </label>
+                  </div>
+                  { ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
+                  <div className="form-check">
+                    <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="pin-thru" checked={configuredPart.package_type.value.toLowerCase() === 'pin-thru'} onChange={this.handleChange} />
+                    <label className="form-check-label" htmlFor="package_pinthru">
+                      Pin-Thru
+                    </label>
+                  </div> }
+                </div>
               </div>
-              { typeof configuredPart.product_type !== 'undefined' &&
-                ('T' !== configuredPart.product_type.value && 'Y' !== configuredPart.product_type.value && 'S' !== configuredPart.product_type.value) &&
-              <div className="form-check">
-                <input className="form-check-input" type="radio" name="frequency_unit" value="kHz" id="kHz" checked={configuredPart.frequency_unit.value === 'kHz'} onChange={this.handleChange} />
-                <label className="form-check-label" htmlFor="kHz">
-                  kHz
-                </label>
-              </div> }
             </div>
-            <div className="col-md-2">
-              <div className="form-check" style={{marginTop: '24px'}}>
-                <input className="form-check-input" type="radio" name="package_type" id="package_smd" value="SMD" checked={configuredPart.package_type.value === 'SMD'} onChange={this.handleChange} />
-                <label className="form-check-label" htmlFor="package_smd">
-                  SMD
-                </label>
-              </div>
-              { ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
-              <div className="form-check">
-                <input className="form-check-input" type="radio" name="package_type" id="package_pinthru" value="Pin-Thru" checked={configuredPart.package_type.value === 'Pin-Thru'} onChange={this.handleChange} />
-                <label className="form-check-label" htmlFor="package_pinthru">
-                  Pin-Thru
-                </label>
-              </div> }
-            </div>
+            {/* Formerly MHz/kHz and SMD/Pin-Thru went here. */}
           </div>
           { typeof configuredPart.product_type !== 'undefined'
             && 0 !== configuredPart.product_type.value.length

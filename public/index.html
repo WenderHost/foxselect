@@ -21,12 +21,73 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>FOXSelect&trade;</title>
+    <script type="text/javascript">
+      /*
+      window.configuredPart = {
+        "frequency_unit": {
+          "value": "khz",
+          "label": "kHz"
+        },
+        "package_type": {
+          "value": "smd",
+          "label": "SMD"
+        },
+        "product_type": {
+          "value": "K",
+          "label": "Crystal"
+        },
+        "size": {
+          "value": "122",
+          "label": "no label (122)"
+        }
+      };
+      /**/
+    </script>
+    <!--
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script type='text/javascript'>
+    /* <![CDATA[ */
+    var fsloaderVars = {"resturl":"http:\/\/foxelectronics.loco\/wp-json\/foxparts\/v1\/get_options\/"};
+    /* ]]> */
+    </script>
+    <style type="text/css">
+      .twbs .container > a.foxselect{margin-bottom: 5px;}
+    </style>
+    <script type="text/javascript">
+      jQuery(document).ready(function($){
+        $('#rootbuttons').slideDown();
+      });
+    </script>
+    <script type="text/javascript" src="%PUBLIC_URL%/part-loader.js"></script>
+    -->
   </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
     <div class="twbs" id="root"></div>
+    <div class="twbs" id="rootbuttons" style="display: none;">
+      <div class="container" style="border-top: 1px solid #eee; margin-top: 60px; padding-top: 20px;">
+        <h5>Default</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary">Open FOXSelect</a>
+        <h5>MHz SMD</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FCABS____-0.0/SMD/MHz">Open FOXSelect (CABS)</a>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC3BS____-0.0/SMD/MHz">Open FOXSelect (C3BS)</a>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC3BQ____-0.0/SMD/MHz">Open FOXSelect (C3BQ)</a>
+        <h5>kHz SMD</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FK122____-0.0/SMD/kHz">Open FOXSelect (K122)</a>
+
+        <h5>MHz Pin Thru</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC4ST____-0.0/Pin-Thru/MHz">Open FOXSelect (C4ST)</a>
+        <h5>kHz Pin Thru</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FKT26____-0.0/Pin-Thru/kHz">Open FOXSelect (KT26)</a>
+        <h5>MHz AEC-Q200</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC3BA____-0.0/SMD/MHz">Open FOXSelect (C3BA)</a>
+        <h5>kHz AEC-Q200</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FK12A____-0.0/SMD/kHz">Open FOXSelect (K12A)</a>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FK13A____-0.0/SMD/kHz">Open FOXSelect (K13A)</a>
+      </div>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

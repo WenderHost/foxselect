@@ -9,7 +9,13 @@ class SelectTolerance extends Component{
 
   render(){
     const { configuredPart, toleranceOptions } = this.props;
-    let toleranceValue = configuredPart.tolerance.value;
+
+    // 04/26/2019 (17:34) - CONTINUE HERE: `undefined`
+    //console.log('configuredPart.tolerance = ', configuredPart.tolerance)
+    if( typeof configuredPart.tolerance === undefined )
+      return
+
+    let toleranceValue = (typeof configuredPart.tolerance !== 'undefined')? configuredPart.tolerance.value : ''
 
     // When we have no tolerance options, set `value` ===
     // the option value that matches our `configuredPart.size`

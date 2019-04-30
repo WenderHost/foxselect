@@ -27,10 +27,10 @@ class AdditionalOptionsForm extends Component{
      */
 
     return(
-      <div>
+      <div className="additional-options-form">
         <div className="form-row" style={{marginTop: '20px'}}>
           { typeof partOptions.size !== 'undefined' &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
           </div> }
 
@@ -42,50 +42,50 @@ class AdditionalOptionsForm extends Component{
           }
 
           { typeof partOptions.enable_type !== 'undefined' && 'S' === configuredPart.product_type.value &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectEnableType configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} enableTypeOptions={partOptions.enable_type} />
           </div> }
 
           { typeof partOptions.tolerance !== 'undefined' && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
           </div> }
 
           { typeof partOptions.output !== 'undefined' &&
             ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value ) &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectOutput configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
           </div> }
 
           { typeof partOptions.voltage !== 'undefined' &&
             ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value || 'S' === configuredPart.product_type.value ) &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
           </div> }
 
           { typeof partOptions.spread !== 'undefined' && 'S' === configuredPart.product_type.value &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectSpread configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} spreadOptions={partOptions.spread} />
           </div> }
 
           { typeof partOptions.stability !== 'undefined' &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectStability  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} stabilityOptions={partOptions.stability} />
           </div> }
 
           { typeof partOptions.load !== 'undefined' && 'C' === configuredPart.product_type.value &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectLoad  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} loadOptions={partOptions.load} />
           </div> }
 
           { typeof partOptions.optemp !== 'undefined' &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectOpTemp  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} optempOptions={partOptions.optemp} />
           </div> }
 
           { typeof partOptions.pin_1 !== 'undefined' &&
             'T' === configuredPart.product_type.value &&
-          <div className="col-md-2">
+          <div className="col-lg">
             <SelectPin1 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} pin_1Options={partOptions.pin_1} />
           </div> }
         </div>

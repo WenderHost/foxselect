@@ -134,7 +134,7 @@ class Login extends Component{
       </div>
 
     ) : (
-      <LoginForm />
+      <LoginForm hydrateStateWithLocalStorage={this.props.hydrateStateWithLocalStorage} />
     );
 
     return(

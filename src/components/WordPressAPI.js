@@ -46,7 +46,7 @@ let WordPressAPI = {
     if( localStorage.hasOwnProperty('foxselect-wp_api_token') ){
       let wpApiToken = localStorage.getItem('foxselect-wp_api_token')
 
-      console.log('[WP.getAppToken] Attempting to validate our token.')
+      //console.log('[WP.getAppToken] Attempting to validate our token.')
 
       const validPromise = WordPressAPI.validateAppToken( url + '/validate', wpApiToken )
       .then( result => {
@@ -86,7 +86,7 @@ let WordPressAPI = {
         }
       })
       .then( response => {
-        console.log('[WP.getAppToken] New token retrieved.' )
+        //console.log('[WP.getAppToken] New token retrieved.' )
         localStorage.setItem('foxselect-wp_api_token', response.data.token )
         return response.data.token
       })
@@ -103,11 +103,10 @@ let WordPressAPI = {
     Alert.info('You have been logged out.',{
       position: 'top',
       effect: 'slide',
-      timeout: 2000,
-      onClose: function(){
-        window.location.reload();
-      }
-    });
+      timeout: 2000
+    })
+
+    return true
   },
 
   submitRFQ: function(url,rfq,cart,user,token){
@@ -138,11 +137,11 @@ let WordPressAPI = {
     })
     .then( response => {
       response.data.data.token = token;
-      console.log('[WP.validateAppToken] Token is valid.', response );
+      //console.log('[WP.validateAppToken] Token is valid.', response );
       return response;
     })
     .catch( error => {
-      console.log('[WP.validateAppToken] Token is NOT valid.') //,"\nTried:\n\n---\n" + token + "\n---\n\nand got:\n\n", error );
+      //console.log('[WP.validateAppToken] Token is NOT valid.') //,"\nTried:\n\n---\n" + token + "\n---\n\nand got:\n\n", error );
       return error;
     })
 
@@ -172,19 +171,18 @@ let WordPressAPI = {
       Alert.success('Login was successful.',{
         position: 'top',
         effect: 'slide',
-        timeout: 1000,
-        onClose: function(){
-          window.location.reload();
-        }
+        timeout: 1000
       })
+      return response.data
     })
     .catch(error => {
-      console.log('[Axios] Invalid Credentials')
+      //console.log('[Axios] Invalid Credentials')
       Alert.error('Invalid credentials. Please check your username/password.',{
         position: 'top',
         effect: 'slide',
         timeout: 2000
       })
+      return error
     });
 
     return validatedUser;
