@@ -2,7 +2,7 @@
   "name": "fox-configurator",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/wp-content/themes/business-pro-theme/assets/scripts/foxselect/",
+  "homepage": "/wp-content/plugins/fox-electronics-parts-catalog/lib/foxselect/",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.17",
     "@fortawesome/free-solid-svg-icons": "^5.8.1",
