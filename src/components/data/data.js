@@ -74,8 +74,8 @@ export const loadOptions = [
 export const productTypeOptions = [
   { value: 'C', label: 'Crystal' },
   { value: 'O', label: 'Oscillator' },
-  { value: 'T', label: 'TCXO' },
-  { value: 'Y', label: 'VC-TCXO/VCXO' },
+  { value: 'T', label: 'TCXO/VC-TCXO' },
+  { value: 'Y', label: 'VCXO' },
   { value: 'S', label: 'SSO' },
 ]
 
