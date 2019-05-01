@@ -550,6 +550,9 @@ class App extends Component {
       } else if( -1 < propsToUpdate.indexOf('voltage') ){
         this.updateConfiguredPart( 'voltage', window.configuredPart['voltage'] )
         return
+      } else if( -1 < propsToUpdate.indexOf('pin_1') ){
+        this.updateConfiguredPart( 'pin_1', window.configuredPart['pin_1'] )
+        return
       } else if( 0 === propsToUpdate.length ){
         this.setState({checkExternalConfiguredPart: false})
       }
