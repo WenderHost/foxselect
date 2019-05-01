@@ -544,6 +544,12 @@ class App extends Component {
       } else if( -1 < propsToUpdate.indexOf('output') ){
         this.updateConfiguredPart( 'output', window.configuredPart['output'] )
         return
+      } else if( -1 < propsToUpdate.indexOf('enable_type') ){
+        this.updateConfiguredPart( 'enable_type', window.configuredPart['enable_type'] )
+        return
+      } else if( -1 < propsToUpdate.indexOf('voltage') ){
+        this.updateConfiguredPart( 'voltage', window.configuredPart['voltage'] )
+        return
       } else if( 0 === propsToUpdate.length ){
         this.setState({checkExternalConfiguredPart: false})
       }
