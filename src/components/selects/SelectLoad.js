@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
-import { loadOptions } from '../data/data';
 
 class SelectLoad extends Component{
 
@@ -9,9 +8,9 @@ class SelectLoad extends Component{
   }
 
   render(){
-    const { configuredPart } = this.props
-    const loadValue = configuredPart.load.value
+    const { configuredPart, loadOptions } = this.props
 
+    const loadValue = configuredPart.load.value
     let optionValue = null
     if( '_' === loadValue ){
       // nothing
