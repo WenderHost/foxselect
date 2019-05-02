@@ -73,7 +73,7 @@ class AdditionalOptionsForm extends Component{
             <SelectStability  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} stabilityOptions={partOptions.stability} />
           </div> }
 
-          { typeof partOptions.load !== 'undefined' && 'C' === configuredPart.product_type.value &&
+          { typeof partOptions.load !== 'undefined' && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
           <div className="col-lg">
             <SelectLoad  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} loadOptions={partOptions.load} />
           </div> }

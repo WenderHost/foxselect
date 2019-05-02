@@ -284,7 +284,7 @@ class App extends Component {
         break;
 
       case 'K':
-        partNumberProperties = ['tolerance','stability','optemp'];
+        partNumberProperties = ['tolerance','stability','load','optemp'];
         break;
 
       case 'O':
@@ -373,6 +373,7 @@ class App extends Component {
     if( typeof configuredPart.product_type !== 'undefined' ){
       switch(configuredPart.product_type.value){
         case 'C':
+        case 'K':
           if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
             isConfigured = false;
 
@@ -382,13 +383,6 @@ class App extends Component {
           if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
             isConfigured = false;
           break;
-
-        case 'K':
-          if( typeof configuredPart.tolerance === 'undefined' || 0 === configuredPart.tolerance.value.length || '_' === configuredPart.tolerance.value )
-            isConfigured = false;
-          if( typeof configuredPart.stability === 'undefined' || 0 === configuredPart.stability.value.length || '_' === configuredPart.stability.value )
-            isConfigured = false;
-          break
 
         case 'O':
         case 'Y':
@@ -625,18 +619,18 @@ class App extends Component {
 
       switch( configuredPart.product_type.value ){
         case 'C':
-          console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 32.768 kHz\n - Set size to 3 chars\n - Delete `load` from configuredPart");
+          console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 32.768 kHz\n - Set size to 3 chars");
           configuredPart.product_type.value = 'K'
           configuredPart.frequency = {value: '32.768', label: '32.768'}
           configuredPart.size = {value: '___', label: ''}
-          delete configuredPart.load
+          //delete configuredPart.load
           break;
 
         case 'K':
           console.log('[RESETTING:Crystal] Toggling from kHz to MHz.');
           configuredPart.product_type.value = 'C'
           configuredPart.frequency = {value: '0.0', label: ''}
-          configuredPart.load = {value: '_', label: ''}
+          //configuredPart.load = {value: '_', label: ''}
           break;
 
         default:
