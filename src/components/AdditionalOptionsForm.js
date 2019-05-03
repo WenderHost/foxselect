@@ -30,16 +30,25 @@ class AdditionalOptionsForm extends Component{
       <div className="additional-options-form">
         <div className="form-row" style={{marginTop: '20px'}}>
           { typeof partOptions.size !== 'undefined' &&
-          <div className="col-lg">
-            <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
-          </div> }
+          <div className="col-lg-auto" style={{minWidth: '200px'}}>
+            <div className="row">
+              <div className="col">
+                <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
+              </div>
+              { typeof configuredPart.size !== 'undefined'
+              && aecq200.parts.includes(configuredPart.product_type.value)
+              && aecq200.sizes.includes(configuredPart.size.value)
+              && ! ( 'O' === configuredPart.product_type.value && 'kHz' === configuredPart.frequency_unit.value )
+              && <div className="col-auto" style={{paddingLeft: '0'}}>
+                <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
+              </div> }
+            </div>
 
-          { typeof configuredPart.size !== 'undefined'
-            && aecq200.parts.includes(configuredPart.product_type.value)
-            && aecq200.sizes.includes(configuredPart.size.value)
-            && ! ( 'O' === configuredPart.product_type.value && 'kHz' === configuredPart.frequency_unit.value )
-            && <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
-          }
+            { typeof configuredPart.size !== 'undefined'
+              && 0 !== configuredPart.size.value.length
+              && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value)
+              && <div className="row" style={{marginTop: '10px'}}><div className="col"><SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /></div></div> }
+          </div> }
 
           { typeof partOptions.enable_type !== 'undefined' && 'S' === configuredPart.product_type.value &&
           <div className="col-lg">
@@ -89,10 +98,6 @@ class AdditionalOptionsForm extends Component{
             <SelectPin1 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} pin_1Options={partOptions.pin_1} />
           </div> }
         </div>
-        { typeof configuredPart.size !== 'undefined'
-          && 0 !== configuredPart.size.value.length
-          && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value)
-          && <SizeOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
         { typeof configuredPart.voltage !== 'undefined'
         && 0 !== configuredPart.voltage.value.length
         && '_' !== configuredPart.voltage.value

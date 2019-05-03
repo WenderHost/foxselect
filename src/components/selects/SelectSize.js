@@ -93,7 +93,7 @@ class SelectSize extends Component{
      */
 
     return(
-      <div>
+      <div style={{minWidth: '230px'}}>
         <label htmlFor="size">Size</label>
         <Select
           name="size"

@@ -117,11 +117,9 @@ class CheckboxAECQ200 extends Component {
     }
 
     return(
-      <div className="col-md-2">
-        <div className="form-check" style={{marginTop: '36px'}}>
-          <input type="checkbox" className="form-check-input" id="aec-q200" value={value} checked={checked} onChange={this.handleChange}/>
-          <label htmlFor="aec-q200" className="form-check-label">AEC-Q200</label>
-        </div>
+      <div className="form-check" style={{marginTop: '36px'}}>
+        <input type="checkbox" className="form-check-input" id="aec-q200" value={value} checked={checked} onChange={this.handleChange}/>
+        <label htmlFor="aec-q200" className="form-check-label">AEC-Q200</label>
       </div>
     );
   }
