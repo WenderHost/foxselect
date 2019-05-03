@@ -45,7 +45,7 @@ class SelectFrequency extends Component{
           { value: '98.304', label: '98.304'}
         ]
 
-    if( 'kHz' === configuredPart.frequency_unit.value ){
+    if( 'khz' === configuredPart.frequency_unit.value.toLowerCase() ){
       switch(configuredPart.product_type.value){
         case 'K':
           options = [
