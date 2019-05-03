@@ -325,7 +325,7 @@ class App extends Component {
         let value = '';
         switch(property){
           case 'package_option':
-            value = ( 'Pin-Thru' === configuredPart.package_type.value )? '' : '__';
+            value = ( 'pin-thru' === configuredPart.package_type.value.toLowerCase() )? '' : '__';
             break;
           case 'output':
             value = ('T' === configuredPart.product_type.value)? '_' : '__';
@@ -698,6 +698,13 @@ class App extends Component {
               option.value = '___'
           } else if( 3 === option.value.length ){ // no package_option when size is 3 chars
             configuredPart.package_option.value = ''
+          } else if( '4' === option.value ){
+            configuredPart.package_option = {value: 'SD', label: 'SD'}
+          } else if( '8' === option.value ){
+            // Crystal MHz SMD 10.0x4.5mm == `AQ` package_option
+            configuredPart.package_option = {value: 'AQ', label: 'AQ'}
+          } else if( '9' === option.value ) {
+            configuredPart.package_option = {value: 'SD', label: 'SD'}
           } else if( 0 < option.value.length && aecq200.sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
             // do nothing
           } else if( 0 < option.value.length && ! aecq200.sizes.includes(option.value) ){
@@ -787,8 +794,6 @@ class App extends Component {
           if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate )
             partOptions[option] = response.data.partOptions[option];
         }
-
-
 
        // If window.configuredPart, we should compare our configuredPart with
         // window.configuredPart, and keep updating configuredPart one option at a
@@ -1006,7 +1011,7 @@ class App extends Component {
             </div>
           </div>
           <div className="row meta-foxselect no-gutters">
-            <div className="col-md-4">
+            <div className="col">
               Configured Part: <code><a href={testLink} target="_blank" rel="noopener noreferrer">{configuredPart.number.label}</a></code>
               <button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>
             </div>
