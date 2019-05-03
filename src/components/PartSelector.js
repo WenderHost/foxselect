@@ -63,7 +63,7 @@ class PartSelector extends React.Component{
                     </label>
                   </div>
                   { typeof configuredPart.product_type !== 'undefined' &&
-                    ('T' !== configuredPart.product_type.value && 'Y' !== configuredPart.product_type.value && 'S' !== configuredPart.product_type.value && ( 'C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value ) ) &&
+                    ('T' !== configuredPart.product_type.value && 'Y' !== configuredPart.product_type.value && 'S' !== configuredPart.product_type.value && ( 'C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value || 'O' === configuredPart.product_type.value ) ) &&
                   <div className="form-check">
                     <input className="form-check-input" type="radio" name="frequency_unit" value="khz" id="kHz" checked={configuredPart.frequency_unit.value === 'khz'} onChange={this.handleChange} />
                     <label className="form-check-label" htmlFor="kHz">
