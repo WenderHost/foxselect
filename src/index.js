@@ -29,7 +29,6 @@ export var init = function(el, service){
 }
 
 // Test jQuery buttons by forcing `apiEnv` to web and uncommenting code in index.js
-/*
 const hostname = window && window.location && window.location.hostname
 let apiEnv = ''
 if( -1 < hostname.indexOf( 'force' ) ){
@@ -39,7 +38,7 @@ if( -1 < hostname.indexOf( 'force' ) ){
 } else {
   apiEnv = 'web'
 }
-apiEnv = 'web'
+//apiEnv = 'web'
 if( 'web' === apiEnv || 'salesforce' === apiEnv ){
   let FoxSelect = {}
   FoxSelect.init = init
@@ -47,10 +46,5 @@ if( 'web' === apiEnv || 'salesforce' === apiEnv ){
 } else {
   init(document.querySelector('#root'),null)
 }
-*/
-let FoxSelect = {}
-FoxSelect.init = init
-window.FoxSelect = FoxSelect
-
 
 unregister()
