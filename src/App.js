@@ -314,7 +314,7 @@ class App extends Component {
           /*&& ( typeof configuredPart[property].display === 'undefined' || configuredPart[property].display === true )*/
       ){
         if( -1 < configuredPart[property].value.indexOf(',') ){
-          console.log('We found a comma in: `' + configuredPart[property].value + '`')
+          //console.log('We found a comma in: `' + configuredPart[property].value + '`')
           configuredPart.number.value += '[' + configuredPart[property].value + ']'
           configuredPart.number.label += '_' // TODO: Set this to the corresponding # of underscorces
         } else {
@@ -561,7 +561,7 @@ class App extends Component {
    * @param      {bool}   delay       If `true`, don't update state
    */
   updateConfiguredPart( attribute, option, delay = false ){
-    console.log('[updateConfiguredPart] delay = ' + delay + '; updating `'+attribute+'` to :',option)
+    console.log("updateConfiguredPart(attribute,option,delay)\n• attribute: ", attribute, "\n• option: ", option, "\n• delay: ", delay)
 
     const { configuredPart, aecq200 } = this.state
     const originalConfiguredPart = configuredPart
@@ -663,6 +663,11 @@ class App extends Component {
     /**/
     // Voltage rules
     if( 'voltage' === attribute ){
+      if( '_' === option.value && 'O' === configuredPart.product_type.value ){
+        console.log('voltage is `null`. Also reseting output. configuredPart.output', configuredPart.output)
+        configuredPart.output = { value: '__', label: configuredPart.output.label }
+      }
+
       switch( configuredPart.size.value ){
         case '3':
         case '5':
