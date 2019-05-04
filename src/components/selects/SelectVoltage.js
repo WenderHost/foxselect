@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
+import VoltageOptions from '../VoltageOptions';
 
 class SelectVoltage extends Component{
 
   handleChange = (selectedOption) => {
+    console.log("[SelectVoltage.js]->handleChange()\n• selectedOption: ", selectedOption)
     this.props.updateConfiguredPart('voltage',selectedOption)
   }
 
@@ -45,6 +47,17 @@ class SelectVoltage extends Component{
           options={voltageOptions}
           styles={customStyles}
         />
+        {/*
+          * 05/03/2019 (15:01) - New idea: It seems we need to show
+          * VoltageOptions whenever we have a comma in configuredPart.voltage.value.
+          * Perhaps this should be in addition to the checks we have below?
+          */}
+        { typeof configuredPart.voltage !== 'undefined'
+        && 0 !== configuredPart.voltage.value.length
+        && '_' !== configuredPart.voltage.value
+        && 'O' === configuredPart.product_type.value
+        /*&& 3 <= configuredPart.size.value*/
+        && <VoltageOptions configuredPart={configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} /> }
       </div>
     );
   };

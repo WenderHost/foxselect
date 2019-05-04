@@ -58,6 +58,7 @@ class VoltageOptions extends Component{
       case 'B':
       case 'C':
       case 'B,C':
+      case 'C,B':
         if( 1.8 <= frequency && 32 >= frequency ){
           optionalInputCurrent.message = '2.5mA'
         } else if( 50 >= frequency ){
@@ -70,6 +71,9 @@ class VoltageOptions extends Component{
         break
 
       case 'H':
+      case 'J':
+      case 'J,H':
+      case 'H,J':
         if( 1.8 <= frequency && 32 >= frequency ){
           optionalInputCurrent.message = '1.5mA'
         } else if( 50 >= frequency ){
@@ -99,6 +103,7 @@ class VoltageOptions extends Component{
         case 'B':
         case 'C':
         case 'B,C':
+        case 'C,B':
           if( 0.5 <= frequency && 20 >= frequency ){
             standardInputCurrent.message = '7mA'
           } else if ( 40 >= frequency ){
@@ -121,6 +126,9 @@ class VoltageOptions extends Component{
           break
 
         case 'H':
+        case 'J':
+        case 'J,H':
+        case 'H,J':
           if( 0.625 <= frequency && 20 >= frequency){
             standardInputCurrent.message = '5mA'
           } else if ( 40 >= frequency ){
@@ -185,21 +193,26 @@ class VoltageOptions extends Component{
 
   handleChange(value){
     const { configuredPart, updateConfiguredPart } = this.props
-    console.log('VoltageOptions::handleChange() updating `output` to ' + value)
-
     // If `comma` in saved value, delay the update. Otherwise update immediately
-    const delay = ( -1 < configuredPart.voltage.value.indexOf(',') )? true : false ;
-    updateConfiguredPart( 'output', {value: value, label: value}, delay );
+    let delay = false
+    delay = ( -1 < configuredPart.voltage.value.indexOf(',') )? true : false ;
 
+    console.clear()
+    // updating `output` to " + value, "\nconfiguredPart.voltage.value = ", configuredPart.voltage.value, "\ndelay = ", delay)
+
+    let voltageOption = {}
     switch(value){
+      // Optional Input Current
       case 'HL':
         switch(configuredPart.voltage.label){
           case '3.3 Volts':
-            updateConfiguredPart('voltage',{value: 'B', label: '3.3 Volts'});
+            delay = true
+            voltageOption = {value: 'B', label: '3.3 Volts'}
             break;
 
           case '2.5 Volts':
-            updateConfiguredPart('voltage',{value: 'H', label: '2.5 Volts'});
+            delay = true
+            voltageOption = {value: 'H', label: '2.5 Volts'}
             break;
 
           default:
@@ -207,28 +220,74 @@ class VoltageOptions extends Component{
 
         break
 
+      // HS = Standard Input Current
       case 'HS':
         switch(configuredPart.voltage.label){
           case '3.3 Volts':
-            updateConfiguredPart('voltage',{value: 'C', label: '3.3 Volts'});
+            delay = true
+            voltageOption = {value: 'C', label: '3.3 Volts'}
             break;
 
           case '2.5 Volts':
-            updateConfiguredPart('voltage',{value: 'H', label: '2.5 Volts'}); // Why is this `H`? According to 2.5V options, we would expect this to be `J`.
+            delay = true
+            voltageOption = {value: 'H', label: '2.5 Volts'} // Why is this `H`? According to 2.5V options, we would expect this to be `J`.
             break;
 
           default:
         }
         break
 
+      case 'LS':
+      case 'LD':
+        switch(configuredPart.voltage.label){
+          case '3.3 Volts':
+            delay = true
+            voltageOption = {value: 'J', label: '3.3 Volts'}
+            break
+
+          case '2.5 Volts':
+            delay = true
+            voltageOption = {value: 'J', label: '2.5 Volts'}
+            break
+
+          default:
+        }
+        break
+
+      /*
+      case 'PS':
+      case 'PD':
+      case 'PU':
+        switch(configuredPart.voltage.label){
+          case '3.3 Volts':
+            delay = true
+            console.log('ALERT: No option defined for 3.3 Volts!')
+            break
+
+          case '2.5 Volts':
+            delay = true
+            voltageOption = {value: 'J', label: '2.5 Volts'}
+            break
+        }
+        break
+      */
+
       default:
+        if( -1 < configuredPart.voltage.value.indexOf(',') )
+          console.log("[VoltageOptions.js]->handleChange()\nWARNING: No change handler written for `"+value+"`!\n\n• voltage = " + configuredPart.voltage.label + " (" + configuredPart.voltage.value + ")\n• output = " + configuredPart.output.label + "(" + value + ")\n\nWhich voltage should we choose from `" + configuredPart.voltage.value + "` when " + configuredPart.output.label + "(" + value + ")?")
     }
+
+    console.log("[VoltageOptions.js]->handleChange(value)\n• value: ", value, "\n• delay: ", delay, "\n• voltageOption: ", voltageOption )
+
+    updateConfiguredPart( 'output', {value: value, label: configuredPart.output.label} ) // , delay
+    if( typeof voltageOption.value !== 'undefined' )
+      updateConfiguredPart( 'voltage', voltageOption )
   }
 
   showOptions(voltage){
     const { configuredPart } = this.props
     const output = configuredPart.output.value
-    console.log('inside showOptions(), output = ' + output )
+    console.log("[VoltageOptions.js]->showOptions(voltage)\n• voltage: ", voltage, "\n• output: ", output )
 
     let excludedOutputs = []
     switch(configuredPart.size.value){
@@ -247,45 +306,45 @@ class VoltageOptions extends Component{
           <div className="alert alert-secondary">
             <p>Input Current:</p>
             <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
-              <div className="row">
-                <div className="col-9">
-                  <label htmlFor="standard">Standard 0.3 pS typ. Jitter, E/D Pin 1</label>
+              <div className="row no-gutters">
+                <div className="col-11">
+                  <label htmlFor="standard">Standard 0.3pS typ. Jitter, E/D Pin 1</label>
                 </div>
-                <div className="col-2"><Radio value="PS" id="standard" /></div>
+                <div className="col-1"><Radio value="PS" id="standard" /></div>
               </div>
-              <div className="row">
-                <div className="col-9">
+              <div className="row no-gutters">
+                <div className="col-11">
                   <label htmlFor="opt-jitter">Optional 0.3pS typ. Jitter, E/D Pin 2</label>
                 </div>
-                <div className="col-2"><Radio value="PD" id="opt-jitter" /></div>
+                <div className="col-1"><Radio value="PD" id="opt-jitter" /></div>
               </div>
-              <div className="row">
-                <div className="col-9">
+              <div className="row no-gutters">
+                <div className="col-11">
                   <label htmlFor="opt-max-jitter">Optional 0.1pS MAX Jitter, E/D Pin 1</label>
                 </div>
-                <div className="col-2"><Radio value="PU" id="opt-max-jitter" /></div>
+                <div className="col-1"><Radio value="PU" id="opt-max-jitter" /></div>
               </div>
             </RadioGroup>
           </div>
       )
     }
 
-    if( 'LS' === output || 'LD' === output ){
+    if( 'LS' === output || 'LD' === output || ( -1 < output.indexOf(',') && -1 < output.indexOf('LD') ) ){
       return(
           <div className="alert alert-secondary">
             <p>Input Current:</p>
             <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
-              <div className="row">
-                <div className="col-9">
-                  <label htmlFor="standard">Standard 0.3 pS typ. Jitter, E/D Pin 1</label>
+              <div className="row no-gutters">
+                <div className="col-11">
+                  <label htmlFor="standard">Standard 0.3pS typ. Jitter, E/D Pin 1</label>
                 </div>
-                <div className="col-2"><Radio value="LS" id="standard" /></div>
+                <div className="col-1"><Radio value="LS" id="standard" /></div>
               </div>
-              <div className="row">
-                <div className="col-9">
+              <div className="row no-gutters">
+                <div className="col-11">
                   <label htmlFor="opt-jitter">Optional 0.3pS typ. Jitter, E/D Pin 2</label>
                 </div>
-                <div className="col-2"><Radio value="LD" id="opt-jitter" /></div>
+                <div className="col-1"><Radio value="LD" id="opt-jitter" /></div>
               </div>
             </RadioGroup>
           </div>
@@ -302,17 +361,17 @@ class VoltageOptions extends Component{
               <div className="alert alert-secondary">
                 <p>Input Current:</p>
                 <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
-                  <div className="row">
-                    <div className="col-8">
+                  <div className="row no-gutters">
+                    <div className="col-11">
                       <label htmlFor="std-input">Standard 50pF Load</label>
                     </div>
-                    <div className="col-2"><Radio value="HD" id="std-input" /></div>
+                    <div className="col-1"><Radio value="HD" id="std-input" /></div>
                   </div>
-                  <div className="row">
-                    <div className="col-8">
+                  <div className="row no-gutters">
+                    <div className="col-11">
                       <label htmlFor="opt-load-ed">Optional 15pF Load</label>
                     </div>
-                    <div className="col-2"><Radio value="HS" id="opt-load-ed" /></div>
+                    <div className="col-1"><Radio value="HS" id="opt-load-ed" /></div>
                   </div>
                 </RadioGroup>
               </div>
@@ -324,23 +383,23 @@ class VoltageOptions extends Component{
               <div className="alert alert-secondary">
                 <p>Input Current:</p>
                 <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
-                  <div className="row">
-                    <div className="col-8">
-                      <label htmlFor="std-input">Standard 50pF Load</label>
+                  <div className="row no-gutters">
+                    <div className="col-11">
+                      <label htmlFor="std-input">Standard Tristate E/D, 50pF Load</label>
                     </div>
-                    <div className="col-2"><Radio value="HH" id="std-input" /></div>
+                    <div className="col-1"><Radio value="HH" id="std-input" /></div>
                   </div>
-                  <div className="row">
-                    <div className="col-8">
+                  {/*<div className="row no-gutters">
+                    <div className="col-11">
                       <label htmlFor="opt-load-ed">Optional 15pF Load with E/D</label>
                     </div>
-                    <div className="col-2"><Radio value="HD" id="opt-load-ed" /></div>
-                  </div>
-                  <div className="row">
-                    <div className="col-8">
-                      <label htmlFor="opt-load-standby">Optional 15pF Load with Standby</label>
+                    <div className="col-1"><Radio value="HD" id="opt-load-ed" /></div>
+                  </div>*/}
+                  <div className="row no-gutters">
+                    <div className="col-11">
+                      <label htmlFor="opt-load-standby">Optional Standby E/D, 15pF Load</label>
                     </div>
-                    <div className="col-2"><Radio value="HB" id="opt-load-standby" /></div>
+                    <div className="col-1"><Radio value="HB" id="opt-load-standby" /></div>
                   </div>
                 </RadioGroup>
               </div>
@@ -354,20 +413,26 @@ class VoltageOptions extends Component{
       case 'B':
       case 'C':
       case 'B,C':
+      case 'C,B':
       case 'H':
+      case 'J,H':
+      case 'H,J':
         const optionalInputCurrent = this.getOptionalInputCurrent()
         const standardInputCurrent = this.getStandardInputCurrent()
+        const stdInputCurrentMsg = ( typeof standardInputCurrent.message !== 'undefined' && '' !== standardInputCurrent.message )? ' (' + standardInputCurrent.message + ')' : ''
 
         return(
           <div className="alert alert-secondary">
             <p>Input Current:</p>
             <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
 
-              <div className="row">
-                <div className="col-8" style={{whiteSpace: 'nowrap'}}>
-                  <label htmlFor="std-input">Standard Input Current ({standardInputCurrent.message})</label>
+              <div className="row no-gutters">
+                <div className="col-11" style={{whiteSpace: 'nowrap'}}>
+                  <label htmlFor="std-input">
+                    Standard Input Current{stdInputCurrentMsg}
+                  </label>
                 </div>
-                <div className="col-4" style={{whiteSpace: 'nowrap'}}>
+                <div className="col-1" style={{whiteSpace: 'nowrap'}}>
                   { standardInputCurrent.available ? (
                     <Radio value="HS" id="std-input" />
                   ) : (
@@ -375,11 +440,11 @@ class VoltageOptions extends Component{
                   )}
                 </div>
               </div>
-              <div className="row">
-                <div className="col-8" style={{whiteSpace: 'nowrap'}}>
+              <div className="row no-gutters">
+                <div className="col-11" style={{whiteSpace: 'nowrap'}}>
                   <label htmlFor="opt-input">Optional Input Current ({optionalInputCurrent.message})</label>
                 </div>
-                <div className="col-4" style={{whiteSpace: 'nowrap'}}>
+                <div className="col-1" style={{whiteSpace: 'nowrap'}}>
                   { optionalInputCurrent.available ? (
                     <Radio value="HL" id="opt-input" />
                   ) : (
@@ -402,10 +467,8 @@ class VoltageOptions extends Component{
     const voltage = configuredPart.voltage.value
 
     return(
-      <div className="form-row">
-        <div className="col-md-4 offset-md-6">
+      <div style={{marginTop: '16px'}}>
           { this.showOptions(voltage) }
-        </div>
       </div>
     )
   }

@@ -33,6 +33,12 @@ class SelectOutput extends Component{
   handleChange = (selectedOption) => {
     const { configuredPart, updateConfiguredPart } = this.props;
 
+    /*
+    const { outputOptions } = this.props
+    if( typeof outputOptions !== 'undefined' && 1 < outputOptions.length && outputOptions.length > this.state.storedOptions )
+      this.setState({storedOptions: outputOptions})
+    */
+
     // Update related options
     switch(configuredPart.product_type.value){
       case 'T':
@@ -56,10 +62,12 @@ class SelectOutput extends Component{
   render(){
     const { configuredPart } = this.props;
     let { outputOptions } = this.props;
-    const { savedOutputOption } = this.state;
-    let output = configuredPart.output;
-    let optionValue = output;
+    //const { savedOutputOption } = this.state;
+    //let output = configuredPart.output;
+    //let optionValue = output;
+    const outputValue = configuredPart.output.value
 
+    /*
     if( 3 <= configuredPart.size.value && null !== this.state.savedOutputOption )
       optionValue = this.state.savedOutputOption
 
@@ -74,6 +82,49 @@ class SelectOutput extends Component{
         className = 'error';
       }
     }
+    */
+
+    let optionValue = null
+    let backgroundColor = null
+
+    /**
+     * Has output been reset by Voltage?
+     *
+     * When output = { value: "__", label: "Example Label" }, in other
+     * words when the value has been set to "blank" and the label
+     * matches one of this.state.storedOptions, it has been reset.
+     */
+    /*
+    const outputLabel = configuredPart.output.label
+    if( '' !== outputLabel && '__' === outputValue ){
+      const { storedOptions } = this.state
+      console.log('storedOptions = ', storedOptions)
+      storedOptions.forEach(function(el){
+        if( outputLabel === el.label )
+          optionValue = el
+      })
+    }
+    /**/
+
+    if( 0 === outputOptions.length && '__' === outputValue ){
+      // No options available, and output isn't set
+      backgroundColor = '#eee'
+    } else if( 0 === outputOptions.length && 0 < outputValue.length ){
+      // No options available, and output is set
+      backgroundColor = 'salmon'
+      optionValue = configuredPart.output
+    } else if( 0 < outputOptions.length && '__' === outputValue ){
+      // Options available, and output is not set
+      // Do nothing so placeholder text will show
+    } else if( 0 < outputOptions.length && '__' !== outputValue && 0 < outputValue.length ){
+      // Options available, and output is set
+      optionValue = configuredPart.output
+    }
+
+    const customStyles = {
+      control: styles => ({...styles, backgroundColor: backgroundColor})
+    }
+
 
     if( 'HA' === configuredPart.output.value ){
       optionValue = {value: 'HA', label: 'AEC-Q200'};
@@ -94,7 +145,7 @@ class SelectOutput extends Component{
           placeholder="Output..."
           matchPos="start"
           options={outputOptions}
-          className={className}
+          styles={customStyles}
           isClearable
         />
       </div>

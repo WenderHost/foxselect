@@ -11,7 +11,6 @@ import SelectStability from './selects/SelectStability';
 import SelectLoad from './selects/SelectLoad';
 import SelectOpTemp from './selects/SelectOpTemp';
 import SizeOptions from './SizeOptions';
-import VoltageOptions from './VoltageOptions';
 import SelectPin1 from './selects/SelectPin1';
 
 class AdditionalOptionsForm extends Component{
@@ -66,9 +65,12 @@ class AdditionalOptionsForm extends Component{
             <SelectOutput configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
           </div> }
 
-          { typeof partOptions.voltage !== 'undefined' &&
-            ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value || 'S' === configuredPart.product_type.value ) &&
-          <div className="col-lg">
+          { typeof partOptions.voltage !== 'undefined'
+            && ( 'O' === configuredPart.product_type.value
+              || 'T' === configuredPart.product_type.value
+              || 'Y' === configuredPart.product_type.value
+              || 'S' === configuredPart.product_type.value ) &&
+          <div className="col-lg-auto" style={{minWidth: '300px'}}>
             <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
           </div> }
 
@@ -98,13 +100,7 @@ class AdditionalOptionsForm extends Component{
             <SelectPin1 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} pin_1Options={partOptions.pin_1} />
           </div> }
         </div>
-        { typeof configuredPart.voltage !== 'undefined'
-        && 0 !== configuredPart.voltage.value.length
-        && '_' !== configuredPart.voltage.value
-        && 'O' === configuredPart.product_type.value
-        && 3 <= configuredPart.size.value
-        && <VoltageOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
-        }
+
         { 'T' === configuredPart.product_type.value
           && 'Clipped Sine' === configuredPart.output.label
           && '' !== configuredPart.stability.value
