@@ -93,7 +93,7 @@ class SizeOptions extends Component{
             <p>3.2 x 2.5 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
-                <div className="col-10"><label htmlFor="32x25bs">0.7mm height, netal lid, seam seal</label></div>
+                <div className="col-10"><label htmlFor="32x25bs">0.7mm height, metal lid, seam seal</label></div>
                 <div className="col-1"><Radio value="BS" id="32x25bs" /></div>
               </div>
               <div className="row">
@@ -113,19 +113,19 @@ class SizeOptions extends Component{
             <p>5.0 x 3.2 mm package options:</p>
             <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
               <div className="row">
-                <div className="col-6"><label>Metal lid, seam seal</label></div>
-                <div className="col-3"><label><Radio value="BS" /> 4 pad</label></div>
-                <div className="col-3"><label><Radio value="AS" /> 2 pad</label></div>
+                <div className="col-7"><label>1.0mm height, metal lid, seam seal</label></div>
+                <div className="col-sm-auto"><label><Radio value="BS" /> 4 pad</label></div>
+                <div className="col-sm-auto"><label><Radio value="AS" /> 2 pad</label></div>
               </div>
               <div className="row">
-                <div className="col-6"><label>Ceramic lid, resin seal:</label></div>
-                <div className="col-3"><label><Radio value="BQ" /> 4 pad</label></div>
-                <div className="col-3"><label><Radio value="AQ" /> 2 pad</label></div>
+                <div className="col-7"><label>1.2mm height, ceramic lid, resin seal</label></div>
+                <div className="col-sm-auto"><label><Radio value="BQ" /> 4 pad</label></div>
+                <div className="col-sm-auto"><label><Radio value="AQ" /> 2 pad</label></div>
               </div>
               <div className="row">
-                <div className="col-6"><label>Ceramic lid, glass seal:</label></div>
-                <div className="col-3"><label><Radio value="CG" /> 4 pad</label></div>
-                <div className="col-3"><label><Radio value="AG" /> 2 pad</label></div>
+                <div className="col-7"><label>1.4mm height, ceramic lid, glass seal</label></div>
+                <div className="col-sm-auto"><label><Radio value="CG" /> 4 pad</label></div>
+                <div className="col-sm-auto"><label><Radio value="AG" /> 2 pad</label></div>
               </div>
             </RadioGroup>
           </div>
