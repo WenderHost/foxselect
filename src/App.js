@@ -938,6 +938,7 @@ class App extends Component {
             user={user}
             rfq={this.state.rfq}
             updateRFQ={this.updateRFQ}
+            setCurrentView={this.setCurrentView}
           />
         </Suspense>
         break;
