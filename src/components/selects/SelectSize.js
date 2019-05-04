@@ -3,23 +3,7 @@ import Select from 'react-select';
 
 class SelectSize extends Component{
 
-  /*
-  constructor(){
-    super();
-    this.state = {
-      savedSizeOption: {}
-    }
-  }
-  */
-
   handleChange = (selectedOption) => {
-    console.log('selectedOption = ',selectedOption)
-    /*
-    this.setState(
-      {savedSizeOption: selectedOption},
-      () => this.props.updateConfiguredPart('size',selectedOption)
-    );
-    */
     this.props.updateConfiguredPart('size',selectedOption)
   }
 
