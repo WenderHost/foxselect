@@ -1049,7 +1049,7 @@ class App extends Component {
           <div className="row meta-foxselect no-gutters">
             <div className="col">
               Configured Part: <code><a href="#part-selector" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector')}} target="_blank" rel="noopener noreferrer">{configuredPart.number.label}</a></code>
-              <button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>
+              {/*<button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>*/}
             </div>
             <div className="col-md-auto">Available Parts: <code>{availableParts}</code></div>
             <div className="col text-md-right">
