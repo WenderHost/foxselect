@@ -5,6 +5,12 @@ import Select from 'react-select';
 import { companyTypeOptions, stateOptions } from './data/data';
 import ReactPasswordStrength from 'react-password-strength';
 import { AUTH_ROOT, API_REST, API_TOKEN } from '../api-config';
+import axios from 'axios';
+
+// Alerts
+import Alert from 'react-s-alert';
+import 'react-s-alert/dist/s-alert-default.css';
+import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 class Login extends Component{
 
@@ -25,7 +31,8 @@ class Login extends Component{
         company_city: '',
         company_state: '',
         company_zip: ''
-      }
+      },
+      isRegistering: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleChangeCompanyType = this.handleChangeCompanyType.bind(this)
@@ -35,8 +42,11 @@ class Login extends Component{
   }
 
   handleRegister(e){
-    console.log('[Login.handleRegister] Creating user...');
+    console.clear()
+    console.log('[Login.js]->handleRegister()')
     const { new_user } = this.state;
+
+    this.setState({isRegistering: true})
 
     const user = {};
     const meta = {};
@@ -51,7 +61,91 @@ class Login extends Component{
     }
     user['meta'] = meta
 
-    WP.createUser( API_REST, user, API_TOKEN, AUTH_ROOT );
+    //WP.createUser( API_REST, user, API_TOKEN, AUTH_ROOT );
+    API_TOKEN.then( token => {
+      // TODO: Validate the token before trying to create the user
+
+     /**
+       * Creating user via standard call to REST API
+       */
+      const config = {
+        method: 'post',
+        url: API_REST + 'wp/v2/users',
+        data: user,
+        headers: {'Authorization': 'Bearer ' + token }
+      }
+      axios(config)
+      .then( response => {
+        const httpStatusCode = response.status
+        console.log("[WP REST] We attempted to create a user.\n• httpStatusCode =", httpStatusCode, "\n• response = ", response )
+
+        switch( httpStatusCode ){
+          case 200:
+          case 201:
+            //const validatedUser =
+            WP.validateUser( AUTH_ROOT, user.email, user.password )
+            .then( response => {
+              this.props.hydrateStateWithLocalStorage()
+            })
+            .catch( error => {
+              console.log('WP.validateUser returned error = ', error)
+            })
+            .finally( () => {
+              this.setState({isRegistering: false})
+            })
+            break
+
+          default:
+            console.log('No logic for handling httpStatusCode = ', httpStatusCode)
+        }
+      })
+      .catch( error => {
+        this.setState({isRegistering: false})
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+
+
+          const responseData = error.response.data
+          console.log("\n\nresponseData = ", responseData)
+
+          const error_code = ( responseData.data && typeof responseData.data.code !== 'undefined' )? responseData.data.code : responseData.code ;
+          console.log('error_code = ', error_code)
+          let message = ''
+          switch( error_code ){
+            case 'rest_missing_callback_param':
+              let paramList = ''
+              const missingParams = ( typeof responseData.data.params !== 'undefined' )? responseData.data.params : ['params not found']
+              missingParams.forEach( (el) => {
+                paramList += '<li>' + el + '</li>'
+              })
+              message = '<p><strong>MISSING REQUIRED FIELDS</strong><br/>Please fill out the following required fields:</p><ul style="margin-bottom: 0">' + paramList + '</ul>'
+              break
+
+            default:
+              message = responseData.message
+          }
+
+          Alert.closeAll()
+          Alert.error(message,{
+            position: 'top',
+            effect: 'slide',
+            timeout: 21000,
+            html: true
+          })
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error: ', error);
+        }
+        if( typeof error.config !== 'undefined' )
+          console.log(error.config)
+      });
+    })
   }
 
   handleChange(e){
@@ -210,7 +304,11 @@ class Login extends Component{
               <hr/>
               <div className="form-row">
                 <div className="col text-right">
-                  <button type="button" className="btn btn-primary" name="register-user" onClick={this.handleRegister}>Register</button>
+                <p><small>All fields are required.</small></p>
+                { ! this.state.isRegistering &&
+                  <button type="button" className="btn btn-primary" name="register-user" onClick={this.handleRegister}>Register</button> }
+                { this.state.isRegistering &&
+                  <button type="button" className="btn btn-secondary" name="register-user" disabled="disabled">Register</button> }
                 </div>
               </div>
             </form>

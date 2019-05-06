@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import CartItem from './CartItem';
 import Select from 'react-select';
-import WP from './WordPressAPI';
+//import WP from './WordPressAPI';
 import { API_REST, API_TOKEN } from '../api-config';
 import { stateOptions } from './data/data';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+// Alerts
+import Alert from 'react-s-alert';
+import 'react-s-alert/dist/s-alert-default.css';
+import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 
 class Checkout extends Component{
@@ -22,7 +28,8 @@ class Checkout extends Component{
       differentShippingAddress = true
 
     this.state = {
-      different_shipping_address: differentShippingAddress
+      different_shipping_address: differentShippingAddress,
+      isSubmitting: false
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -116,7 +123,30 @@ class Checkout extends Component{
    */
   handleSubmission(){
     const { rfq, cart, user } = this.props
-    WP.submitRFQ(API_REST + 'foxelectronics/v1/postRFQ', rfq, cart, user, API_TOKEN )
+    this.setState({isSubmitting: true})
+    //WP.submitRFQ(API_REST + 'foxelectronics/v1/postRFQ', rfq, cart, user, API_TOKEN )
+
+    API_TOKEN.then( token => {
+      const config = {
+        headers: {'Authorization': 'Bearer ' + token }
+      }
+      axios.post( API_REST + 'foxelectronics/v1/postRFQ', {rfq: rfq, cart: cart, user: user}, config)
+      .then( response => {
+        this.props.updateCart('empty')
+        console.log('[WP REST] Response from /postRFQ/', response.data )
+        Alert.success('We have received your RFQ. We will be in touch with you soon.',{
+          position: 'top',
+          effect: 'slide',
+          timeout: 7000
+        })
+      })
+      .catch( error => {
+        console.log( error );
+      })
+      .finally( () => {
+        this.setState({isSubmitting: false})
+      })
+    })
   }
 
   render(){
@@ -177,115 +207,118 @@ class Checkout extends Component{
     return(
 
       <div className="checkout container">
-        <h1 className="section-title">Checkout</h1>
+        { ! this.state.isSubmitting &&
+        <div className="rfq">
+          <h1 className="section-title">Checkout</h1>
 
-        <h3 className="section-title">Your Parts</h3>
-        <div className="row d-none d-md-flex">
-          <div className="col-md-2"><small>Part No.</small></div>
-          <div className="col-md-10"><small>Desc</small></div>
-        </div>
-        <div style={{marginBottom: '3rem'}}>
-        { 0 < this.props.partsInCart ? (
-          Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)
-        ) : (
-          <div>
-            <hr/>
-            <p className="text-center">Your RFQ is empty.</p>
-            <p className="text-center"><button type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.props.setCurrentView('PartSelector')}>Continue Configuring Your Parts</button></p>
-            <hr/>
+          <h3 className="section-title">Your Parts</h3>
+          <div className="row d-none d-md-flex">
+            <div className="col-md-2"><small>Part No.</small></div>
+            <div className="col-md-10"><small>Desc</small></div>
           </div>
-        ) }
-        </div>
+          <div style={{marginBottom: '3rem'}}>
+          { 0 < this.props.partsInCart ? (
+            Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)
+          ) : (
+            <div>
+              <hr/>
+              <p className="text-center">Your RFQ is empty.</p>
+              <p className="text-center"><button type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.props.setCurrentView('PartSelector')}>Continue Configuring Your Parts</button></p>
+              <hr/>
+            </div>
+          ) }
+          </div>
 
-        <h3 className="section-title">Your Order Details</h3>
-        <div className="row">
-          <div className="col-md-12">
-            <div className="row">
-              <div className="col-md-6">
-                <h4>Customer</h4>
-                <p>{user.user_display_name} (<a href="mailto:{user.user_email}">{user.user_email}</a>)</p>
-                {/* PROJECT DETAILS */}
-                <h4>Project Details</h4>
-                <div className="form-group">
-                  <label htmlFor="project_name">Name</label>
-                  <input type="text" className="form-control" placeholder="Project Name" name="project_name" value={rfq.project_name} onChange={this.handleChange} />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="project_description">Description (optional)</label>
-                  <textarea className="form-control" name="project_description" rows="3" value={rfq.project_description} onChange={this.handleChange}></textarea>
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label htmlFor="project_prototype_date">Prototype Date</label><br />
-                      <DatePicker
-                        selected={prototype_date}
-                        onChange={this.handlePrototypeDate}
-                        className="form-control"
-                        placeholderText="Click to select a date"
-                      />
+          <h3 className="section-title">Your Order Details</h3>
+          <div className="row">
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-6">
+                  <h4>Customer</h4>
+                  <p>{user.user_display_name} (<a href="mailto:{user.user_email}">{user.user_email}</a>)</p>
+                  {/* PROJECT DETAILS */}
+                  <h4>Project Details</h4>
+                  <div className="form-group">
+                    <label htmlFor="project_name">Name</label>
+                    <input type="text" className="form-control" placeholder="Project Name" name="project_name" value={rfq.project_name} onChange={this.handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="project_description">Description (optional)</label>
+                    <textarea className="form-control" name="project_description" rows="3" value={rfq.project_description} onChange={this.handleChange}></textarea>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="form-group">
+                        <label htmlFor="project_prototype_date">Prototype Date</label><br />
+                        <DatePicker
+                          selected={prototype_date}
+                          onChange={this.handlePrototypeDate}
+                          className="form-control"
+                          placeholderText="Click to select a date"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="form-group">
+                        <label htmlFor="project_production_date">Production Date</label><br />
+                        <DatePicker
+                          selected={production_date}
+                          onChange={this.handleProductionDate}
+                          className="form-control"
+                          placeholderText="Click to select a date"
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label htmlFor="project_production_date">Production Date</label><br />
-                      <DatePicker
-                        selected={production_date}
-                        onChange={this.handleProductionDate}
-                        className="form-control"
-                        placeholderText="Click to select a date"
-                      />
+                  <h4>Distributors</h4>
+                  <div className="row" style={{ margin: '0 0 20px 6px'}}>
+                    <div className="col">
+                      <input type="checkbox" className="form-check-input" id="distributor_avnet" name="distys" value="avnet" checked={rfq.distys.includes('avnet')} onChange={this.handleChange} />
+                      <label htmlFor="distributor_avnet" className="form-check-label">Avnet</label>
+                    </div>
+                    <div className="col">
+                      <input type="checkbox" className="form-check-input" id="distributor_mouser" name="distys" value="mouser" checked={rfq.distys.includes('mouser')} onChange={this.handleChange} />
+                      <label htmlFor="distributor_mouser" className="form-check-label">Mouser</label>
+                    </div>
+                    <div className="col">
+                      <input type="checkbox" className="form-check-input" id="distributor_digikey" name="distys" value="digikey" checked={rfq.distys.includes('digikey')} onChange={this.handleChange} />
+                      <label htmlFor="distributor_digikey" className="form-check-label">Digikey</label>
+                    </div>
+                    <div className="col">
+                      <input type="checkbox" className="form-check-input" id="distributor_future" name="distys" value="future" checked={rfq.distys.includes('future')} onChange={this.handleChange} />
+                      <label htmlFor="distributor_future" className="form-check-label">Future</label>
+                    </div>
+                    <div className="col">
+                      <input type="checkbox" className="form-check-input" id="distributor_arrow" name="distys" value="arrow" checked={rfq.distys.includes('arrow')} onChange={this.handleChange} />
+                      <label htmlFor="distributor_arrow" className="form-check-label">Arrow</label>
+                    </div>
+                    <div className="col">
+                      <input type="checkbox" className="form-check-input" id="distributor_newark" name="distys" value="newark" checked={rfq.distys.includes('newark')} onChange={this.handleChange} />
+                      <label htmlFor="distributor_newark" className="form-check-label">Newark</label>
                     </div>
                   </div>
+                  {/* /PROJECT DETAILS*/}
                 </div>
-                <h4>Distributors</h4>
-                <div className="row" style={{ margin: '0 0 20px 6px'}}>
-                  <div className="col">
-                    <input type="checkbox" className="form-check-input" id="distributor_avnet" name="distys" value="avnet" checked={rfq.distys.includes('avnet')} onChange={this.handleChange} />
-                    <label htmlFor="distributor_avnet" className="form-check-label">Avnet</label>
-                  </div>
-                  <div className="col">
-                    <input type="checkbox" className="form-check-input" id="distributor_mouser" name="distys" value="mouser" checked={rfq.distys.includes('mouser')} onChange={this.handleChange} />
-                    <label htmlFor="distributor_mouser" className="form-check-label">Mouser</label>
-                  </div>
-                  <div className="col">
-                    <input type="checkbox" className="form-check-input" id="distributor_digikey" name="distys" value="digikey" checked={rfq.distys.includes('digikey')} onChange={this.handleChange} />
-                    <label htmlFor="distributor_digikey" className="form-check-label">Digikey</label>
-                  </div>
-                  <div className="col">
-                    <input type="checkbox" className="form-check-input" id="distributor_future" name="distys" value="future" checked={rfq.distys.includes('future')} onChange={this.handleChange} />
-                    <label htmlFor="distributor_future" className="form-check-label">Future</label>
-                  </div>
-                  <div className="col">
-                    <input type="checkbox" className="form-check-input" id="distributor_arrow" name="distys" value="arrow" checked={rfq.distys.includes('arrow')} onChange={this.handleChange} />
-                    <label htmlFor="distributor_arrow" className="form-check-label">Arrow</label>
-                  </div>
-                  <div className="col">
-                    <input type="checkbox" className="form-check-input" id="distributor_newark" name="distys" value="newark" checked={rfq.distys.includes('newark')} onChange={this.handleChange} />
-                    <label htmlFor="distributor_newark" className="form-check-label">Newark</label>
+                <div className="col-md-6">
+                  <h4>Account Address</h4>
+                  <p>{user.company_name}<br />c/o {user.user_display_name}<br />{user.company_street}<br />{user.company_city}, {user.company_state} {user.company_zip}</p>
+                  <h4>Shipping Address</h4>
+                  {shippingAddressFields}
+                  <div className="form-group form-check">
+                    <input type="checkbox" className="form-check-input" id="differentShippingAddress" value="true" checked={!!different_shipping_address} onChange={this.handleClickDifferentShippingAddress} />
+                    <label className="form-check-label" htmlFor="differentShippingAddress">Use a different shipping address.</label>
                   </div>
                 </div>
-                {/* /PROJECT DETAILS*/}
-              </div>
-              <div className="col-md-6">
-                <h4>Account Address</h4>
-                <p>{user.company_name}<br />c/o {user.user_display_name}<br />{user.company_street}<br />{user.company_city}, {user.company_state} {user.company_zip}</p>
-                <h4>Shipping Address</h4>
-                {shippingAddressFields}
-                <div className="form-group form-check">
-                  <input type="checkbox" className="form-check-input" id="differentShippingAddress" value="true" checked={!!different_shipping_address} onChange={this.handleClickDifferentShippingAddress} />
-                  <label className="form-check-label" htmlFor="differentShippingAddress">Use a different shipping address.</label>
-                </div>
-              </div>
 
+              </div>
             </div>
           </div>
-        </div>
-        <div className="alert alert-secondary text-center">
-          <button type="button" className="btn btn-primary" name="submit-rfq" onClick={this.handleSubmission}>Submit to FOX</button>
-        </div>
-        <br />
-
+          <div className="alert alert-secondary text-center">
+            <button type="button" className="btn btn-primary" name="submit-rfq" onClick={this.handleSubmission}>Submit to FOX</button>
+          </div>
+        </div> }{/* .rfq */}
+        { this.state.isSubmitting &&
+        <div className="submitting-rfq"><div className="alert alert-info">One moment...</div></div> }
       </div>
     )
   }

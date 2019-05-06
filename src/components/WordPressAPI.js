@@ -138,13 +138,15 @@ let WordPressAPI = {
         headers: {'Authorization': 'Bearer ' + token }
       }
 
-      axios.post(url, {rfq: rfq, cart: cart, user: user}, config)
+      const rfqPromise = axios.post(url, {rfq: rfq, cart: cart, user: user}, config)
       .then( response => {
         console.log('[WP REST] Response from /postRFQ/', response.data )
       })
       .catch( error => {
         console.log( error );
       });
+
+      return rfqPromise
     });
   },
 
@@ -196,14 +198,34 @@ let WordPressAPI = {
     })
     .catch(error => {
       //console.log('[Axios] Invalid Credentials')
+      /*
+      // 05/04/2019 (15:32) - Original
       Alert.error('Invalid credentials. Please check your username/password.',{
         position: 'top',
         effect: 'slide',
         timeout: 2000
       })
       return error
+      /**/
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+      }
+      console.log('error.config = ', error.config);
+      return error
     });
-
+    //console.log('validatedUser = ', validatedUser)
     return validatedUser;
   }
 }

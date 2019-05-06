@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
-import WP from './WordPressAPI';
 import { AUTH_ROOT } from '../api-config';
+import axios from 'axios';
+
+// Alerts
+import Alert from 'react-s-alert';
+import 'react-s-alert/dist/s-alert-default.css';
+import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 class LoginForm extends Component{
   constructor(props){
@@ -21,15 +26,53 @@ class LoginForm extends Component{
     this.setState(formValue);
   }
 
-  handleLogin(e){
+  handleLogin(){
     const { email, password } = this.state
-    const validatedUser = WP.validateUser( AUTH_ROOT, email, password )
+    const { hydrateStateWithLocalStorage } = this.props
+    console.log('auth_root = ', AUTH_ROOT)
 
-    validatedUser.then( data => {
-      if( typeof data !== 'undefined' && typeof data.name !== 'undefined' && data.name === 'Error' ){
-      } else {
-        this.props.hydrateStateWithLocalStorage()
+    axios({
+      method: 'post',
+      url: AUTH_ROOT,
+      data: {
+        username: email,
+        password: password
       }
+    })
+    .then( response => {
+      console.log('Saving userData to `localStorage`...', response.data)
+      localStorage.setItem('foxselect-userdata', JSON.stringify( response.data ) )
+      localStorage.setItem('foxselect-currentview', 'loggedin')
+      Alert.success('Login was successful.',{
+        position: 'top',
+        effect: 'slide',
+        timeout: 1000,
+        onClose: function(){
+          hydrateStateWithLocalStorage()
+        }
+      })
+    })
+    .catch( error => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        //console.log(error.response.data,error.response.status,error.response.headers);
+        Alert.error(error.response.data.message,{
+          position: 'top',
+          effect: 'slide',
+          timeout: 21000,
+          html: true
+        })
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+      }
+      console.log('error.config = ', error.config);
     })
   }
 
