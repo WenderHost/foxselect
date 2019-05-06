@@ -221,7 +221,7 @@ class App extends Component {
         if( clearPart ){
           // clear the part in response to the "Clear" button next to the part number
           //console.log('Need to clear the part.')
-          this.resetConfiguredPart();
+          this.resetConfiguredPart(null,true);
         }
         //this.resetConfiguredPart();
         break;
@@ -430,7 +430,7 @@ class App extends Component {
    * @param      {string}  action  The action (add|delete)
    * @param      {string}  id      The Id of the part in the cart
    */
-  updateCart(action, id, option = '', value = ''){
+  updateCart(action, id = null, option = '', value = ''){
     let cart = { ...this.state.cart };
     switch(action){
       case 'add':
@@ -455,6 +455,30 @@ class App extends Component {
           }
         }
         break;
+
+      case 'empty':
+        console.log('Emptying shopping cart. cart = ', cart)
+        for( var key in cart ){
+          if( cart.hasOwnProperty(key) )
+            delete cart[key]
+        }
+        const newRFQ = {
+          project_name: '',
+          project_description: '',
+          shipping_address: {
+            company: '',
+            contact: '',
+            street: '',
+            city: '',
+            state: '',
+            zip: ''
+          },
+          prototype_date: new Date(),
+          production_date: new Date(),
+          distys: []
+        }
+        this.setState({cart:cart,rfq: newRFQ})
+        break
 
       case 'update':
         let part = cart[id];
@@ -835,8 +859,8 @@ class App extends Component {
    * @param      {object}  configuredPart   The configured part
    * @param      {object}  product_type The `product_type` we're switching to
    */
-  resetConfiguredPart(product_type){ // configuredPart, new_product_type
-    if(typeof product_type === 'undefined')
+  resetConfiguredPart(product_type, clearAll = false ){ // configuredPart, new_product_type
+    if(typeof product_type === 'undefined' || true === clearAll)
       product_type = {value: '_', label: ''}
 
     //*
@@ -853,7 +877,7 @@ class App extends Component {
       number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______0.0'}
     }
     /**/
-
+    console.log('[resetConfiguredPart] clearAll = ', clearAll, "\nproduct_type = ", product_type, "\nresetPart = ", resetPart)
     //const resetPart = JSON.parse( JSON.stringify( defaultConfiguredPart ) )
 
     switch(product_type.value){
@@ -896,7 +920,13 @@ class App extends Component {
 
     this.setState(
       {configuredPart: resetPart, availableParts: 'n/a'},
-      () => this.updateOptions( resetPart, resetPart )
+      () => {
+        if( true === clearAll ){
+          window.location.reload()
+        } else {
+          this.updateOptions( resetPart, resetPart )
+        }
+      }
     );
   }
 
@@ -916,7 +946,7 @@ class App extends Component {
     const { aecq200, configuredPart, partOptions, availableParts, cart, user } = this.state
     let { currentView } = this.state
     const editing = cart.hasOwnProperty(configuredPart.cart_id)
-    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value
+    //const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value
     var cartKeys = Object.keys(cart)
     var partsInCart = cartKeys.length
 
@@ -1018,7 +1048,7 @@ class App extends Component {
           </div>
           <div className="row meta-foxselect no-gutters">
             <div className="col">
-              Configured Part: <code><a href={testLink} target="_blank" rel="noopener noreferrer">{configuredPart.number.label}</a></code>
+              Configured Part: <code><a href="#part-selector" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector')}} target="_blank" rel="noopener noreferrer">{configuredPart.number.label}</a></code>
               <button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>
             </div>
             <div className="col-md-auto">Available Parts: <code>{availableParts}</code></div>
