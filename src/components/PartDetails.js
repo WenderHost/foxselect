@@ -36,7 +36,7 @@ class PartDetails extends Component{
         <div className="row">
           <div className="col-md-3">
             <label htmlFor="">Model</label><br/>
-            {configuredPart.number.value}
+            {configuredPart.number.label}
           </div>
           <div className="col-md-9">
             <label htmlFor="">Details</label>

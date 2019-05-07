@@ -40,7 +40,7 @@ class CartItem extends Component{
         <div className="row">
           <div className="col-lg-2">
             <small className="d-none d-sm-block d-md-none">Part No.</small>
-            <strong>{part.number.value}</strong>
+            <strong>{part.number.label}</strong>
           </div>
           <div className="col-lg-8">
             <small className="d-none d-sm-block d-md-none" style={{marginTop: '8px'}}>Desc</small>
