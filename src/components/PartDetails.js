@@ -38,7 +38,7 @@ class PartDetails extends Component{
             <label htmlFor="">Model</label><br/>
             {configuredPart.number.value}
           </div>
-          <div className="col-md-5">
+          <div className="col-md-9">
             <label htmlFor="">Details</label>
             {/*<div>
               {configuredPart.product_type.label}, {configuredPart.size.label}, {configuredPart.frequency.label}{configuredPart.frequency_unit.label}
@@ -98,10 +98,10 @@ class PartDetails extends Component{
               </tbody>
             </table>
           </div>
-          <div className="col-md-4">
+          {/*<div className="col-md-4">
             <label htmlFor="">Documents</label><br/>
             <div><a href="/get-datasheet/#">Data Sheet</a> &middot; <a href="/get-support-docs/#">Support Docs</a></div>
-          </div>
+          </div>*/}
         </div>
         <hr/>
         <div className="row">
