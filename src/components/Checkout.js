@@ -89,7 +89,8 @@ class Checkout extends Component{
     this.props.updateShippingAddress(shipping_address)
     */
     const { rfq } = this.props
-    rfq.shipping_address.state = e.value
+    const stateValue = ( null !== e )? e.value : ''
+    rfq.shipping_address.state = stateValue
     this.props.updateRFQ( rfq )
   }
 
@@ -156,16 +157,6 @@ class Checkout extends Component{
     const prototype_date = new Date( rfq.prototype_date )
     const production_date = new Date( rfq.production_date )
 
-    let defaultValue = user.company_state
-    if( null !== rfq.shipping_address.state ){
-      for( var i = 0; i < stateOptions.length; i++ ){
-        var option = stateOptions[i]
-        //console.log('defaultValue = ', defaultValue, 'option.value = ', option.value)
-        if( defaultValue === option.value )
-          defaultValue = option
-      }
-    }
-
     const stateSelectStyles = {
       option: (styles, {data, isDisabled, isFocused, isSelected }) => {
         return{
@@ -200,12 +191,13 @@ class Checkout extends Component{
             </div>
             <div className="col">
               <Creatable
-                name="shipping_state"
                 onChange={this.handleShippingAddressState}
                 multi={false}
-                placeholder="State/Province/Region..."
+                placeholder="State/Prov/Region..."
+                name="state"
                 options={stateOptions}
                 styles={stateSelectStyles}
+                value={{label: rfq.shipping_address.state, value: rfq.shipping_address.state}}
               />
             </div>
             <div className="col-md-2">
@@ -332,7 +324,7 @@ class Checkout extends Component{
             </div>
           </div>
           <div className="alert alert-secondary text-center">
-            <button type="button" className="btn btn-primary" name="submit-rfq" onClick={this.handleSubmission}>Submit to FOX</button>
+            <button type="button" className="btn btn-primary" name="submit-rfq" disabled={0 === this.props.partsInCart} onClick={this.handleSubmission}>Submit to FOX</button>
           </div>
         </div> }{/* .rfq */}
         { this.state.isSubmitting &&
