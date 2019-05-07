@@ -208,6 +208,7 @@ export const sampleCart = {
 }
 
 export const stateOptions = [
+  { value: '', label: 'Select from below, or enter your own.'},
   { value: 'AL', label: 'Alabama' },
   { value: 'AK', label: 'Alaska' },
   { value: 'AZ', label: 'Arizona' },

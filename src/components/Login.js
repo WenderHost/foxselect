@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
 import WP from './WordPressAPI';
-import Select from 'react-select';
+import Select, { Creatable } from 'react-select';
 import { companyTypeOptions, stateOptions } from './data/data';
 import ReactPasswordStrength from 'react-password-strength';
 import { AUTH_ROOT, API_REST, API_TOKEN } from '../api-config';
@@ -30,7 +30,8 @@ class Login extends Component{
         company_street: '',
         company_city: '',
         company_state: '',
-        company_zip: ''
+        company_zip: '',
+        company_country: ''
       },
       isRegistering: false
     }
@@ -231,6 +232,15 @@ class Login extends Component{
       <LoginForm hydrateStateWithLocalStorage={this.props.hydrateStateWithLocalStorage} />
     );
 
+    const stateSelectStyles = {
+      option: (styles, {data, isDisabled, isFocused, isSelected }) => {
+        return{
+          ...styles,
+          fontSize: data.value === '' ? '13px' : '16px'
+        }
+      }
+    }
+
     return(
       <div className="checkout">
         <div className="row">
@@ -281,30 +291,37 @@ class Login extends Component{
               </div>
               <div className="form-row">
                 <div className="col">
-                  <input type="text" className="form-control" placeholder="Address" name="company_street" value={new_user.company_street} onChange={this.handleChange} />
+                  {/*<input type="text" className="form-control" placeholder="Address" name="company_street" value={new_user.company_street} onChange={this.handleChange} />*/}
+                  <textarea className="form-control" name="company_street" rows="2" placeholder="Address"  onChange={this.handleChange} value={new_user.company_street} />
                 </div>
               </div>
               <div className="form-row">
-                <div className="col-md-5">
+                <div className="col">
                   <input type="text" className="form-control" placeholder="City" name="company_city" value={new_user.company_city} onChange={this.handleChange} />
                 </div>
-                <div className="col-md-4">
-                  <Select
-                    name="company_state"
+                <div className="col">
+                  <Creatable
                     onChange={this.handleChangeCompanyState}
-                    placeholder="State..."
+                    multi={false}
+                    placeholder="State/Prov/Region..."
+                    name="company_state"
                     options={stateOptions}
-                    value={stateValue}
+                    styles={stateSelectStyles}
                   />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-2">
                   <input type="text" className="form-control" placeholder="Zip" name="company_zip" value={new_user.company_zip} onChange={this.handleChange} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="col">
+                  <input type="text" className="form-control" placeholder="Country" name="company_country" value={new_user.company_country} onChange={this.handleChange} />
                 </div>
               </div>
               <hr/>
               <div className="form-row">
                 <div className="col text-right">
-                <p><small>All fields are required.</small></p>
+                <p><small>All fields are required unless noted.</small></p>
                 { ! this.state.isRegistering &&
                   <button type="button" className="btn btn-primary" name="register-user" onClick={this.handleRegister}>Register</button> }
                 { this.state.isRegistering &&
