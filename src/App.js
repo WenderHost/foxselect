@@ -338,7 +338,14 @@ class App extends Component {
       }
     }
     configuredPart.number.value += '-' + configuredPart.frequency.value;
-    configuredPart.number.label += configuredPart.frequency.value;
+    let frequency = ''
+    if( '32.768' === configuredPart.frequency.value ){
+      frequency = parseFloat( configuredPart.frequency.value )
+      frequency = frequency/1000
+    } else {
+      frequency = configuredPart.frequency.value
+    }
+    configuredPart.number.label += frequency
     if( returnPartNo ){
       return {value: configuredPart.number.value, label: configuredPart.number.label }
     } else {
