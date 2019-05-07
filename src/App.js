@@ -1035,7 +1035,10 @@ class App extends Component {
                   <button disabled={'PartSelector' === currentView} type="button" className="btn btn-primary btn-sm" onClick={() => this.setCurrentView('PartSelector')}>Part Selector</button>
                 </span>
                 <span>
-                  <button disabled={editing || ('ShoppingCart' === currentView)} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('ShoppingCart')}>Your Cart ({partsInCart} parts)</button>
+                  <button disabled={editing || ('ShoppingCart' === currentView)} type="button" className="btn btn-primary btn-sm" name="shoppingcart" onClick={() => this.setCurrentView('ShoppingCart')}>Your Cart ({partsInCart} parts)</button>
+                </span>
+                <span>
+                  <button disabled={editing || ('Checkout' === currentView)} type="button" className="btn btn-primary btn-sm" name="checkout" onClick={() => this.setCurrentView('Checkout')}>Checkout</button>
                 </span>
 
                 {/* { 0 === Object.keys(cart).length && cart.constructor === Object &&
