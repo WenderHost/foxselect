@@ -301,10 +301,10 @@ class Login extends Component{
                 </div>
                 <div className="col">
                   <Creatable
-                    name="company_state"
-                    multi={false}
                     onChange={this.handleChangeCompanyState}
-                    placeholder="State/Province/Region..."
+                    multi={false}
+                    placeholder="State/Prov/Region..."
+                    name="company_state"
                     options={stateOptions}
                     styles={stateSelectStyles}
                   />
