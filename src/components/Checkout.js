@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import CartItem from './CartItem';
-import Select from 'react-select';
+import { Creatable } from 'react-select';
 //import WP from './WordPressAPI';
 import { API_REST, API_TOKEN } from '../api-config';
 import { stateOptions } from './data/data';
@@ -44,7 +44,7 @@ class Checkout extends Component{
     //const { shipping_address } = this.props
     const { rfq } = this.props
 
-    const address_fields = ['company','contact','street','city','state','zip']
+    const address_fields = ['company','contact','street','city','state','zip','country']
     if( typeof e.target.name !== undefined && address_fields.includes( e.target.name ) ){
       rfq.shipping_address[e.target.name] = e.target.value
     } else if( typeof e.target.name !== undefined && 'distys' === e.target.name ){
@@ -106,7 +106,8 @@ class Checkout extends Component{
         street: '',
         city: '',
         state: '',
-        zip: ''
+        zip: '',
+        country: ''
       }
       this.props.updateRFQ( rfq )
       this.setState({different_shipping_address: false})
@@ -165,6 +166,15 @@ class Checkout extends Component{
       }
     }
 
+    const stateSelectStyles = {
+      option: (styles, {data, isDisabled, isFocused, isSelected }) => {
+        return{
+          ...styles,
+          fontSize: data.value === '' ? '13px' : '16px'
+        }
+      }
+    }
+
     const shippingAddressFields = different_shipping_address ? (
         <div className="shipping-form">
           <div className="form-row">
@@ -180,28 +190,36 @@ class Checkout extends Component{
           </div>
           <div className="form-row">
             <div className="col">
-              <input type="text" className="form-control" placeholder="Address" name="street" value={rfq.shipping_address.street} onChange={this.handleChange} />
+              {/*<input type="text" className="form-control" placeholder="Address" name="street" value={rfq.shipping_address.street} onChange={this.handleChange} />*/}
+              <textarea className="form-control" placeholder="Address" name="street" rows="2" onChange={this.handleChange} value={rfq.shipping_address.street} />
             </div>
           </div>
           <div className="form-row">
-            <div className="col-md-5">
+            <div className="col">
               <input type="text" className="form-control" placeholder="City" name="city" value={rfq.shipping_address.city} onChange={this.handleChange} />
             </div>
-            <div className="col-md-4">
-              <Select
+            <div className="col">
+              <Creatable
+                name="shipping_state"
                 onChange={this.handleShippingAddressState}
-                placeholder="State..."
+                multi={false}
+                placeholder="State/Province/Region..."
                 options={stateOptions}
-                defaultValue={defaultValue}
+                styles={stateSelectStyles}
               />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-2">
               <input type="text" className="form-control" placeholder="Zip" name="zip" value={rfq.shipping_address.zip} onChange={this.handleChange} />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="col">
+              <input type="text" className="form-control" placeholder="Country" name="country" value={rfq.shipping_address.country} onChange={this.handleChange} />
             </div>
           </div>
         </div>
       ) : (
-        <p>{user.company_name}<br />c/o {user.user_display_name}<br />{user.company_street}<br />{user.company_city}, {user.company_state} {user.company_zip}</p>
+        <p>{user.company_name}<br />c/o {user.user_display_name}<br /><span style={{whiteSpace: 'pre-line'}}>{user.company_street}</span><br />{user.company_city}, {user.company_state} {user.company_zip}<br />{user.company_country}</p>
       )
 
     return(
@@ -301,7 +319,7 @@ class Checkout extends Component{
                 </div>
                 <div className="col-md-6">
                   <h4>Account Address</h4>
-                  <p>{user.company_name}<br />c/o {user.user_display_name}<br />{user.company_street}<br />{user.company_city}, {user.company_state} {user.company_zip}</p>
+                  <p>{user.company_name}<br />c/o {user.user_display_name}<br /><span style={{whiteSpace: 'pre-line'}}>{user.company_street}</span><br />{user.company_city}, {user.company_state} {user.company_zip}<br />{user.company_country}</p>
                   <h4>Shipping Address</h4>
                   {shippingAddressFields}
                   <div className="form-group form-check">
