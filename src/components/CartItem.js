@@ -47,8 +47,10 @@ class CartItem extends Component{
             {cartItemDetail}
           </div>
           <div className="col-lg-2 text-md-right">
-            <button type="button" name="edit" className="btn btn-primary btn-sm" onClick={this.handleClick}>Edit</button>
-            <button type="button" name="delete" className="btn btn-danger btn-sm" onClick={this.handleClick}>Delete</button>
+            <div className="btn-group">
+              <button type="button" name="edit" className="btn btn-primary btn-sm" style={{fontSize: '.75rem'}} onClick={this.handleClick}>Edit</button>
+              <button type="button" name="delete" className="btn btn-danger btn-sm" style={{fontSize: '.75rem'}} onClick={this.handleClick}>Delete</button>
+            </div>
           </div>
         </div>
         <CartItemOptions id={id} part={part} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />
