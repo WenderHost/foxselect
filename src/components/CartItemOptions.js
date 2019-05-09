@@ -29,11 +29,13 @@ class CartItemOptions extends Component {
 
     let sampleNoValue = ''
     let internalPartNoValue = ''
+    let eauValue = ''
     if(typeof part.options !== 'undefined'){
       if(sampleChecked)
         sampleNoValue = (typeof part.options.sampleNo !== 'undefined')? part.options.sampleNo : ''
 
       internalPartNoValue = (typeof part.options.internalPartNo !== 'undefined')? part.options.internalPartNo : ''
+      eauValue = (typeof part.options.eau !== 'undefined')? part.options.eau : ''
     }
 
     let evalDate = new Date()
@@ -82,6 +84,12 @@ class CartItemOptions extends Component {
             <label className="col-md-2 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>Internal Part No.</label>
             <div className="col-md-10">
               <input className="form-control form-control-sm form-control-inline text-right" style={{padding: '0 .5rem 0 .2rem', maxWidth: '244px'}} name="internalPartNo" value={internalPartNoValue} type="text" placeholder="Internal Part No." onChange={this.handleChange} />
+            </div>
+          </div>
+          <div className="form-group row" style={{marginBottom: '0'}}>
+            <label className="col-md-2 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>EAU</label>
+            <div className="col-md-10">
+              <input className="form-control form-control-sm form-control-inline text-right" style={{padding: '0 .5rem 0 .2rem', maxWidth: '244px'}} name="eau" value={eauValue} type="text" placeholder="EAU" onChange={this.handleChange} />
             </div>
           </div>
         </div>
