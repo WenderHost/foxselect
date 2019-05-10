@@ -337,6 +337,7 @@ class App extends Component {
         configuredPart.number.label += value;
       }
     }
+
     configuredPart.number.value += '-' + configuredPart.frequency.value;
     let frequency = ''
     if( '32.768' === configuredPart.frequency.value ){
@@ -345,6 +346,7 @@ class App extends Component {
     } else {
       frequency = configuredPart.frequency.value
     }
+
     configuredPart.number.label += frequency
     if( returnPartNo ){
       return {value: configuredPart.number.value, label: configuredPart.number.label }
@@ -670,6 +672,13 @@ class App extends Component {
     }
 
     // Set frequency to a number
+    //
+    // 05/10/2019 (12:20) - the following `frequency` rules
+    // are no longer needed as we are formatting the frequency
+    // inside InputFrequency.js using formatFrequency() from
+    // /lib/utilities.js
+    //
+    /*
     if( 'frequency' === attribute && 0 < option.value.length ){
       if( 0 === option.value.indexOf('.') ){
         option.value = '0' + option.value;
@@ -682,6 +691,7 @@ class App extends Component {
         option.value = parseInt(option.value,10).toFixed(1);
       }
     }
+    /**/
 
     // Oscillators: When Voltage is `null`, reset Output when size >= 3
     /*
