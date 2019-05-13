@@ -56,7 +56,7 @@ class SelectVoltage extends Component{
         && 0 !== configuredPart.voltage.value.length
         && '_' !== configuredPart.voltage.value
         && 'O' === configuredPart.product_type.value
-        /*&& 3 <= configuredPart.size.value*/
+        && ( "3" === configuredPart.size.value || "5" === configuredPart.size.value || "7" === configuredPart.size.value )
         && <VoltageOptions configuredPart={configuredPart} updateConfiguredPart={this.props.updateConfiguredPart} /> }
       </div>
     );

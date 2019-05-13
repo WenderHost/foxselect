@@ -3,15 +3,6 @@ import { RadioGroup, Radio } from 'react-radio-group';
 
 class VoltageOptions extends Component{
 
-  constructor(){
-    super()
-
-    this.getOptionalInputCurrent = this.getOptionalInputCurrent.bind(this)
-    this.getStandardInputCurrent = this.getStandardInputCurrent.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.showOptions = this.showOptions.bind(this)
-  }
-
   /*
   componentDidUpdate(){
     const { configuredPart, updateConfiguredPart } = this.props
@@ -48,7 +39,7 @@ class VoltageOptions extends Component{
   }
   /**/
 
-  getOptionalInputCurrent(){
+  getOptionalInputCurrent = () => {
     const { configuredPart } = this.props
     const frequency = parseFloat( configuredPart.frequency.value )
 
@@ -92,7 +83,7 @@ class VoltageOptions extends Component{
     return optionalInputCurrent
   }
 
-  getStandardInputCurrent(){
+  getStandardInputCurrent = () => {
     const { configuredPart } = this.props
     const frequency = parseFloat( configuredPart.frequency.value )
 
@@ -191,7 +182,7 @@ class VoltageOptions extends Component{
     return standardInputCurrent
   }
 
-  handleChange(value){
+  handleChange = (value) => {
     const { configuredPart, updateConfiguredPart } = this.props
     // If `comma` in saved value, delay the update. Otherwise update immediately
     let delay = false
@@ -284,10 +275,12 @@ class VoltageOptions extends Component{
       updateConfiguredPart( 'voltage', voltageOption )
   }
 
-  showOptions(voltage){
+  showOptions = (voltage) => {
     const { configuredPart } = this.props
     const output = configuredPart.output.value
-    console.log("[VoltageOptions.js]->showOptions(voltage)\n• voltage: ", voltage, "\n• output: ", output )
+    console.log("[VoltageOptions.js]->showOptions(voltage)")
+    console.log("• voltage: ", voltage)
+    console.log("• output: ", output )
 
     let excludedOutputs = []
     switch(configuredPart.size.value){

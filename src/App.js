@@ -594,7 +594,10 @@ class App extends Component {
    * @param      {bool}   delay       If `true`, don't update state
    */
   updateConfiguredPart( attribute, option, delay = false ){
-    console.log("updateConfiguredPart(attribute,option,delay)\n• attribute: ", attribute, "\n• option: ", option, "\n• delay: ", delay)
+    console.log("updateConfiguredPart(attribute,option,delay)")
+    console.log("• attribute: ", attribute)
+    console.log("• option: ", option)
+    console.log("• delay: ", delay)
 
     const { configuredPart, aecq200 } = this.state
     const originalConfiguredPart = configuredPart
