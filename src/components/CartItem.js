@@ -37,23 +37,28 @@ class CartItem extends Component{
 
     return(
       <div className="cart-part">
-        <div className="row">
-          <div className="col-lg-2">
-            <small className="d-none d-sm-block d-md-none">Part No.</small>
-            <strong>{part.number.label}</strong>
-          </div>
-          <div className="col-lg-8">
-            <small className="d-none d-sm-block d-md-none" style={{marginTop: '8px'}}>Desc</small>
-            {cartItemDetail}
-          </div>
-          <div className="col-lg-2 text-md-right">
+        <div className="row no-gutters">
+          <div className="col-10">
+            <div className="row">
+              <div className="col-lg-2">
+                <small className="d-none d-sm-block d-md-none">Part No.</small>
+                <strong>{part.number.label}</strong>
+              </div>
+              <div className="col">
+                <small className="d-none d-sm-block d-md-none" style={{marginTop: '8px'}}>Desc</small>
+                {cartItemDetail}
+                <CartItemOptions id={id} part={part} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />
+              </div>
+            </div>
+
+          </div>{/* .col-10 */}
+          <div className="col" style={{textAlign: 'right'}}>
             <div className="btn-group">
               <button type="button" name="edit" className="btn btn-primary btn-sm" style={{fontSize: '.75rem'}} onClick={this.handleClick}>Edit</button>
               <button type="button" name="delete" className="btn btn-danger btn-sm" style={{fontSize: '.75rem'}} onClick={this.handleClick}>Delete</button>
             </div>
-          </div>
+          </div>{/* .col-2 */}
         </div>
-        <CartItemOptions id={id} part={part} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />
       </div>
     )
   }
