@@ -1,7 +1,7 @@
 import React from 'react';
 
 import SelectProductType from './selects/SelectProductType';
-import SelectFrequency from './selects/SelectFrequency';
+import InputFrequency from './InputFrequency'
 import AdditionalOptionsForm from './AdditionalOptionsForm';
 import PartDetails from './PartDetails';
 import { API_ENV } from '../api-config';
@@ -38,19 +38,10 @@ class PartSelector extends React.Component{
               />
             </div>
             <div className="col-xl-8">
-              {/*<label className="sr-only" htmlFor="frequency">Frequency</label>
-              <SelectFrequency
-                frequency={configuredPart.frequency}
-                updateConfiguredPart={this.props.updateConfiguredPart}
-                frequencyOptions={partOptions.frequency}
-                configuredPart={configuredPart}
-              />*/}
               <div className="row">
                 <div className="col-md-6 col-frequency">
-                  <SelectFrequency
-                    frequency={configuredPart.frequency}
+                  <InputFrequency
                     updateConfiguredPart={this.props.updateConfiguredPart}
-                    frequencyOptions={partOptions.frequency}
                     configuredPart={configuredPart}
                   />
                 </div>
