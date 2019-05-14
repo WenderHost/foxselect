@@ -143,6 +143,7 @@ class VoltageOptions extends Component{
         case 'B':
         case 'C':
         case 'B,C':
+        case 'C,B':
           if( 1 <= frequency && 32 >= frequency ){
             standardInputCurrent.message = '15mA'
           } else if ( 50 >= frequency ){
@@ -233,7 +234,7 @@ class VoltageOptions extends Component{
         switch(configuredPart.voltage.label){
           case '3.3 Volts':
             delay = true
-            voltageOption = {value: 'J', label: '3.3 Volts'}
+            voltageOption = {value: 'C', label: '3.3 Volts'}
             break
 
           case '2.5 Volts':
@@ -297,7 +298,7 @@ class VoltageOptions extends Component{
     if( 'P' === output.substring(0,1) ){
       return(
           <div className="alert alert-secondary">
-            <p>Input Current:</p>
+            <p>Jitter – E/D Pin:</p>
             <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
               <div className="row no-gutters">
                 <div className="col-11">
@@ -311,21 +312,23 @@ class VoltageOptions extends Component{
                 </div>
                 <div className="col-1"><Radio value="PD" id="opt-jitter" /></div>
               </div>
+              { 'C' === configuredPart.voltage.value &&
               <div className="row no-gutters">
                 <div className="col-11">
                   <label htmlFor="opt-max-jitter">Optional 0.1pS MAX Jitter, E/D Pin 1</label>
                 </div>
                 <div className="col-1"><Radio value="PU" id="opt-max-jitter" /></div>
-              </div>
+              </div> }
             </RadioGroup>
           </div>
       )
     }
 
-    if( 'LS' === output || 'LD' === output || ( -1 < output.indexOf(',') && -1 < output.indexOf('LD') ) ){
+    //if( 'LS' === output || 'LD' === output || ( -1 < output.indexOf(',') && -1 < output.indexOf('LD') ) ){
+    if( -1 < output.indexOf('LD') || -1 < output.indexOf('LS') ){
       return(
           <div className="alert alert-secondary">
-            <p>Input Current:</p>
+            <p>Jitter – E/D Pin:</p>
             <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
               <div className="row no-gutters">
                 <div className="col-11">
@@ -352,7 +355,7 @@ class VoltageOptions extends Component{
           case '5':
             inputOptions = (
               <div className="alert alert-secondary">
-                <p>Input Current:</p>
+                <p>Output Load:</p>
                 <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
                   <div className="row no-gutters">
                     <div className="col-11">
@@ -374,7 +377,7 @@ class VoltageOptions extends Component{
           case '7':
             inputOptions = (
               <div className="alert alert-secondary">
-                <p>Input Current:</p>
+                <p>Output Load:</p>
                 <RadioGroup name="voltage_option" selectedValue={output} onChange={this.handleChange}>
                   <div className="row no-gutters">
                     <div className="col-11">
