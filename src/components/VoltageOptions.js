@@ -413,6 +413,10 @@ class VoltageOptions extends Component{
       case 'H':
       case 'J,H':
       case 'H,J':
+        // FO7 does not have any `Input Current` options
+        if( '7' === configuredPart.size.value )
+          return
+
         const optionalInputCurrent = this.getOptionalInputCurrent()
         const standardInputCurrent = this.getStandardInputCurrent()
         const stdInputCurrentMsg = ( typeof standardInputCurrent.message !== 'undefined' && '' !== standardInputCurrent.message )? ' (' + standardInputCurrent.message + ')' : ''
