@@ -33,12 +33,6 @@ class SelectOutput extends Component{
   handleChange = (selectedOption) => {
     const { configuredPart, updateConfiguredPart } = this.props;
 
-    /*
-    const { outputOptions } = this.props
-    if( typeof outputOptions !== 'undefined' && 1 < outputOptions.length && outputOptions.length > this.state.storedOptions )
-      this.setState({storedOptions: outputOptions})
-    */
-
     // Update related options
     switch(configuredPart.product_type.value){
       case 'T':
