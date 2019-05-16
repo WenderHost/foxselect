@@ -24,7 +24,7 @@ class App extends Component {
   constructor(){
     super();
 
-    this.loadPart = this.loadPart.bind(this);
+    //this.loadPart = this.loadPart.bind(this);
     this.loadSampleCart = this.loadSampleCart.bind(this);
     this.hydrateStateWithLocalStorage = this.hydrateStateWithLocalStorage.bind(this);
     this.setCurrentView = this.setCurrentView.bind(this);
@@ -823,7 +823,7 @@ class App extends Component {
       .get(axiosUrl)
       .then(response => {
 
-        const { partOptions } = this.state;
+        const { partOptions, configuredPart } = this.state;
         const { availableParts } = response.data;
 
         var forceUpdate = false;
@@ -840,8 +840,35 @@ class App extends Component {
         const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp','pin_1','enable_type','spread'];
         for (var i = allowedOptions.length - 1; i >= 0; i--) {
           var option = allowedOptions[i];
-          if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate )
+          if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate ){
             partOptions[option] = response.data.partOptions[option];
+
+            /**
+             * Conditions for updating configuredPart[${option}] w/ return option:
+             *
+             * • 1 === partOptions[option].length // API returned only 1 option
+             * • -1 === partOptions[option][0].value.indexOf(',') // does not have comma
+             * • -1 < configuredPart[option].value.indexOf(',') // configuredPart has a comma
+             */
+            if(
+              typeof partOptions[option] !== 'undefined'
+              && typeof partOptions[option] === 'object'
+              && typeof partOptions[option][0].value !== 'undefined'
+              && typeof partOptions[option][0].value === 'string'
+              && 1 === partOptions[option].length
+              && -1 === partOptions[option][0].value.indexOf(',')
+              && -1 < configuredPart[option].value.indexOf(',')
+            ){
+              console.log(`🔔 [App.js]->updateOptions(): UPDATING '${option}'...`)
+              console.log(`Our API has "selected" the '${option}' as '${partOptions[option][0].value}' from '${configuredPart[option].value}' b/c the following conditions have been met:`)
+              console.log(`\t• API has returned only one option (partOptions[${option}].length = ${partOptions[option].length}).`)
+              console.log(`\t• Returned API '${option}' does not have a comma ('${option}' = ${partOptions[option][0].value}).`)
+              console.log(`\t• Our configuredPart.${option}.value has a comma (configuredPart.${option}.value = ${configuredPart[option].value}).`)
+              configuredPart[option].value = partOptions[option][0].value
+              console.log(`\t• New part no. is now:`, this.setPartNumber(true) ) // Don't comment out this console.log as we're actually setting the PartNumber here.
+            }
+
+          }
         }
 
        // If window.configuredPart, we should compare our configuredPart with
@@ -855,7 +882,7 @@ class App extends Component {
             () => this.updateConfiguredPartViaGlobalVar()
           )
         } else {
-          this.setState({partOptions: partOptions, availableParts: availableParts})
+          this.setState({partOptions: partOptions, availableParts: availableParts, configuredPart: configuredPart})
         }
         /**/
 
@@ -966,7 +993,7 @@ class App extends Component {
     const { aecq200, configuredPart, partOptions, availableParts, cart, user } = this.state
     let { currentView } = this.state
     const editing = cart.hasOwnProperty(configuredPart.cart_id)
-    //const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value
+    const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value
     var cartKeys = Object.keys(cart)
     var partsInCart = cartKeys.length
 
@@ -1044,6 +1071,8 @@ class App extends Component {
       <div className="container">
         { ( 'web' === API_ENV ) &&
         <div>
+          { -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') &&
+          <div className="row no-gutters justify-content-center"><div className="col-12 meta-foxselect " style={{textAlign: 'center'}}><code><a href={testLink} target="_blank">View API</a></code></div></div> }
           <div className="row no-gutters">
             <div className="col-md-3">
               <h1 className="title">
