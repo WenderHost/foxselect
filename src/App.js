@@ -341,7 +341,8 @@ class App extends Component {
 
     configuredPart.number.value += '-' + configuredPart.frequency.value;
     let frequency = ''
-    if( '32.768' === configuredPart.frequency.value ){
+    // '32.768' === configuredPart.frequency.value &&
+    if( 'khz' === configuredPart.frequency_unit.value ){
       frequency = parseFloat( configuredPart.frequency.value )
       frequency = frequency/1000
     } else {
@@ -845,6 +846,14 @@ class App extends Component {
             partOptions[option] = response.data.partOptions[option];
 
             /**
+             * "SETTING" A PART ATTRIBUTE FROM THE API
+             *
+             * When we have a part attribute with a `hold`
+             * (e.g. output = { value: [HS,HL,HB], label: 'HCMOS'}) and the API
+             * returns one option for that attribute, we can resolve the `hold` by
+             * selecting the option returned by the API since our part configuration
+             * has now limited the returned API values.
+             *
              * Conditions for updating configuredPart[${option}] w/ return option:
              *
              * • 1 === partOptions[option].length // API returned only 1 option
