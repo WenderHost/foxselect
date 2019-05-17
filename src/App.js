@@ -1065,8 +1065,12 @@ class App extends Component {
         </Suspense>
     }
 
-    let buttonText = 'Return to Cart';
-    if( typeof configuredPart.cart_id !== 'undefined' && configuredPart.number.value !== cart[configuredPart.cart_id].number.value )
+    let buttonText = 'Return to Cart'
+    if(
+      typeof configuredPart.cart_id !== 'undefined'
+      && typeof cart[configuredPart.cart_id] !== 'undefined'
+      && configuredPart.number.value !== cart[configuredPart.cart_id].number.value
+    )
       buttonText = 'Update Part'
 
     let buttonClass = ( this.isPartConfigured(configuredPart) )? 'btn-primary' : 'btn-secondary'
