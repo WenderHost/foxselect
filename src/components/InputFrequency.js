@@ -14,7 +14,6 @@ class InputFrequency extends Component{
 
   formatFrequency = (e) => {
     const formattedFrequency = formatFrequency( e.target.value )
-    console.log('formattedFrequency = ', formattedFrequency)
     this.setState({hasFocus: false, frequency: formattedFrequency},() => {
       this.props.updateConfiguredPart('frequency',{label: formattedFrequency, value: formattedFrequency })
     })
