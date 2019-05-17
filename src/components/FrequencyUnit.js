@@ -10,8 +10,9 @@ class FrequencyUnit extends Component{
   handleChange = (e) => {
     const { configuredPart } = this.props
     const frequencyUnitLabels = {'mhz': 'MHz', 'khz': 'kHz'}
-    if( ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) && window.confirm('Updating this setting will reset your additional options. Continue?') ){
-      this.props.updateConfiguredPart(e.target.name,{ value: e.target.value, label: frequencyUnitLabels[e.target.value] } );
+    if( 'C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value ){
+      if( window.confirm('Updating this setting will reset your additional options. Continue?') )
+        this.props.updateConfiguredPart(e.target.name,{ value: e.target.value, label: frequencyUnitLabels[e.target.value] } );
     } else {
       this.props.updateConfiguredPart(e.target.name,{ value: e.target.value, label: frequencyUnitLabels[e.target.value] } );
     }
