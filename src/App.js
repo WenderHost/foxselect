@@ -214,13 +214,14 @@ class App extends Component {
 
       case 'PartSelector':
         if( removeConfiguredPartCartId ){
-          console.log('We are removing the Cart ID.')
+          console.log('🔔 [App.js]->setCurrentView() We are removing the Cart ID.')
           const { configuredPart } = this.state
           delete configuredPart.cart_id
         }
         if( clearPart ){
           // clear the part in response to the "Clear" button next to the part number
           //console.log('Need to clear the part.')
+          console.log('🔔 [App.js]->setCurrentView() Clearing the part...')
           this.resetConfiguredPart(null,true);
         }
         //this.resetConfiguredPart();
@@ -594,10 +595,10 @@ class App extends Component {
    * @param      {bool}   delay       If `true`, don't update state
    */
   updateConfiguredPart( attribute, option, delay = false ){
-    console.log("updateConfiguredPart(attribute,option,delay)")
-    console.log("• attribute: ", attribute)
-    console.log("• option: ", option)
-    console.log("• delay: ", delay)
+    console.log("🔔 [App.js]->updateConfiguredPart(attribute,option,delay)")
+    console.log(`\t• attribute: `, attribute)
+    console.log(`\t• option: `, option)
+    console.log(`\t• delay: `, delay)
 
     const { configuredPart, aecq200 } = this.state
     const originalConfiguredPart = configuredPart
@@ -655,7 +656,7 @@ class App extends Component {
 
       switch( configuredPart.product_type.value ){
         case 'C':
-          console.log("[RESETING:Crystal] We're switching from MHz to kHz. We need to:\n - Set `product_type` = K\n - Set frequency to 32.768 kHz\n - Set size to 3 chars");
+          console.log("🔔 [App.js]->updateConfiguredPart() We're switching from MHz to kHz. We need to:\n\t• Set `product_type` = K\n\t• Set frequency to 32.768 kHz\n\t• Set size to 3 chars");
           configuredPart.product_type.value = 'K'
           configuredPart.frequency = {value: '32.768', label: '32.768'}
           configuredPart.size = {value: '___', label: ''}
@@ -663,7 +664,7 @@ class App extends Component {
           break;
 
         case 'K':
-          console.log('[RESETTING:Crystal] Toggling from kHz to MHz.');
+          console.log('🔔 [App.js]->updateConfiguredPart() Toggling from kHz to MHz.');
           configuredPart.product_type.value = 'C'
           configuredPart.frequency = {value: '0.0', label: ''}
           //configuredPart.load = {value: '_', label: ''}
@@ -810,7 +811,7 @@ class App extends Component {
     if( typeof configuredPart.number === 'undefined' || typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value || '_' === configuredPart.product_type.value )
       return
 
-    console.log('updateOptions('+configuredPart.number.value+')')
+    console.log(`🔔 [App.js]->updateOptions(${configuredPart.number.value})`)
 
     if( 'salesforce' === API_ENV ){
       const { dataService } = this.props;
@@ -871,7 +872,7 @@ class App extends Component {
           }
         }
 
-       // If window.configuredPart, we should compare our configuredPart with
+        // If window.configuredPart, we should compare our configuredPart with
         // window.configuredPart, and keep updating configuredPart one option at a
         // time until we match window.configuredPart
         //*
@@ -924,7 +925,11 @@ class App extends Component {
       number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______0.0'}
     }
     /**/
-    console.log('[resetConfiguredPart] clearAll = ', clearAll, "\nproduct_type = ", product_type, "\nresetPart = ", resetPart)
+    console.log('🔔 [App.js]->resetConfiguredPart()')
+    console.log(`\t• product_type = `, product_type )
+    console.log(`\t• clearAll = `, clearAll )
+    console.log(`• resetPart = `, resetPart )
+
     //const resetPart = JSON.parse( JSON.stringify( defaultConfiguredPart ) )
 
     switch(product_type.value){
@@ -968,13 +973,16 @@ class App extends Component {
     this.setState(
       {configuredPart: resetPart, availableParts: 'n/a'},
       () => {
+        this.updateOptions( resetPart, resetPart )
+        /*
         if( true === clearAll ){
           window.location.reload()
         } else {
           this.updateOptions( resetPart, resetPart )
         }
+        /**/
       }
-    );
+    )
   }
 
   checkAppToken(){
@@ -1101,7 +1109,7 @@ class App extends Component {
           <div className="row meta-foxselect no-gutters">
             <div className="col">
               Configured Part: <code><a href="#part-selector" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector')}} target="_blank" rel="noopener noreferrer">{configuredPart.number.label}</a></code>
-              {/*<button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>*/}
+              <button disabled={('_' || 'F') === configuredPart.number.value.substring(0,1)} className="btn btn-sm btn-secondary" onClick={(e) => {e.preventDefault(); this.setCurrentView('PartSelector',true,true);}}>Clear</button>
             </div>
             <div className="col-md-auto">Available Parts: <code>{availableParts}</code></div>
             <div className="col text-md-right">
