@@ -52,7 +52,7 @@ export const productTypeOptions = [
   { value: 'O', label: 'Oscillator' },
   { value: 'T', label: 'TCXO/VC-TCXO' },
   { value: 'Y', label: 'VCXO' },
-  { value: 'S', label: 'SSO' },
+  { value: 'S', label: 'SSO' }
 ]
 
 
