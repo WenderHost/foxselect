@@ -30,7 +30,6 @@ class App extends Component {
     this.setCurrentView = this.setCurrentView.bind(this);
     this.setPartNumber = this.setPartNumber.bind(this);
     this.isPartConfigured = this.isPartConfigured.bind(this);
-    this.resetConfiguredPart = this.resetConfiguredPart.bind(this);
     this.updateCart = this.updateCart.bind(this);
     this.updateConfiguredPart = this.updateConfiguredPart.bind(this);
     this.updateOptions = this.updateOptions.bind(this);
@@ -222,7 +221,7 @@ class App extends Component {
           // clear the part in response to the "Clear" button next to the part number
           //console.log('Need to clear the part.')
           console.log('🔔 [App.js]->setCurrentView() Clearing the part...')
-          this.resetConfiguredPart(null,true);
+          this.resetConfiguredPart(null);
         }
         //this.resetConfiguredPart();
         break;
@@ -619,7 +618,7 @@ class App extends Component {
 
     // `product_type` has changed, reset the configuredPart
     if( 'product_type' === attribute && option.value !== currentValue ){
-      this.resetConfiguredPart(option); //configuredPart,option.value
+      this.resetConfiguredPart({product_type: option}); //configuredPart,option.value
       return;
     }
 
@@ -653,50 +652,26 @@ class App extends Component {
 
     // if `frequency_unit` has changed, reset AdditionalOptions
     if( 'frequency_unit' === attribute && option.value !== currentValue ){
-      //const product_type_value = ( typeof window.configuredPart !== 'undefined' && this.state.checkExternalConfiguredPart )? window.configuredPart.product_type.value : configuredPart.product_type.value
-
       switch( configuredPart.product_type.value ){
         case 'C':
-          console.log("🔔 [App.js]->updateConfiguredPart() We're switching from MHz to kHz. We need to:\n\t• Set `product_type` = K\n\t• Set frequency to 32.768 kHz\n\t• Set size to 3 chars");
-          configuredPart.product_type.value = 'K'
-          configuredPart.frequency = {value: '32.768', label: '32.768'}
-          configuredPart.size = {value: '___', label: ''}
-          //delete configuredPart.load
-          break;
+          console.log("🔔🚨 [App.js]->updateConfiguredPart() We're switching from MHz to kHz. We need to:\n\t• Set `product_type` = K\n\t• Set frequency to 32.768 kHz\n\t• Set size to 3 chars");
+          this.resetConfiguredPart({
+            product_type: {value: 'K', label: 'Crystal'},
+            frequency: {value: '32.768', label: '32.768'},
+            frequency_unit: {value: 'khz', label: 'KHz'},
+            size: {value: '___', label: ''}
+          })
+          return
 
         case 'K':
-          console.log('🔔 [App.js]->updateConfiguredPart() Toggling from kHz to MHz.');
-          configuredPart.product_type.value = 'C'
-          configuredPart.frequency = {value: '0.0', label: ''}
-          //configuredPart.load = {value: '_', label: ''}
-          break;
+          console.log('🔔🚨 [App.js]->updateConfiguredPart() Toggling from kHz to MHz.')
+          this.resetConfiguredPart({product_type: {value: 'C', label: 'Crystal'}})
+          return
 
         default:
-          console.log('No reset written for `' +  configuredPart.product_type.label + '` when toggling MHz/kHz.');
+          console.log('🔔🚨 [App.js]->updateConfiguredPart() No reset written for `' +  configuredPart.product_type.label + '` when toggling MHz/kHz.');
       }
     }
-
-    // Set frequency to a number
-    //
-    // 05/10/2019 (12:20) - the following `frequency` rules
-    // are no longer needed as we are formatting the frequency
-    // inside InputFrequency.js using formatFrequency() from
-    // /lib/utilities.js
-    //
-    /*
-    if( 'frequency' === attribute && 0 < option.value.length ){
-      if( 0 === option.value.indexOf('.') ){
-        option.value = '0' + option.value;
-      } else if( 0 < option.value.indexOf('.') ){
-        // nothing; We found a decimal in value. Value is fixed already.
-      } else if( '_' === option.value ){
-        // No frequency, (We may one to RESET the part here:)
-        option.value = '0.0';
-      } else {
-        option.value = parseInt(option.value,10).toFixed(1);
-      }
-    }
-    /**/
 
     // Oscillators: When Voltage is `null`, reset Output when size >= 3
     /*
@@ -797,8 +772,9 @@ class App extends Component {
     if( ! delay ){
       const partNumber = this.setPartNumber( true ) // configuredPart
       configuredPart.number = partNumber
-      this.setState({configuredPart: configuredPart, currentView: 'PartSelector'})
-      this.updateOptions( originalConfiguredPart, configuredPart )
+      this.setState({configuredPart: configuredPart, currentView: 'PartSelector'},() => {
+        this.updateOptions( originalConfiguredPart, configuredPart )
+      })
     }
   }
 
@@ -812,7 +788,7 @@ class App extends Component {
     if( typeof configuredPart.number === 'undefined' || typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value || '_' === configuredPart.product_type.value )
       return
 
-    console.log(`🔔 [App.js]->updateOptions(${configuredPart.number.value})`)
+    console.log(`☎️ [App.js]->updateOptions(${configuredPart.number.value}) calling API...`)
 
     if( 'salesforce' === API_ENV ){
       const { dataService } = this.props;
@@ -827,6 +803,8 @@ class App extends Component {
 
         const { partOptions, configuredPart } = this.state;
         const { availableParts } = response.data;
+        console.log(`⏰ [App.js]->updateOptions returned:`)
+        console.log(response.data)
 
         var forceUpdate = false;
         if( null === originalConfiguredPart ){
@@ -843,7 +821,7 @@ class App extends Component {
         for (var i = allowedOptions.length - 1; i >= 0; i--) {
           var option = allowedOptions[i];
           if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate ){
-            partOptions[option] = response.data.partOptions[option];
+            partOptions[option] = response.data.partOptions[option]
 
             /**
              * "SETTING" A PART ATTRIBUTE FROM THE API
@@ -865,6 +843,7 @@ class App extends Component {
               && typeof partOptions[option] === 'object'
               && typeof partOptions[option][0].value !== 'undefined'
               && typeof partOptions[option][0].value === 'string'
+              && typeof configuredPart[option] === 'object'
               && 1 === partOptions[option].length
               && -1 === partOptions[option][0].value.indexOf(',')
               && -1 < configuredPart[option].value.indexOf(',')
@@ -884,7 +863,6 @@ class App extends Component {
         // If window.configuredPart, we should compare our configuredPart with
         // window.configuredPart, and keep updating configuredPart one option at a
         // time until we match window.configuredPart
-        //*
         if( window.configuredPart && this.state.checkExternalConfiguredPart ){
           console.log('[App.js] updateOptions('+axiosUrl+') Axios request returned and window.configuredPart is set.')
           this.setState(
@@ -892,9 +870,9 @@ class App extends Component {
             () => this.updateConfiguredPartViaGlobalVar()
           )
         } else {
+          console.log(`🔔 [App.js]->updateOptions() should be setting availableParts to ${availableParts}.`)
           this.setState({partOptions: partOptions, availableParts: availableParts, configuredPart: configuredPart})
         }
-        /**/
 
       })
       .catch(error => console.log(error))
@@ -913,14 +891,50 @@ class App extends Component {
   /**
    * Resets ${configuredPart} with `_` for all properties
    *
-   * @param      {object}  configuredPart   The configured part
-   * @param      {object}  product_type The `product_type` we're switching to
+   * @param      {object}  partOptions  The options we want to set on the reset part
    */
-  resetConfiguredPart(product_type, clearAll = false ){ // configuredPart, new_product_type
-    if(typeof product_type === 'undefined' || true === clearAll)
-      product_type = {value: '_', label: ''}
+  resetConfiguredPart = ( partOptions = {} ) => { // configuredPart, new_product_type
+    if ( null === partOptions )
+      partOptions = {product_type: {value: '_', label: ''}}
 
-    //*
+    const resetPart = {}
+    const partAttributes = ['product_type','frequency','frequency_unit','package_type','package_option','size','stability','load','optemp','number']
+    for (var i = partAttributes.length - 1; i >= 0; i--) {
+      let attribute = partAttributes[i]
+      switch( attribute ){
+        case 'frequency':
+          resetPart[attribute] = ( typeof partOptions[attribute] !== 'undefined' )? partOptions[attribute] : {value: '0.0', label: ''}
+          break
+
+        case 'frequency_unit':
+          resetPart[attribute] = ( typeof partOptions[attribute] !== 'undefined' )? partOptions[attribute] : {value: 'mhz', label: 'MHz'}
+          break
+
+        case 'package_type':
+          resetPart[attribute] = ( typeof partOptions[attribute] !== 'undefined' )? partOptions[attribute] : {value: 'smd', label: 'SMD'}
+          break
+
+        case 'package_option':
+          resetPart[attribute] = ( typeof partOptions[attribute] !== 'undefined' )? partOptions[attribute] : {value: 'BS', label: ''}
+          break
+
+        case 'number':
+          if( typeof partOptions[attribute] !== 'undefined' ){
+            resetPart[attribute] = partOptions[attribute]
+          } else if( typeof partOptions.product_type !== 'undefined' ){
+            resetPart[attribute] = {value: 'F' + partOptions.product_type.value + '_______-0.0', label: 'F' + partOptions.product_type.value + '_______0.0'}
+          } else {
+            resetPart[attribute] = {value: 'F________-0.0', label: 'F________0.0'}
+          }
+          break
+
+        default:
+          resetPart[attribute] = ( typeof partOptions[attribute] !== 'undefined' )? partOptions[attribute] : {value: '_', label: ''}
+      }
+    }
+
+
+    /*
     const resetPart = {
       product_type: product_type,
       frequency: {value: '0.0', label: ''},
@@ -935,13 +949,10 @@ class App extends Component {
     }
     /**/
     console.log('🔔 [App.js]->resetConfiguredPart()')
-    console.log(`\t• product_type = `, product_type )
-    console.log(`\t• clearAll = `, clearAll )
+    console.log(`\t• partOptions = `, partOptions )
     console.log(`• resetPart = `, resetPart )
 
-    //const resetPart = JSON.parse( JSON.stringify( defaultConfiguredPart ) )
-
-    switch(product_type.value){
+    switch(partOptions.product_type.value){
       case 'C':
         delete resetPart.voltage;
         delete resetPart.output;
@@ -983,13 +994,6 @@ class App extends Component {
       {configuredPart: resetPart, availableParts: 'n/a'},
       () => {
         this.updateOptions( resetPart, resetPart )
-        /*
-        if( true === clearAll ){
-          window.location.reload()
-        } else {
-          this.updateOptions( resetPart, resetPart )
-        }
-        /**/
       }
     )
   }
@@ -1015,8 +1019,6 @@ class App extends Component {
     var partsInCart = cartKeys.length
 
     let thisView = '';
-    // Originally a prop of PartSelector below:
-    // resetConfiguredPart={this.resetConfiguredPart}
 
     if( typeof currentView !== 'undefined' && 'Checkout' === currentView && user === null )
       currentView = 'Login'
