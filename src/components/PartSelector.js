@@ -2,24 +2,19 @@ import React from 'react';
 
 import SelectProductType from './selects/SelectProductType';
 import InputFrequency from './InputFrequency'
+import FrequencyUnit from './FrequencyUnit'
 import AdditionalOptionsForm from './AdditionalOptionsForm';
 import PartDetails from './PartDetails';
 import { API_ENV } from '../api-config';
 
 class PartSelector extends React.Component{
 
-  constructor(){
-    super();
-
-    this.handleChange = this.handleChange.bind(this);
-  }
-
   /**
    * Handles a change in state for an input element
    *
    * @param      {object}  e       A changeEvent object
    */
-  handleChange(e){
+  handleChange = (e) => {
     if( window.confirm('Updating this setting will reset your additional options. Continue?') )
       this.props.updateConfiguredPart(e.target.name,{value: e.target.value, label: e.target.value});
   }
@@ -46,21 +41,10 @@ class PartSelector extends React.Component{
                   />
                 </div>
                 <div className="col-sm-2">
-                  <label className="" htmlFor="frequency_unit">Unit</label>
-                  <div className="form-check">
-                    <input className="form-check-input" type="radio" name="frequency_unit" value="mhz" id="MHz" checked={configuredPart.frequency_unit.value === 'mhz'} onChange={this.handleChange} />
-                    <label className="form-check-label" htmlFor="MHz">
-                      MHz
-                    </label>
-                  </div>
-                  { typeof configuredPart.product_type !== 'undefined' &&
-                    ('T' !== configuredPart.product_type.value && 'Y' !== configuredPart.product_type.value && 'S' !== configuredPart.product_type.value && ( 'C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value || 'O' === configuredPart.product_type.value ) ) &&
-                  <div className="form-check">
-                    <input className="form-check-input" type="radio" name="frequency_unit" value="khz" id="kHz" checked={configuredPart.frequency_unit.value === 'khz'} onChange={this.handleChange} />
-                    <label className="form-check-label" htmlFor="kHz">
-                      kHz
-                    </label>
-                  </div> }
+                  <FrequencyUnit
+                    updateConfiguredPart={this.props.updateConfiguredPart}
+                    configuredPart={configuredPart}
+                  />
                 </div>
                 <div className="col-sm-3">
                   <label className="" htmlFor="package_type">Package Type</label>

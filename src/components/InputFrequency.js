@@ -5,29 +5,26 @@ class InputFrequency extends Component{
 
   constructor(){
     super()
-    this.formatFrequency = this.formatFrequency.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleFocus = this.handleFocus.bind(this)
+
     this.state = {
       frequency: '',
       hasFocus: false
     }
   }
 
-  formatFrequency(e){
+  formatFrequency = (e) => {
     const formattedFrequency = formatFrequency( e.target.value )
-    console.log('formattedFrequency = ', formattedFrequency)
     this.setState({hasFocus: false, frequency: formattedFrequency},() => {
       this.props.updateConfiguredPart('frequency',{label: formattedFrequency, value: formattedFrequency })
     })
   }
 
-  handleChange(e){
+  handleChange = (e) => {
     console.log('Not updating configuredPart.frequency until this input loses focus.')
     this.setState({frequency: e.target.value})
   }
 
-  handleFocus(){
+  handleFocus = () => {
     this.setState({hasFocus: true})
   }
 

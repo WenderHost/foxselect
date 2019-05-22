@@ -108,6 +108,11 @@
   padding: 20px;
 }
 
+/* Tables */
+.twbs tbody th[scope="row"]{
+  text-align: left;
+}
+
 /* Select states */
 .twbs .empty .Select-control{
   background-color: #eee;

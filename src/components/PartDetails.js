@@ -46,14 +46,14 @@ class PartDetails extends Component{
 
             <table className="table table-sm table-striped">
               <colgroup>
-                <col style={{width: '35%'}}/>
-                <col style={{width: '65%'}}/>
+                <col style={{width: '30%'}}/>
+                <col style={{width: '70%'}}/>
               </colgroup>
               <tbody>
                 {/* Object.keys(configuredPart).map(key => <tr key={key}><th scope="row">{key}</th><td>{configuredPart[key].label}</td></tr>) */}
                 <tr>
                   <th scope="row">Product Type</th>
-                  <td>{configuredPart.product_type.label} {configuredPart.frequency.value}{configuredPart.frequency_unit.value} - {configuredPart.package_type.value}</td>
+                  <td>{configuredPart.product_type.label} {configuredPart.frequency.value}{configuredPart.frequency_unit.label} - {configuredPart.package_type.label}</td>
                 </tr>
                 <tr>
                   <th scope="row">Size</th>

@@ -280,7 +280,7 @@ class Checkout extends Component{
                       </div>
                     </div>
                   </div>
-                  <p>Distributors you want a quote from:</p>
+                  <h4>Distributors you want a quote from:</h4>
                   <div className="row" style={{ margin: '0 0 20px 6px'}}>
                     <div className="col">
                       <input type="checkbox" className="form-check-input" id="distributor_avnet" name="distys" value="avnet" checked={rfq.distys.includes('avnet')} onChange={this.handleChange} />
