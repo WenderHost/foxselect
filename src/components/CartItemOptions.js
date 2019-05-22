@@ -5,34 +5,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendar } from '@fortawesome/free-solid-svg-icons'
 
 class CartItemOptions extends Component {
-  constructor(){
-    super()
 
-    this.handleChange = this.handleChange.bind(this)
-    this.handleEvalDate = this.handleEvalDate.bind(this)
-  }
-
-  handleChange(e){
-    let value = ('checkbox' === e.target.type)? e.target.checked : e.target.value;
-    //console.log('CartItemOptions::handleChange value = ' + value );
+  handleChange = (e) => {
+    let value = ('checkbox' === e.target.type)? e.target.checked : e.target.value
     this.props.updateCart( 'update', this.props.id, e.target.name, value );
   }
 
-  handleEvalDate( date ){
+  handleEvalDate = ( date ) => {
     this.props.updateCart( 'update', this.props.id, 'evalDate', date )
   }
 
   render(){
     const { id, part } = this.props;
-    let sampleChecked = (typeof part.options === 'undefined')? false : part.options.sample;
-    let sampleNoDisabled = (sampleChecked)? '' : 'disabled';
+    const sampleChecked = (typeof part.options === 'undefined')? false : part.options.sample;
+    const quoteChecked = (typeof part.options === 'undefined')? false : part.options.quote;
 
     let sampleNoValue = ''
+    //let quoteNoValue = ''
     let internalPartNoValue = ''
     let eauValue = ''
     if(typeof part.options !== 'undefined'){
       if(sampleChecked)
         sampleNoValue = (typeof part.options.sampleNo !== 'undefined')? part.options.sampleNo : ''
+      //if(quoteChecked)
+      //  quoteNoValue = (typeof part.options.quoteNo !== 'undefined')? part.options.quoteNo : ''
 
       internalPartNoValue = (typeof part.options.internalPartNo !== 'undefined')? part.options.internalPartNo : ''
       eauValue = (typeof part.options.eau !== 'undefined')? part.options.eau : ''
@@ -44,24 +40,26 @@ class CartItemOptions extends Component {
         evalDate = new Date(part.options.evalDate)
     }
 
-    let quoteChecked = (typeof part.options === 'undefined')? false : part.options.quote;
     let datasheetChecked = (typeof part.options === 'undefined')? false : part.options.datasheet;
 
     let options = (
       <div className="options">
-        <div className="row">
-          <div className="col-lg-3 form-inline">
+        <div className="form-row align-items-center" style={{ height: '28px'}}>
+          <div className="col-3 form-inline">
             <input className="form-check-input" type="checkbox" name="sample" value="true" id={'sample-' + id} checked={!!sampleChecked} onChange={this.handleChange} />
             <label className="form-check-label" htmlFor={'sample-' + id}>Sample</label>
-            <input className="form-control form-control-sm text-right" style={{marginLeft: '8px', padding: '0 .5rem 0 .2rem', maxWidth: '38px'}} disabled={sampleNoDisabled} name="sampleNo" value={sampleNoValue} type="text" placeholder="No." onChange={this.handleChange} />
+            { sampleChecked &&
+              <input className="form-control form-control-sm" style={{marginLeft: '8px', maxWidth: '50px', padding: '.15rem .25rem'}} name="sampleNo" value={sampleNoValue} type="number" onChange={this.handleChange} />}
           </div>
-          <div className="col-lg-2">
+          <div className="col-3 form-inline">
             <div className="form-check">
               <input className="form-check-input" type="checkbox" name="quote" value="true" id={'quote-' + id} checked={!!quoteChecked} onChange={this.handleChange} />
               <label className="form-check-label" htmlFor={'quote-' + id}>Quote</label>
+              {/* quoteChecked &&
+                <input className="form-control form-control-sm" style={{marginLeft: '8px', maxWidth: '50px', padding: '.15rem .25rem'}} name="quoteNo" value={quoteNoValue} type="number" onChange={this.handleChange} />*/}
             </div>
           </div>
-          <div className="col-lg-2">
+          <div className="col-3 form-inline">
             <div className="form-check">
               <input className="form-check-input" type="checkbox" name="datasheet" value="true" id={'datasheet-' + id} checked={!!datasheetChecked} onChange={this.handleChange} />
               <label className="form-check-label" htmlFor={'datasheet-' + id}>Datasheet</label>
