@@ -60,10 +60,6 @@ class Checkout extends Component{
       rfq[e.target.name] = e.target.value
     }
 
-    //if( typeof e.target.name !== undefined )
-    //  shipping_address[e.target.name] = e.target.value
-
-    //this.props.updateShippingAddress(shipping_address)
     this.props.updateRFQ( rfq )
   }
 
@@ -83,11 +79,6 @@ class Checkout extends Component{
    * onChange handler for our Address:State selector
    */
   handleShippingAddressState(e){
-    /*
-    const { shipping_address } = this.props
-    shipping_address['state'] = e.value
-    this.props.updateShippingAddress(shipping_address)
-    */
     const { rfq } = this.props
     const stateValue = ( null !== e )? e.value : ''
     rfq.shipping_address.state = stateValue
