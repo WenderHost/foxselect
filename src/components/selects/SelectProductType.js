@@ -21,6 +21,11 @@ class SelectProductType extends Component{
       console.log(`• productTypeOptions = `, productTypeOptions)
     }
     const selectedValue = ( '' === this.props.product_type.label )? null : this.props.product_type
+    let page = window.location.pathname + 'foxselect/' + this.props.currentView
+    if( null !== selectedValue )
+      page+= '/' + this.props.product_type.label
+    console.log(`🔔 [SelectProductType.js]->render Sending this pageview to GA: `, page)
+    this.props.ReactGA.pageview( page )
 
     return(
       <div>

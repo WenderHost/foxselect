@@ -6,6 +6,10 @@ import 'core-js/es7/array'
 import './css/bootstrap-ns.css'
 import './css/style.css'
 
+const loggingEnabled = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') )? true : false
+if( ! loggingEnabled )
+  console.log = function(){}
+
 const App = React.lazy(() => import('./App'))
 
 /**

@@ -12,6 +12,7 @@
     "react": "^16.8.3",
     "react-datepicker": "^2.1.0",
     "react-dom": "^16.8.3",
+    "react-ga": "^2.5.7",
     "react-password-strength": "^2.3.1",
     "react-radio-group": "^3.0.2",
     "react-s-alert": "^1.4.1",

@@ -28,8 +28,10 @@ class PartSelector extends React.Component{
           <div className="form-row">
             <div className="col-xl-4">
               <SelectProductType
+                currentView={this.props.currentView}
                 product_type={configuredPart.product_type}
                 updateConfiguredPart={this.props.updateConfiguredPart}
+                ReactGA={this.props.ReactGA}
               />
             </div>
             <div className="col-xl-8">

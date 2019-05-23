@@ -1,18 +1,30 @@
-import React, { Component, Suspense } from 'react';
+import React, { Component, Suspense } from 'react'
+
+// Google Analytics
+import ReactGA from 'react-ga'
 
 // Alerts
-import Alert from 'react-s-alert';
-import 'react-s-alert/dist/s-alert-default.css';
-import 'react-s-alert/dist/s-alert-css-effects/slide.css';
+import Alert from 'react-s-alert'
+import 'react-s-alert/dist/s-alert-default.css'
+import 'react-s-alert/dist/s-alert-css-effects/slide.css'
 
 // Components
 import { sampleCart, aecq200Options, defaultConfiguredPart, frequencyOptions } from './components/data/data'
-import logo from './logo.svg';
+import logo from './logo.svg'
 
 // Server Communication
-import WP from './components/WordPressAPI';
-import axios from 'axios';
-import { API_ROOT, API_ENV } from './api-config';
+import WP from './components/WordPressAPI'
+import axios from 'axios'
+import { API_ROOT, API_ENV } from './api-config'
+
+// Initialize Google Analytics
+const GAtestMode = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') )? true : false
+const GAoptions = {}
+if( GAtestMode ){
+  GAoptions.testMode = GAtestMode
+  GAoptions.debug = GAtestMode
+}
+ReactGA.initialize('UA-5411671-3', GAoptions)
 
 // Lazy load the following components for performance
 const Login = React.lazy(() => import('./components/Login'))
@@ -186,17 +198,18 @@ class App extends Component {
    * @param      {string}  view    A string defining the current view
    */
   setCurrentView = ( view, removeConfiguredPartCartId = true, clearPart = false ) => {
-    let viewObj = {currentView: view};
-    const { user } = this.state;
+    let viewObj = {currentView: view}
+    const { user } = this.state
 
     switch(view){
 
       case 'Checkout':
-        view = ( typeof user !== 'undefined' && null !== user )? 'Checkout' : 'Login' ;
-        viewObj = {currentView: view};
-        break;
+        view = ( typeof user !== 'undefined' && null !== user )? 'Checkout' : 'Login'
+        viewObj = {currentView: view}
+        break
 
       case 'PartSelector':
+      case 'ShoppingCart':
         if( removeConfiguredPartCartId ){
           console.log('🔔 [App.js]->setCurrentView() We are removing the Cart ID.')
           const { configuredPart } = this.state
@@ -204,22 +217,22 @@ class App extends Component {
         }
         if( clearPart ){
           // clear the part in response to the "Clear" button next to the part number
-          //console.log('Need to clear the part.')
           console.log('🔔 [App.js]->setCurrentView() Clearing the part...')
-          this.resetConfiguredPart(null);
+          this.resetConfiguredPart(null)
         }
-        //this.resetConfiguredPart();
-        break;
+        break
 
       case 'UpdateCartPart':
-        const { cart, configuredPart } = this.state;
-        const cart_id = configuredPart.cart_id;
+        console.log('🔔 [App.js]->setCurrentView() We are removing the Cart ID.')
+        const { cart, configuredPart } = this.state
+        const cart_id = configuredPart.cart_id
         delete configuredPart.cart_id;
-        console.log('configuredPart after deleting cart_id:');
-        console.log(configuredPart);
+        console.log(`configuredPart after deleting cart_id:`, configuredPart)
         cart[cart_id] = configuredPart;
         viewObj = {cart: cart, currentView: 'ShoppingCart'};
-        break;
+        console.log('🔔 [App.js]->setCurrentView() Clearing the part...')
+        this.resetConfiguredPart(null)
+        break
 
       default:
         // nothing
@@ -996,6 +1009,12 @@ class App extends Component {
     if( typeof currentView !== 'undefined' && 'Checkout' === currentView && user === null )
       currentView = 'Login'
 
+    const page = window.location.pathname + 'foxselect/' + currentView
+    if('PartSelector' !== currentView && '' !== currentView ){
+      console.log(`🔔 [App.js]->render Sending this pageview to GA: `, page)
+      ReactGA.pageview(page)
+    }
+
     switch( currentView ){
       case 'Checkout':
         thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
@@ -1035,16 +1054,18 @@ class App extends Component {
         thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
           <PartSelector
             addPart={this.addPart}
+            aecq200={aecq200}
             cart={cart}
             configuredPart={configuredPart}
-            aecq200={aecq200}
+            currentView={currentView}
             editing={editing}
             isPartConfigured={this.isPartConfigured}
             partOptions={partOptions}
-            updateConfiguredPart={this.updateConfiguredPart}
-            updateCart={this.updateCart}
-            updateOptions={this.updateOptions}
+            ReactGA={ReactGA}
             setCurrentView={this.setCurrentView}
+            updateCart={this.updateCart}
+            updateConfiguredPart={this.updateConfiguredPart}
+            updateOptions={this.updateOptions}
           />
         </Suspense>
     }
@@ -1114,7 +1135,7 @@ class App extends Component {
             <div className="row">
               <div className="col-10" style={{alignSelf: 'center'}}><strong>NOTE:</strong> <em>You are editing a part in your Cart.</em> If you wish to configure a new part, <a href="/select-a-new-part/" onClick={(e) => {e.preventDefault();this.setCurrentView('PartSelector')}}>click here</a>.</div>
               <div className="col-2 text-right">
-                <button type="button" className={buttonClass} disabled={! this.isPartConfigured(configuredPart) } onClick={(e) => {e.preventDefault(); let nextView = ('Update Part' === buttonText)? 'UpdateCartPart' : 'ShoppingCart';this.setCurrentView(nextView)}}>{buttonText}</button>
+                <button type="button" className={buttonClass} disabled={! this.isPartConfigured(configuredPart) } onClick={(e) => {e.preventDefault(); let nextView = ('Update Part' === buttonText)? 'UpdateCartPart' : 'ShoppingCart';this.setCurrentView(nextView,true,true)}}>{buttonText}</button>
               </div>
             </div>
           </div> }
