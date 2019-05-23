@@ -12,7 +12,7 @@ import logo from './logo.svg';
 // Server Communication
 import WP from './components/WordPressAPI';
 import axios from 'axios';
-import { API_ROOT, API_ENV, API_TOKEN } from './api-config';
+import { API_ROOT, API_ENV } from './api-config';
 
 // Lazy load the following components for performance
 const Login = React.lazy(() => import('./components/Login'))
@@ -22,22 +22,7 @@ const Checkout = React.lazy(() => import('./components/Checkout'))
 
 class App extends Component {
   constructor(){
-    super();
-
-    //this.loadPart = this.loadPart.bind(this);
-    this.loadSampleCart = this.loadSampleCart.bind(this);
-    this.hydrateStateWithLocalStorage = this.hydrateStateWithLocalStorage.bind(this);
-    this.setCurrentView = this.setCurrentView.bind(this);
-    this.setPartNumber = this.setPartNumber.bind(this);
-    this.isPartConfigured = this.isPartConfigured.bind(this);
-    this.updateCart = this.updateCart.bind(this);
-    this.updateConfiguredPart = this.updateConfiguredPart.bind(this);
-    this.updateOptions = this.updateOptions.bind(this);
-    this.updateShippingAddress = this.updateShippingAddress.bind(this); // Gets replaced by updateRFQ
-    this.updateRFQ = this.updateRFQ.bind(this); // This should replace updateShippingAddress()
-    this.updateConfiguredPartViaGlobalVar = this.updateConfiguredPartViaGlobalVar.bind(this)
-    this.updateFirstPartOption = this.updateFirstPartOption.bind(this)
-    this.handleLogOut = this.handleLogOut.bind(this)
+    super()
 
     // initial state
     this.state = {
@@ -126,7 +111,7 @@ class App extends Component {
    *  - FOXSelect RFQ
    *  - currentView
    */
-  hydrateStateWithLocalStorage(){
+  hydrateStateWithLocalStorage = () => {
     let user = null
     let cart = null
     let rfq = null
@@ -200,7 +185,7 @@ class App extends Component {
    *
    * @param      {string}  view    A string defining the current view
    */
-  setCurrentView( view, removeConfiguredPartCartId = true, clearPart = false ){
+  setCurrentView = ( view, removeConfiguredPartCartId = true, clearPart = false ) => {
     let viewObj = {currentView: view};
     const { user } = this.state;
 
@@ -248,7 +233,7 @@ class App extends Component {
    *
    * @param      {object}  configuredPart  The configured part
    */
-  setPartNumber( returnPartNo = false ){
+  setPartNumber = ( returnPartNo = false ) => {
     let { configuredPart } = {...this.state};
 
     if( '_' === configuredPart.product_type.value){
@@ -362,7 +347,7 @@ class App extends Component {
    * @param      {object}   configuredPart  The part to check
    * @return     {boolean}  True if part configured, False otherwise.
    */
-  isPartConfigured(configuredPart){
+  isPartConfigured = (configuredPart) => {
     let isConfigured = true;
     const { availableParts } = this.state;
     if( 0 === availableParts )
@@ -440,7 +425,7 @@ class App extends Component {
    * @param      {string}  action  The action (add|delete)
    * @param      {string}  id      The Id of the part in the cart
    */
-  updateCart(action, id = null, option = '', value = ''){
+  updateCart = (action, id = null, option = '', value = '') => {
     let cart = { ...this.state.cart };
     switch(action){
       case 'add':
@@ -509,7 +494,7 @@ class App extends Component {
   /**
    * Called via `componentDidMount()`. Updates our initial part options when we are configuring via an external window.configuredPart
    */
-  updateFirstPartOption(){
+  updateFirstPartOption = () => {
     if( ! window.configuredPart )
       return
 
@@ -532,7 +517,7 @@ class App extends Component {
   /**
    * Updates configuredPart via global window.configuredPart
    */
-  updateConfiguredPartViaGlobalVar(){
+  updateConfiguredPartViaGlobalVar = () => {
     if( window.configuredPart ){
       let propsToUpdate = []
       for( var property in window.configuredPart ){
@@ -594,7 +579,7 @@ class App extends Component {
    * @param      {obj}    option     The attribute object: {value: '', label: ''}
    * @param      {bool}   delay       If `true`, don't update state
    */
-  updateConfiguredPart( attribute, option, delay = false ){
+  updateConfiguredPart = ( attribute, option, delay = false ) => {
     console.log("🔔 [App.js]->updateConfiguredPart(attribute,option,delay)")
     console.log(`\t• attribute: `, attribute)
     console.log(`\t• option: `, option)
@@ -784,7 +769,7 @@ class App extends Component {
    * @param      {object}  originalConfiguredPart  The original configured part
    * @param      {object}  configuredPart          The configured part
    */
-  updateOptions( originalConfiguredPart, configuredPart ){
+  updateOptions = ( originalConfiguredPart, configuredPart ) => {
     if( typeof configuredPart.number === 'undefined' || typeof configuredPart.number.value === 'undefined' || '_________' === configuredPart.number.value || '_' === configuredPart.product_type.value )
       return
 
@@ -878,13 +863,7 @@ class App extends Component {
       .catch(error => console.log(error))
   }
 
-  updateShippingAddress( shipping_address ){
-    const { rfq } = this.state
-    rfq.shipping_address = shipping_address
-    this.setState({rfq: rfq })
-  }
-
-  updateRFQ( rfq ){
+  updateRFQ = ( rfq ) => {
     this.setState({rfq: rfq})
   }
 
@@ -998,13 +977,7 @@ class App extends Component {
     )
   }
 
-  checkAppToken(){
-    API_TOKEN.then( token => {
-      console.log('API_TOKEN = ', token);
-    });
-  }
-
-  handleLogOut(){
+  handleLogOut = () => {
     const logout = WP.logoutUser()
     if( logout )
       this.hydrateStateWithLocalStorage()
