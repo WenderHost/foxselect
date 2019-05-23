@@ -10,7 +10,7 @@ class SelectLoad extends Component{
   render(){
     const { configuredPart, loadOptions } = this.props
 
-    const loadValue = configuredPart.load.value
+    const loadValue = (typeof configuredPart.load !== 'undefined')? configuredPart.load.value : ''
     let optionValue = null
     if( '_' === loadValue ){
       // nothing

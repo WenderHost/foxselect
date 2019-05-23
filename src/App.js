@@ -944,7 +944,9 @@ class App extends Component {
     console.log(`\t• partOptions = `, partOptions )
     console.log(`• resetPart = `, resetPart )
 
-    switch(partOptions.product_type.value){
+    const productType = ( typeof partOptions.product_type !== 'undefined' )? partOptions.product_type : ''
+
+    switch(productType){
       case 'C':
         delete resetPart.voltage;
         delete resetPart.output;

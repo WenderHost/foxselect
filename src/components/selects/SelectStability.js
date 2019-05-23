@@ -88,7 +88,7 @@ class SelectStability extends Component{
 
   render(){
     const { configuredPart, stabilityOptions } = this.props
-    let stabilityValue = configuredPart.stability.value
+    let stabilityValue = (typeof configuredPart.stability !== 'undefined')? configuredPart.stability.value : ''
 
     let optionValue = null
     let backgroundColor = null

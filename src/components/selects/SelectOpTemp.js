@@ -19,7 +19,7 @@ class SelectOpTemp extends Component{
 
   render(){
     const { configuredPart, optempOptions } = this.props
-    let optempValue = configuredPart.optemp.value
+    let optempValue = (typeof configuredPart.optemp !== 'undefined')? configuredPart.optemp.value : ''
 
     let optionValue = null
     let backgroundColor = null

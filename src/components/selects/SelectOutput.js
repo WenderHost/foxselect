@@ -59,7 +59,7 @@ class SelectOutput extends Component{
     //const { savedOutputOption } = this.state;
     //let output = configuredPart.output;
     //let optionValue = output;
-    const outputValue = configuredPart.output.value
+    const outputValue = (typeof configuredPart.output !== 'undefined')? configuredPart.output.value : ''
 
     /*
     if( 3 <= configuredPart.size.value && null !== this.state.savedOutputOption )
@@ -120,7 +120,7 @@ class SelectOutput extends Component{
     }
 
 
-    if( 'HA' === configuredPart.output.value ){
+    if( typeof configuredPart.output !== 'undefined' && 'HA' === configuredPart.output.value ){
       optionValue = {value: 'HA', label: 'AEC-Q200'};
       outputOptions = [optionValue];
     }

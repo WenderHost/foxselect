@@ -11,7 +11,7 @@ class SelectVoltage extends Component{
 
   render(){
     const { configuredPart, voltageOptions } = this.props
-    const voltageValue = configuredPart.voltage.value
+    const voltageValue = ( typeof configuredPart.voltage !== 'undefined' )? configuredPart.voltage.value : ''
 
     let optionValue = null
     let backgroundColor = null

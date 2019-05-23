@@ -9,7 +9,7 @@ class SelectPin1 extends Component{
 
   render(){
     const { configuredPart, pin_1Options } = this.props
-    const pin_1Value = configuredPart.pin_1.value
+    const pin_1Value = (typeof configuredPart.pin_1 !== 'undefined')? configuredPart.pin_1.value : ''
 
     let optionValue = null
     let backgroundColor = null

@@ -101,11 +101,15 @@ class AdditionalOptionsForm extends Component{
           </div> }
         </div>
 
-        { 'T' === configuredPart.product_type.value
+        { typeof configuredPart.product_type !== 'undefined'
+          && 'T' === configuredPart.product_type.value
+          && typeof configuredPart.output !== 'undefined'
           && 'Clipped Sine' === configuredPart.output.label
+          && typeof configuredPart.stability !== 'undefined'
           && '' !== configuredPart.stability.value
           && '_' !== configuredPart.stability.value
           && 'U' !== configuredPart.stability.value
+          && typeof configuredPart.size !== 'undefined'
           && '3' === configuredPart.size.value
           && <CompensationOptions configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
         }

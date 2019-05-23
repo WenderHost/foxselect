@@ -9,7 +9,7 @@ class SelectEnableType extends Component{
 
   render(){
     const { configuredPart, enableTypeOptions } = this.props
-    const enableTypeValue = configuredPart.enable_type.value
+    const enableTypeValue = (typeof configuredPart.enable_type !== 'undefined')? configuredPart.enable_type.value : ''
 
     let optionValue = null
     let backgroundColor = null

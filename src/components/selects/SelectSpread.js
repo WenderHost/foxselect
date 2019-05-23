@@ -9,7 +9,7 @@ class SelectSpread extends Component{
 
   render(){
     const { configuredPart, spreadOptions } = this.props
-    const spreadValue = configuredPart.spread.value
+    const spreadValue = (typeof configuredPart.spread !== 'undefined')? configuredPart.spread.value : ''
 
     let optionValue = null
     let backgroundColor = null
