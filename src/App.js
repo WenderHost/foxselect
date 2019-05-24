@@ -20,10 +20,13 @@ import { API_ROOT, API_ENV } from './api-config'
 // Initialize Google Analytics
 const GAtestMode = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') )? true : false
 const GAoptions = {}
-if( GAtestMode ){
+
+if( GAtestMode )
   GAoptions.testMode = GAtestMode
-  GAoptions.debug = GAtestMode
-}
+//if( GAtestMode )
+//  GAoptions.debug = GAtestMode
+
+
 ReactGA.initialize('UA-5411671-3', GAoptions)
 
 // Lazy load the following components for performance
@@ -511,10 +514,11 @@ class App extends Component {
     if( ! window.configuredPart )
       return
 
-    console.log('window.configuredPart is set.',window.configuredPart,' Configuring our first part options...')
+    console.log('🔔 [App.js]->updateFirstPartOption window.configuredPart is set.')
+    console.log( window.configuredPart )
 
     if( window.configuredPart.hasOwnProperty('product_type') ){
-      console.log('window.configuredPart.product_type = ', window.configuredPart.product_type )
+      console.log(`\t• window.configuredPart.product_type = ${window.configuredPart.product_type.label} (${window.configuredPart.product_type.value})` )
 
       // EXCEPTION TO THE RULE:
       // Switching the `product_type` from `C` to `K`
@@ -542,7 +546,8 @@ class App extends Component {
           propsToUpdate.push(property)
         }
       }
-      console.log('We need to update these properties: ', propsToUpdate)
+      console.log('🔔 [App.js]->updateConfiguredPartViaGlobalVar We need to update these properties: ')
+      console.log(propsToUpdate)
 
       // Works for:
       // Doesn't work for: C3BS (parts with AEC-Q200 option)
@@ -866,7 +871,7 @@ class App extends Component {
         // window.configuredPart, and keep updating configuredPart one option at a
         // time until we match window.configuredPart
         if( window.configuredPart && this.state.checkExternalConfiguredPart ){
-          console.log('[App.js] updateOptions('+axiosUrl+') Axios request returned and window.configuredPart is set.')
+          console.log('🔔 [App.js] updateOptions('+axiosUrl+') Axios request returned and window.configuredPart is set.')
           this.setState(
             {partOptions: partOptions, availableParts: availableParts},
             () => this.updateConfiguredPartViaGlobalVar()
@@ -944,13 +949,9 @@ class App extends Component {
       number: {value: 'F' + product_type.value + '_______-0.0', label: 'F' + product_type.value + '_______0.0'}
     }
     /**/
-    console.log('🔔 [App.js]->resetConfiguredPart()')
-    console.log(`\t• partOptions = `, partOptions )
-    console.log(`• resetPart = `, resetPart )
+    const productType = ( typeof partOptions.product_type !== 'undefined' )? partOptions.product_type : {value: '_', label: ''}
 
-    const productType = ( typeof partOptions.product_type !== 'undefined' )? partOptions.product_type : ''
-
-    switch(productType){
+    switch(productType.value){
       case 'C':
         delete resetPart.voltage;
         delete resetPart.output;
@@ -959,11 +960,11 @@ class App extends Component {
       break;
 
       case 'O':
-        delete resetPart.tolerance;
-        delete resetPart.package_option;
-        delete resetPart.load;
-        resetPart.voltage = {value: '_', label: ''};
-        resetPart.output = {value: '__', label: ''};
+        delete resetPart.tolerance
+        delete resetPart.package_option
+        delete resetPart.load
+        resetPart.voltage = {value: '_', label: ''}
+        resetPart.output = {value: '__', label: ''}
       break;
 
       case 'S':
@@ -987,6 +988,11 @@ class App extends Component {
 
       default:
     }
+
+    console.log('🔔 [App.js]->resetConfiguredPart()')
+    console.log(`\t• productType = `, productType)
+    console.log(`\t• partOptions = `, partOptions )
+    console.log(`• resetPart = `, resetPart )
 
     this.setState(
       {configuredPart: resetPart, availableParts: 'n/a'},
