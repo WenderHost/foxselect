@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 
 class CheckboxAECQ200 extends Component {
 
-  constructor(){
-    super();
-    this.handleChange = this.handleChange.bind(this);
-  }
-
   /*
   componentDidMount(){
     const { configuredPart, updateConfiguredPart } = this.props
@@ -37,7 +32,7 @@ class CheckboxAECQ200 extends Component {
   }
   /**/
 
-  handleChange(e){
+  handleChange = (e) => {
     const { configuredPart, updateConfiguredPart } = this.props
 
     let value = ''
@@ -109,7 +104,10 @@ class CheckboxAECQ200 extends Component {
 
       case 'O':
         value = 'HA'
-        if('HA' === configuredPart.output.value)
+        if(
+          typeof configuredPart.output !== 'undefined'
+          && 'HA' === configuredPart.output.value
+        )
           checked = true
         break
 

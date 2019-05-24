@@ -534,7 +534,11 @@ class App extends Component {
     if( window.configuredPart ){
       let propsToUpdate = []
       for( var property in window.configuredPart ){
-        if( this.state.configuredPart[property].value !== window.configuredPart[property].value ){
+        if(
+          typeof this.state.configuredPart !== 'undefined'
+          && typeof this.state.configuredPart[property] !== 'undefined'
+          && this.state.configuredPart[property].value !== window.configuredPart[property].value
+        ){
           propsToUpdate.push(property)
         }
       }
