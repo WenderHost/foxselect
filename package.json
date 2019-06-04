@@ -11,6 +11,7 @@
     "core-js": "^2.6.5",
     "react": "^16.8.3",
     "react-datepicker": "^2.1.0",
+    "react-devtools": "^3.6.1",
     "react-dom": "^16.8.3",
     "react-ga": "^2.5.7",
     "react-password-strength": "^2.3.1",
