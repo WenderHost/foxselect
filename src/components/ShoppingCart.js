@@ -27,9 +27,13 @@ class ShoppingCart extends Component{
     return(
       <div className="containerX">
         <h1>Your Cart</h1>
-        <div className="row d-none d-md-flex">
-          <div className="col-md-2"><small>Part No.</small></div>
-          <div className="col-md-8"><small>Desc</small></div>
+        <div className="row d-none d-lg-flex">
+          <div className="col-10">
+            <div className="row">
+              <div className="col-md-4"><small>Part No.</small></div>
+              <div className="col-md-8"><small>Desc</small></div>
+            </div>
+          </div>
         </div>
         { 0 < this.props.partsInCart ? (
           Object.keys(this.props.cart).map(key => <CartItem key={key} id={key} part={this.props.cart[key]} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />)

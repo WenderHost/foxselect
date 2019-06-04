@@ -8,6 +8,11 @@
 .twbs h1.title{
   margin-bottom: 0;
 }
+@media screen and (max-width: 768px){
+  .twbs h1.title{
+    margin-bottom: 10px;
+  }
+}
 .twbs h1.title img{
   height: 70px;
 }

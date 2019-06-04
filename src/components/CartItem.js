@@ -43,15 +43,15 @@ class CartItem extends Component{
 
     return(
       <div className="cart-part">
-        <div className="row no-gutters">
+        <div className="row">
           <div className="col-10">
             <div className="row">
-              <div className="col-lg-2">
-                <small className="d-none d-sm-block d-md-none">Part No.</small>
+              <div className="col-lg-4" style={{textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}>
+                <small className="d-none d-md-block d-lg-none">Part No.</small>
                 <strong>{part.number.label}</strong>
               </div>
               <div className="col">
-                <small className="d-none d-sm-block d-md-none" style={{marginTop: '8px'}}>Desc</small>
+                <small className="d-none d-md-block d-lg-none" style={{marginTop: '8px'}}>Desc</small>
                 {cartItemDetail}
                 <CartItemOptions id={id} part={part} loadPart={this.props.loadPart} updateCart={this.props.updateCart} />
               </div>

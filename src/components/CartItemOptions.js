@@ -69,8 +69,8 @@ class CartItemOptions extends Component {
         <div className="row">
           <div className="col">
             <div className="form-group row" style={{marginBottom: '0', marginTop: '1rem'}}>
-              <label htmlFor="" className="col-md-2 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>Evaluation Date*</label>
-              <div className="col-md-10">
+              <label htmlFor="" className="col-md-3 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>Evaluation Date*</label>
+              <div className="col-md-9">
                 <label style={{width: '116px'}}>
                   <DatePicker
                     selected={evalDate}
@@ -82,13 +82,13 @@ class CartItemOptions extends Component {
               </div>
             </div>
             <div className="form-group row" style={{marginBottom: '0'}}>
-              <label className="col-md-2 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>Internal Part No.</label>
+              <label className="col-md-3 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>Internal Part No.</label>
               <div className="col-md-2">
                 <input className="form-control form-control-sm form-control-inline text-right" style={{padding: '0 .5rem 0 .2rem', maxWidth: '244px'}} name="internalPartNo" value={internalPartNoValue} type="text" placeholder="" onChange={this.handleChange} />
               </div>
             </div>
             <div className="form-group row" style={{marginBottom: '0'}}>
-              <label className="col-md-2 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>EAU</label>
+              <label className="col-md-3 col-form-label col-form-label-sm" style={{fontSize: '13px'}}>EAU</label>
               <div className="col-md-2">
                 <input className="form-control form-control-sm form-control-inline text-right" style={{padding: '0 .5rem 0 .2rem', maxWidth: '244px'}} name="eau" value={eauValue} type="text" placeholder="EAU" onChange={this.handleChange} />
               </div>
