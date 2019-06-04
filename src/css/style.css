@@ -5,6 +5,12 @@
   color: #333333;
   background-color: white;
 }
+.twbs h1.title{
+  margin-bottom: 0;
+}
+.twbs h1.title img{
+  height: 70px;
+}
 
 .twbs .nav-foxselect{
   display: flex;
