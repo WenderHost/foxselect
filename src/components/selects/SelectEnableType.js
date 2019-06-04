@@ -8,7 +8,7 @@ class SelectEnableType extends Component{
   }
 
   render(){
-    const { configuredPart, enableTypeOptions } = this.props
+    const { configuredPart, enableTypeOptions, loadingPartOptions } = this.props
     const enableTypeValue = (typeof configuredPart.enable_type !== 'undefined')? configuredPart.enable_type.value : ''
 
     let optionValue = null
@@ -43,6 +43,7 @@ class SelectEnableType extends Component{
           options={enableTypeOptions}
           styles={customStyles}
           isClearable
+          isLoading={loadingPartOptions}
         />
       </div>
     );

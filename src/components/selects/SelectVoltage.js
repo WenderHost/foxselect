@@ -10,7 +10,7 @@ class SelectVoltage extends Component{
   }
 
   render(){
-    const { configuredPart, voltageOptions } = this.props
+    const { configuredPart, voltageOptions, loadingPartOptions } = this.props
     const voltageValue = ( typeof configuredPart.voltage !== 'undefined' )? configuredPart.voltage.value : ''
 
     let optionValue = null
@@ -41,6 +41,7 @@ class SelectVoltage extends Component{
           name="voltage"
           value={optionValue}
           isClearable
+          isLoading={loadingPartOptions}
           onChange={this.handleChange}
           placeholder="Voltage..."
           matchPos="start"

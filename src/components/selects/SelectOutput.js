@@ -54,7 +54,7 @@ class SelectOutput extends Component{
   }
 
   render(){
-    const { configuredPart } = this.props;
+    const { configuredPart, loadingPartOptions } = this.props;
     let { outputOptions } = this.props;
     //const { savedOutputOption } = this.state;
     //let output = configuredPart.output;
@@ -141,6 +141,7 @@ class SelectOutput extends Component{
           options={outputOptions}
           styles={customStyles}
           isClearable
+          isLoading={loadingPartOptions}
         />
       </div>
     );

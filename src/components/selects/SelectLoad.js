@@ -8,7 +8,7 @@ class SelectLoad extends Component{
   }
 
   render(){
-    const { configuredPart, loadOptions } = this.props
+    const { configuredPart, loadOptions, loadingPartOptions } = this.props
 
     const loadValue = (typeof configuredPart.load !== 'undefined')? configuredPart.load.value : ''
     let optionValue = null
@@ -25,6 +25,7 @@ class SelectLoad extends Component{
           name="load"
           value={optionValue}
           isClearable
+          isLoading={loadingPartOptions}
           onChange={this.handleChange}
           placeholder="Load..."
           matchPos="start"

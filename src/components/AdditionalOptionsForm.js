@@ -15,7 +15,7 @@ import SelectPin1 from './selects/SelectPin1';
 
 class AdditionalOptionsForm extends Component{
   render(){
-    const { aecq200, configuredPart, updateConfiguredPart, partOptions } = this.props;
+    const { aecq200, configuredPart, updateConfiguredPart, partOptions, loadingPartOptions } = this.props;
 
     /**
      * Show AEC-Q200 option if size:
@@ -32,7 +32,12 @@ class AdditionalOptionsForm extends Component{
           <div className="col-lg-auto" style={{minWidth: '200px'}}>
             <div className="row">
               <div className="col">
-                <SelectSize configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} sizeOptions={partOptions.size} />
+                <SelectSize
+                  configuredPart={configuredPart}
+                  updateConfiguredPart={updateConfiguredPart}
+                  sizeOptions={partOptions.size}
+                  loadingPartOptions={loadingPartOptions}
+                />
               </div>
               { typeof configuredPart.size !== 'undefined'
               && aecq200.parts.includes(configuredPart.product_type.value)
@@ -51,18 +56,33 @@ class AdditionalOptionsForm extends Component{
 
           { typeof partOptions.enable_type !== 'undefined' && 'S' === configuredPart.product_type.value &&
           <div className="col-lg">
-            <SelectEnableType configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} enableTypeOptions={partOptions.enable_type} />
+            <SelectEnableType
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              enableTypeOptions={partOptions.enable_type}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.tolerance !== 'undefined' && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
           <div className="col-lg">
-            <SelectTolerance configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} toleranceOptions={partOptions.tolerance} />
+            <SelectTolerance
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              toleranceOptions={partOptions.tolerance}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.output !== 'undefined' &&
             ( 'O' === configuredPart.product_type.value || 'T' === configuredPart.product_type.value || 'Y' === configuredPart.product_type.value ) &&
           <div className="col-lg">
-            <SelectOutput configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} outputOptions={partOptions.output} />
+            <SelectOutput
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              outputOptions={partOptions.output}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.voltage !== 'undefined'
@@ -71,33 +91,63 @@ class AdditionalOptionsForm extends Component{
               || 'Y' === configuredPart.product_type.value
               || 'S' === configuredPart.product_type.value ) &&
           <div className="col-lg-auto" style={{minWidth: '300px'}}>
-            <SelectVoltage configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} voltageOptions={partOptions.voltage} />
+            <SelectVoltage
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              voltageOptions={partOptions.voltage}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.spread !== 'undefined' && 'S' === configuredPart.product_type.value &&
           <div className="col-lg">
-            <SelectSpread configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} spreadOptions={partOptions.spread} />
+            <SelectSpread
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              spreadOptions={partOptions.spread}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.stability !== 'undefined' &&
           <div className="col-lg">
-            <SelectStability  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} stabilityOptions={partOptions.stability} />
+            <SelectStability
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              stabilityOptions={partOptions.stability}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.load !== 'undefined' && ('C' === configuredPart.product_type.value || 'K' === configuredPart.product_type.value) &&
           <div className="col-lg">
-            <SelectLoad  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} loadOptions={partOptions.load} />
+            <SelectLoad
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              loadOptions={partOptions.load}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.optemp !== 'undefined' &&
           <div className="col-lg">
-            <SelectOpTemp  configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} optempOptions={partOptions.optemp} />
+            <SelectOpTemp
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              optempOptions={partOptions.optemp}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
 
           { typeof partOptions.pin_1 !== 'undefined' &&
             'T' === configuredPart.product_type.value &&
           <div className="col-lg">
-            <SelectPin1 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} pin_1Options={partOptions.pin_1} />
+            <SelectPin1
+              configuredPart={configuredPart}
+              updateConfiguredPart={updateConfiguredPart}
+              pin_1Options={partOptions.pin_1}
+              loadingPartOptions={loadingPartOptions}
+            />
           </div> }
         </div>
 

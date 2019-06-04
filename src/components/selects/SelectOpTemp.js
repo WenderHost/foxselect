@@ -18,7 +18,7 @@ class SelectOpTemp extends Component{
   }
 
   render(){
-    const { configuredPart, optempOptions } = this.props
+    const { configuredPart, optempOptions, loadingPartOptions } = this.props
     let optempValue = (typeof configuredPart.optemp !== 'undefined')? configuredPart.optemp.value : ''
 
     let optionValue = null
@@ -45,6 +45,7 @@ class SelectOpTemp extends Component{
           name="optemp"
           value={optionValue}
           isClearable
+          isLoading={loadingPartOptions}
           onChange={this.handleChange}
           placeholder="Op Temp..."
           options={optempOptions}

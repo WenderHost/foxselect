@@ -76,6 +76,7 @@ class PartSelector extends React.Component{
               updateConfiguredPart={updateConfiguredPart}
               partOptions={partOptions}
               aecq200={aecq200}
+              loadingPartOptions={this.props.loadingPartOptions}
             /> }
           { this.props.isPartConfigured(configuredPart)
             && 'web' === API_ENV &&

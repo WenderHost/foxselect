@@ -52,6 +52,7 @@ class App extends Component {
         load: [],
         optemp: []
       },
+      loadingPartOptions: false,
       aecq200: aecq200Options,
       availableParts: 'n/a',
       user: null,
@@ -802,8 +803,9 @@ class App extends Component {
       dataService.setPartNumber( configuredPart.number.label )
     }
 
-    let axiosUrl = `${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}/${configuredPart.frequency_unit.value}`
+    this.setState({loadingPartOptions: true})
 
+    let axiosUrl = `${API_ROOT}${configuredPart.number.value}/${configuredPart.package_type.value}/${configuredPart.frequency_unit.value}`
     axios
       .get(axiosUrl)
       .then(response => {
@@ -873,12 +875,12 @@ class App extends Component {
         if( window.configuredPart && this.state.checkExternalConfiguredPart ){
           console.log('🔔 [App.js] updateOptions('+axiosUrl+') Axios request returned and window.configuredPart is set.')
           this.setState(
-            {partOptions: partOptions, availableParts: availableParts},
+            {partOptions: partOptions, availableParts: availableParts, loadingPartOptions: false},
             () => this.updateConfiguredPartViaGlobalVar()
           )
         } else {
           console.log(`🔔 [App.js]->updateOptions() should be setting availableParts to ${availableParts}.`)
-          this.setState({partOptions: partOptions, availableParts: availableParts, configuredPart: configuredPart})
+          this.setState({partOptions: partOptions, availableParts: availableParts, configuredPart: configuredPart, loadingPartOptions: false})
         }
 
       })
@@ -1009,7 +1011,8 @@ class App extends Component {
   }
 
   render() {
-    const { aecq200, configuredPart, partOptions, availableParts, cart, user } = this.state
+    const { aecq200, configuredPart, partOptions, cart, user, loadingPartOptions } = this.state
+    const availableParts = ( loadingPartOptions )? '...' : this.state.availableParts
     let { currentView } = this.state
     const editing = cart.hasOwnProperty(configuredPart.cart_id)
     const testLink = API_ROOT + configuredPart.number.value + '/' + configuredPart.package_type.value + '/' + configuredPart.frequency_unit.value
@@ -1072,6 +1075,7 @@ class App extends Component {
             currentView={currentView}
             editing={editing}
             isPartConfigured={this.isPartConfigured}
+            loadingPartOptions={loadingPartOptions}
             partOptions={partOptions}
             ReactGA={ReactGA}
             setCurrentView={this.setCurrentView}

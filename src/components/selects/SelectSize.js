@@ -8,8 +8,7 @@ class SelectSize extends Component{
   }
 
   render(){
-    const { configuredPart, sizeOptions } = this.props;
-    //const { savedSizeOption } = this.state;
+    const { configuredPart, sizeOptions, loadingPartOptions } = this.props
     const size = configuredPart.size;
     let optionValue = size;
 
@@ -83,6 +82,7 @@ class SelectSize extends Component{
           name="size"
           value={optionValue}
           isClearable
+          isLoading={loadingPartOptions}
           onChange={this.handleChange}
           placeholder="Size..."
           autoBlur={true}

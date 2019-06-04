@@ -8,7 +8,7 @@ class SelectTolerance extends Component{
   }
 
   render(){
-    const { configuredPart, toleranceOptions } = this.props;
+    const { configuredPart, toleranceOptions, loadingPartOptions } = this.props;
 
     // 04/26/2019 (17:34) - CONTINUE HERE: `undefined`
     //console.log('configuredPart.tolerance = ', configuredPart.tolerance)
@@ -72,6 +72,7 @@ class SelectTolerance extends Component{
           name="tolerance"
           value={optionValue}
           isClearable
+          isLoading={loadingPartOptions}
           onChange={this.handleChange}
           placeholder="Tolerance..."
           matchPos="start"

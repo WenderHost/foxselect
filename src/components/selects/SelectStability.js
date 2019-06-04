@@ -87,7 +87,7 @@ class SelectStability extends Component{
   }
 
   render(){
-    const { configuredPart, stabilityOptions } = this.props
+    const { configuredPart, stabilityOptions, loadingPartOptions } = this.props
     let stabilityValue = (typeof configuredPart.stability !== 'undefined')? configuredPart.stability.value : ''
 
     let optionValue = null
@@ -114,6 +114,7 @@ class SelectStability extends Component{
           name="stability"
           value={optionValue}
           isClearable
+          isLoading={loadingPartOptions}
           onChange={this.handleChange}
           placeholder="Stability..."
           matchPos="start"
