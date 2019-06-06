@@ -97,14 +97,14 @@ class PartDetails extends Component{
         break
 
       case 'nodetails':
-        partDetailRows[9999] = <tr key={9999}><th scope="row">Availability</th><td><code style={{color: '#333', fontSize: '14px'}}>Please check with FOX regarding this part's availability.</code></td></tr>
+        partDetailRows[9999] = <tr key={9999}><th scope="row">Availability</th><td>Please check with FOX regarding this part's availability.</td></tr>
         return
 
       default:
         returnValue = partDetail.value
     }
 
-    if( null !== returnValue )
+    if( null !== returnValue && '' !== returnValue )
       partDetailRows[displayOrder] = <tr key={key}><th scope="row" style={{whiteSpace: 'nowrap'}}>{label}</th><td>{returnValue}</td></tr>
   }
 
