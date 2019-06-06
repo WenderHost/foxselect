@@ -829,7 +829,7 @@ class App extends Component {
         const allowedOptions = ['size','tolerance','stability','voltage','output','load','optemp','pin_1','enable_type','spread'];
         for (var i = allowedOptions.length - 1; i >= 0; i--) {
           var option = allowedOptions[i];
-          if( typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate ){
+          if( (typeof response.data.partOptions[option] !== 'undefined' || true === forceUpdate) && 0 < response.data.availableParts ){
             partOptions[option] = response.data.partOptions[option]
 
             /**
