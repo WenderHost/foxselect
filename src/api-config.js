@@ -5,6 +5,7 @@ const hostname = window && window.location && window.location.hostname
 
 const apiEnv = ( -1 < hostname.indexOf( 'force' ) )? 'salesforce' : 'web'
 
+export const HOSTNAME = hostname
 export const API_ENV = apiEnv
 export const API_ROOT = `${process.env.REACT_APP_WPAPI_EP}/wp-json/foxparts/${apiVersion}/get_options/`
 export const FOXPART_API_ROOT = `${process.env.REACT_APP_WPAPI_EP}/wp-json/foxparts/${apiVersion}/get_web_part`
