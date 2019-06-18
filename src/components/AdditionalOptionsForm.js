@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import SelectSize from './selects/SelectSize';
 import CompensationOptions from './CompensationOptions';
-import CheckboxAECQ200 from './CheckboxAECQ200';
+import AECQ200 from './checkboxes/AECQ200';
+import VibrationResistant from './checkboxes/VibrationResistant'
 import SelectEnableType from './selects/SelectEnableType'
 import SelectTolerance from './selects/SelectTolerance';
 import SelectSpread from './selects/SelectSpread';
@@ -12,10 +13,13 @@ import SelectLoad from './selects/SelectLoad';
 import SelectOpTemp from './selects/SelectOpTemp';
 import SizeOptions from './SizeOptions';
 import SelectPin1 from './selects/SelectPin1';
+//import { aecq200Options } from './data/data'
+import { getSizeOptions } from '../lib/utilities'
 
 class AdditionalOptionsForm extends Component{
   render(){
-    const { aecq200, configuredPart, updateConfiguredPart, partOptions, loadingPartOptions } = this.props;
+    const { configuredPart, updateConfiguredPart, partOptions, loadingPartOptions } = this.props
+    const sizeOptions = getSizeOptions( configuredPart )
 
     /**
      * Show AEC-Q200 option if size:
@@ -30,7 +34,7 @@ class AdditionalOptionsForm extends Component{
         <div className="form-row" style={{marginTop: '20px'}}>
           { typeof partOptions.size !== 'undefined' &&
           <div className="col-lg-auto" style={{minWidth: '200px'}}>
-            <div className="row">
+            <div className="row no-gutters">
               <div className="col">
                 <SelectSize
                   configuredPart={configuredPart}
@@ -39,13 +43,24 @@ class AdditionalOptionsForm extends Component{
                   loadingPartOptions={loadingPartOptions}
                 />
               </div>
+              { ( sizeOptions.aecq200 || sizeOptions.vibrationResistant )
+                && <div className="col-auto" style={{paddingLeft: '12px'}}>
+                  <label>Options</label>
+                  { sizeOptions.aecq200
+                    && <AECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
+                  { sizeOptions.vibrationResistant
+                    && <VibrationResistant configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} /> }
+                </div> }
+            {/*
               { typeof configuredPart.size !== 'undefined'
-              && aecq200.parts.includes(configuredPart.product_type.value)
-              && aecq200.sizes.includes(configuredPart.size.value)
+              && aecq200Options.parts.includes(configuredPart.product_type.value)
+              && aecq200Options.sizes.includes(configuredPart.size.value)
               && ! ( 'O' === configuredPart.product_type.value && 'kHz' === configuredPart.frequency_unit.value )
-              && <div className="col-auto" style={{paddingLeft: '0'}}>
+              && <div className="col-auto" style={{paddingLeft: '12px'}}>
+                <label>Options</label>
                 <CheckboxAECQ200 configuredPart={configuredPart} updateConfiguredPart={updateConfiguredPart} />
               </div> }
+            */}
             </div>
 
             { typeof configuredPart.size !== 'undefined'

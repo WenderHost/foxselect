@@ -1,3 +1,4 @@
+import { aecq200Options } from '../components/data/data';
 
 export function formatFrequency( frequency ){
 
@@ -20,4 +21,31 @@ export function formatFrequency( frequency ){
     floatFreq = '0.0'
 
   return floatFreq
+}
+
+export function getSizeOptions( configuredPart ){
+  const sizeOptions = {
+    aecq200: false,
+    vibrationResistant: false
+  }
+
+  if( typeof configuredPart.size === 'undefined' )
+    return sizeOptions
+
+  // AEC-Q200 option
+  if(
+    aecq200Options.parts.includes(configuredPart.product_type.value)
+    && aecq200Options.sizes.includes(configuredPart.size.value)
+    && ! ( 'O' === configuredPart.product_type.value && 'kHz' === configuredPart.frequency_unit.value )
+  )
+    sizeOptions.aecq200 = true
+
+  // `Vibration Resistant` option for C3VR family
+  if(
+    'C' === configuredPart.product_type.value
+    && '3' === configuredPart.size.value
+  )
+    sizeOptions.vibrationResistant = true
+
+  return sizeOptions
 }

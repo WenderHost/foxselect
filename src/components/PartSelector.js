@@ -20,7 +20,7 @@ class PartSelector extends React.Component{
   }
 
   render(){
-    const { aecq200, cart, configuredPart, editing, partOptions, updateConfiguredPart } = this.props;
+    const { cart, configuredPart, editing, partOptions, updateConfiguredPart } = this.props;
 
     return (
       <div className="PartSelector">
@@ -75,7 +75,6 @@ class PartSelector extends React.Component{
               configuredPart={configuredPart}
               updateConfiguredPart={updateConfiguredPart}
               partOptions={partOptions}
-              aecq200={aecq200}
               loadingPartOptions={this.props.loadingPartOptions}
             /> }
           { this.props.isPartConfigured(configuredPart)

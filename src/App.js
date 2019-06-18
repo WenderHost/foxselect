@@ -53,7 +53,6 @@ class App extends Component {
         optemp: []
       },
       loadingPartOptions: false,
-      aecq200: aecq200Options,
       availableParts: 'n/a',
       user: null,
       rfq: {
@@ -608,7 +607,7 @@ class App extends Component {
     console.log(`\t• option: `, option)
     console.log(`\t• delay: `, delay)
 
-    const { configuredPart, aecq200 } = this.state
+    const { configuredPart } = this.state
     const originalConfiguredPart = configuredPart
     const currentValue = (typeof configuredPart[attribute] !== 'undefined')? configuredPart[attribute].value : ''
 
@@ -739,9 +738,9 @@ class App extends Component {
             configuredPart.package_option = {value: 'AQ', label: 'AQ'}
           } else if( '9' === option.value ) {
             configuredPart.package_option = {value: 'SD', label: 'SD'}
-          } else if( 0 < option.value.length && aecq200.sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
+          } else if( 0 < option.value.length && aecq200Options.sizes.includes(option.value) && configuredPart.package_option.value === 'BA' ){
             // do nothing
-          } else if( 0 < option.value.length && ! aecq200.sizes.includes(option.value) ){
+          } else if( 0 < option.value.length && ! aecq200Options.sizes.includes(option.value) ){
             configuredPart.package_option.value = ( '_' !== option.value )? 'BS' : '__'
           } else {
             configuredPart.package_option.value = ( '_' !== option.value )? 'BS' : '__'
@@ -1011,7 +1010,7 @@ class App extends Component {
   }
 
   render() {
-    const { aecq200, configuredPart, partOptions, cart, user, loadingPartOptions } = this.state
+    const { configuredPart, partOptions, cart, user, loadingPartOptions } = this.state
     const availableParts = ( loadingPartOptions )? '...' : this.state.availableParts
     let { currentView } = this.state
     const editing = cart.hasOwnProperty(configuredPart.cart_id)
@@ -1069,7 +1068,6 @@ class App extends Component {
         thisView = <Suspense fallback={<div className="alert alert-info text-center">Loading...</div>}>
           <PartSelector
             addPart={this.addPart}
-            aecq200={aecq200}
             cart={cart}
             configuredPart={configuredPart}
             currentView={currentView}

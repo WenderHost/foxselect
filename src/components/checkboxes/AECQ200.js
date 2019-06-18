@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class CheckboxAECQ200 extends Component {
+class AECQ200 extends Component {
 
   /*
   componentDidMount(){
@@ -115,12 +115,12 @@ class CheckboxAECQ200 extends Component {
     }
 
     return(
-      <div className="form-check" style={{marginTop: '36px'}}>
+      <div className="form-check align-middle">
         <input type="checkbox" className="form-check-input" id="aec-q200" value={value} checked={checked} onChange={this.handleChange}/>
-        <label htmlFor="aec-q200" className="form-check-label">AEC-Q200</label>
+                <label htmlFor="aec-q200" className="form-check-label">AEC-Q200</label>
       </div>
     );
   }
 }
 
-export default CheckboxAECQ200;
+export default AECQ200;
