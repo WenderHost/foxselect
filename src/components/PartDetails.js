@@ -81,6 +81,11 @@ class PartDetails extends Component{
         break
 
       case 'output':
+        displayOrder = 3
+        label = key.charAt(0).toUpperCase() + key.slice(1)
+        returnValue = ('HA' === partDetail.label)? 'HCMOS, AEC-Q200' : partDetail.label
+        break
+
       case 'size':
       case 'stability':
       case 'tolerance':
