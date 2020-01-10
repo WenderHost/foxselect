@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import CartItem from './CartItem';
-import { Creatable } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 //import WP from './WordPressAPI';
 import { API_REST, API_TOKEN } from '../api-config';
 import { stateOptions } from './data/data';
@@ -181,7 +181,7 @@ class Checkout extends Component{
               <input type="text" className="form-control" placeholder="City" name="city" value={rfq.shipping_address.city} onChange={this.handleChange} />
             </div>
             <div className="col">
-              <Creatable
+              <CreatableSelect
                 onChange={this.handleShippingAddressState}
                 multi={false}
                 placeholder="State/Prov/Region..."

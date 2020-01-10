@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
 import WP from './WordPressAPI';
-import Select, { Creatable } from 'react-select';
+import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable'
 import { companyTypeOptions, stateOptions } from './data/data';
 import ReactPasswordStrength from 'react-password-strength';
 import { AUTH_ROOT, API_REST, API_TOKEN } from '../api-config';
@@ -300,7 +301,7 @@ class Login extends Component{
                   <input type="text" className="form-control" placeholder="City" name="company_city" value={new_user.company_city} onChange={this.handleChange} />
                 </div>
                 <div className="col">
-                  <Creatable
+                  <CreatableSelect
                     onChange={this.handleChangeCompanyState}
                     multi={false}
                     placeholder="State/Prov/Region..."
