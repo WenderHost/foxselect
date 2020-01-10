@@ -18,7 +18,7 @@ import axios from 'axios'
 import { API_ROOT, API_ENV, HOSTNAME } from './api-config'
 
 // Initialize Google Analytics
-const GAtestMode = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') )? true : false
+const GAtestMode = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.local') )? true : false
 const GAoptions = {}
 
 if( GAtestMode )
@@ -1102,8 +1102,8 @@ class App extends Component {
       <div className="container">
         { ( 'web' === API_ENV ) &&
         <div>
-          { ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') || -1 < HOSTNAME.indexOf('.loco') ) &&
-          <div className="row no-gutters justify-content-center"><div className="col-12 meta-foxselect " style={{textAlign: 'center'}}><code><a href={testLink} target="_blank">View API</a></code></div></div> }
+          { ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.local') || -1 < HOSTNAME.indexOf('.local') ) &&
+          <div className="row no-gutters justify-content-center"><div className="col-12 meta-foxselect " style={{textAlign: 'center'}}><code><a href={testLink} target="_blank" rel="noopener noreferrer">View API</a></code></div></div> }
           <div className="row no-gutters">
             <div className="col-md-3">
               <h1 className="title">
