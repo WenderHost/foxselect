@@ -1,12 +1,12 @@
 import React, { Suspense } from 'react' // , { Component }
 import { render } from 'react-dom'
 import { unregister } from './registerServiceWorker'
-import 'core-js/es7/array'
+import 'core-js/es/array'
 
 import './css/bootstrap-ns.css'
 import './css/style.css'
 
-const loggingEnabled = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.loco') )? true : false
+const loggingEnabled = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.local') )? true : false
 if( ! loggingEnabled )
   console.log = function(){}
 
