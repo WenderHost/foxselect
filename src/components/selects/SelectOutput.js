@@ -121,7 +121,7 @@ class SelectOutput extends Component{
 
 
     if( typeof configuredPart.output !== 'undefined' && 'HA' === configuredPart.output.value ){
-      optionValue = {value: 'HA', label: 'AEC-Q200'};
+      optionValue = {value: 'HA', label: 'HCMOS, AEC-Q200'};
       outputOptions = [optionValue];
     }
 
