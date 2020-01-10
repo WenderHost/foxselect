@@ -7,8 +7,12 @@ import './css/bootstrap-ns.css'
 import './css/style.css'
 
 const loggingEnabled = ( -1 < process.env.REACT_APP_WPAPI_EP.indexOf('.local') )? true : false
-if( ! loggingEnabled )
+if( ! loggingEnabled ){
+  console.warn('🔔 LOGGING DISABLED: Dev endpoint `.local` not found.');
   console.log = function(){}
+} else {
+  console.log('👍 console.log is enabled for `.local` domains.')
+}
 
 const App = React.lazy(() => import('./App'))
 
@@ -42,13 +46,13 @@ if( -1 < hostname.indexOf( 'force' ) ){
 } else {
   apiEnv = 'web'
 }
-//apiEnv = 'web'
+console.log('🔔 apiEnv = ', apiEnv)
 if( 'web' === apiEnv || 'salesforce' === apiEnv ){
-  let FoxSelect = {}
+  const FoxSelect = {}
   FoxSelect.init = init
   window.FoxSelect = FoxSelect
 } else {
-  init(document.querySelector('#root'),null)
+  init(document.querySelector('#rootfoxselect'),null)
 }
 
 unregister()
