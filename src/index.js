@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react' // , { Component }
 import { render } from 'react-dom'
 import { unregister } from './registerServiceWorker'
-import 'core-js/es/array'
+import 'core-js/stable'
 
 import './css/bootstrap-ns.css'
 import './css/style.css'
