@@ -106,6 +106,11 @@ class PartDetails extends Component{
         return
 
       default:
+        if( '' === partDetail.label){
+          console.log(`🔔 partDetail.label is empty for partDetail.value = '${partDetail.value}'. So that we don't return a row with an empty label, we are returning...`)
+          return
+        }
+
         returnValue = partDetail.value
     }
 
