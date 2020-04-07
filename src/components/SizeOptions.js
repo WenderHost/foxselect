@@ -97,10 +97,6 @@ class SizeOptions extends Component{
                 <div className="col-1"><Radio value="BS" id="32x25bs" /></div>
               </div>
               <div className="row">
-                <div className="col-10"><label htmlFor="32x25bg">1.0 mm height, ceramic lid, glass seal</label></div>
-                <div className="col-1"><Radio value="BG" id="32x25bg" /></div>
-              </div>
-              <div className="row">
                 <div className="col-10"><label htmlFor="32x25bq">1.1 mm height, ceramic lid, resin seal</label></div>
                 <div className="col-1"><Radio value="BQ" id="32x25bq" /></div>
               </div>
@@ -121,11 +117,6 @@ class SizeOptions extends Component{
                 <div className="col-7"><label>1.2mm height, ceramic lid, resin seal</label></div>
                 <div className="col-sm-auto"><label><Radio value="BQ" /> 4 pad</label></div>
                 <div className="col-sm-auto"><label><Radio value="AQ" /> 2 pad</label></div>
-              </div>
-              <div className="row">
-                <div className="col-7"><label>1.4mm height, ceramic lid, glass seal</label></div>
-                <div className="col-sm-auto"><label><Radio value="CG" /> 4 pad</label></div>
-                <div className="col-sm-auto"><label><Radio value="AG" /> 2 pad</label></div>
               </div>
             </RadioGroup>
           </div>
