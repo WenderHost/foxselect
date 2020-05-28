@@ -749,12 +749,25 @@ class App extends Component {
 
         case 'K':
           if( -1 < option.value.indexOf(',') ){
-            console.log('Size value has a comma. updateConfiguredPart() setting Size to default:')
+            console.log(`🔔 Size value has a comma:\n\t• size = ${option.value}\n\t• updateConfiguredPart() setting Size to default:`)
             // The first two chars of the size will determine the default (i.e. 12 or 13):
             const currentSize = option.value.substring(0,2)
             switch(currentSize){
               case '12':
-                configuredPart.size = {value: '122', label: '2.0x1.2 mm'}
+                switch(option.value){
+                  case '122,12A':
+                    configuredPart.size = {value: '122', label: '2.0x1.2 mm'}
+                    break
+
+                  case '121,124':
+                    configuredPart.size = {value: '121', label: '1.2x1.0 mm'}
+                    configuredPart.package_option = {label: '', value: '121'}
+                    break
+
+                  default:
+                    //nothing
+                }
+
                 break
 
               case '13':
@@ -764,6 +777,9 @@ class App extends Component {
               default:
                 // nothing
             }
+          } else if( '124' === option.value || '121' === option.value ){
+            configuredPart.size = {value: option.value, label: '1.2x1.0 mm'}
+            configuredPart.package_option = {label: '', value: option.value}
           } else if( 3 > option.value.length && '_' === option.value.substring(0,1) ){
             // Default size value for kHz-Crystal-SMD is three underscores
             option.value = '___'

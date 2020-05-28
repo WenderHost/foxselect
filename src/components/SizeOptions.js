@@ -25,6 +25,21 @@ class SizeOptions extends Component{
 
     switch(size){
 
+      case '121,124':
+      case '121':
+      case '124':
+        return(
+          <div className="alert alert-secondary">
+            <p>1.2 x 1.0 mm package options:</p>
+            <RadioGroup name="package_option" selectedValue={package_option} onChange={this.handleChange}>
+              <div className="row">
+                <div className="col-auto"><label><Radio value="121" id="121" /> 2 pad</label></div>
+                <div className="col-auto"><label><Radio value="124" id="124" /> 4 pad</label></div>
+              </div>
+            </RadioGroup>
+          </div>
+        );
+
       case '13A':
       case '135':
       case '13L':
