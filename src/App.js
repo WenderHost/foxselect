@@ -597,15 +597,19 @@ class App extends Component {
   /**
    * Updates the `configuredPart`
    *
-   * @param      {str}    attribute  The configuredPart attribute
-   * @param      {obj}    option     The attribute object: {value: '', label: ''}
-   * @param      {bool}   delay       If `true`, don't update state
+   * @param      {str}    attribute         The configuredPart attribute
+   * @param      {obj}    option            The attribute object: {value: '', label: ''}
+   * @param      {bool}   delay             If `true`, don't update state
+   * @param      {bool}   checkExtConfPart  Should we check `window.configuredPart`?
    */
-  updateConfiguredPart = ( attribute, option, delay = false ) => {
+  updateConfiguredPart = ( attribute, option, delay = false, checkExtConfPart = true ) => {
     console.log("🔔 [App.js]->updateConfiguredPart(attribute,option,delay)")
     console.log(`\t• attribute: `, attribute)
     console.log(`\t• option: `, option)
     console.log(`\t• delay: `, delay)
+    console.log(`\t• checkExtConfPart: `, checkExtConfPart)
+    if( ! checkExtConfPart )
+      console.log(`🔔 Since checkExtConfPart is false, we won't check window.configuredPart`)
 
     const { configuredPart } = this.state
     const originalConfiguredPart = configuredPart
@@ -796,7 +800,7 @@ class App extends Component {
     if( ! delay ){
       const partNumber = this.setPartNumber( true ) // configuredPart
       configuredPart.number = partNumber
-      this.setState({configuredPart: configuredPart, currentView: 'PartSelector'},() => {
+      this.setState({configuredPart: configuredPart, currentView: 'PartSelector', checkExternalConfiguredPart: checkExtConfPart },() => {
         this.updateOptions( originalConfiguredPart, configuredPart )
       })
     }
