@@ -760,6 +760,7 @@ class App extends Component {
                     break
 
                   case '121,124':
+                  case '124,121':
                     configuredPart.size = {value: '121', label: '1.2x1.0 mm'}
                     configuredPart.package_option = {label: '', value: '121'}
                     break
