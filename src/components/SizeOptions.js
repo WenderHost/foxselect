@@ -25,9 +25,10 @@ class SizeOptions extends Component{
 
     switch(size){
 
-      case '121,124':
       case '121':
       case '124':
+      case '121,124':
+      case '124,121':
         return(
           <div className="alert alert-secondary">
             <p>1.2 x 1.0 mm package options:</p>
