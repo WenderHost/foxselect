@@ -13,7 +13,7 @@ class SizeOptions extends Component{
     switch(this.props.configuredPart.product_type.value){
       case 'K':
         const sizeValue = ( 0 <= value.indexOf('13') )? { value: value, label: '3.2x1.5 mm' } : { value: value, label: '2.0x1.2 mm'}
-        this.props.updateConfiguredPart('size',sizeValue)
+        this.props.updateConfiguredPart('size',sizeValue,false,false)
         break;
 
       default:
