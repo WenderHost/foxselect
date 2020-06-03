@@ -37,12 +37,20 @@
           "label": "Crystal"
         },
         "size": {
-          "value": "122",
-          "label": "no label (122)"
+          "value": "124",
+          "label": "1.2x1.0 mm"
         }
       };
       /**/
     </script>
+
+    <!--
+    # HOW TO TEST foxselect-loader.js
+
+    1. Uncomment the following section:
+    2. Add `apiEnv = 'web'` inside /src/index.js around line 48 to force the apiEnv to be `web`.
+    -->
+
     <!--
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script type='text/javascript'>
@@ -66,10 +74,16 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <div class="twbs" id="rootfoxselect"></div>
-    <div class="twbs" id="rootbuttons" style="display: none;">
+    <div class="twbs" id="rootbuttons" style="display: block;">
       <div class="container" style="border-top: 1px solid #eee; margin-top: 60px; padding-top: 20px;">
         <h5>Default</h5>
         <a href="#" class="foxselect btn btn-sm btn-primary">Open FOXSelect</a>
+
+        <h5>Crystals - kHz SMD</h5>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FK121____-0.0/SMD/kHz">Open FOXSelect (K121)</a>
+        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FK124____-0.0/SMD/kHz">Open FOXSelect (K124)</a>
+        <hr/>
+
         <h5>TCXOs and VC-TCXOs</h5>
         <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FT1CN____-0.0/SMD/MHz">Open FOXSelect (T1CN)</a>
         <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FT1CV____-0.0/SMD/MHz">Open FOXSelect (T1CV)</a>
@@ -85,9 +99,6 @@
         <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FCABS____-0.0/SMD/MHz">Open FOXSelect (CABS)</a>
         <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC3BS____-0.0/SMD/MHz">Open FOXSelect (C3BS)</a>
         <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC3BQ____-0.0/SMD/MHz">Open FOXSelect (C3BQ)</a>
-        <h5>Crystals - kHz SMD</h5>
-        <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FK122____-0.0/SMD/kHz">Open FOXSelect (K122)</a>
-
         <h5>Crystals - MHz Pin Thru</h5>
         <a href="#" class="foxselect btn btn-sm btn-primary" data-partnumber="FC4ST____-0.0/Pin-Thru/MHz">Open FOXSelect (C4ST)</a>
         <h5>Crystals - kHz Pin Thru</h5>
